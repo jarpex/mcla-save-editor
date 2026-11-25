@@ -377,7 +377,7 @@ input::placeholder { color: var(--ink-faint); }
 .statlist { max-height: 430px; overflow-y: auto; margin: 0 -15px -15px; padding: 0 15px 15px; }
 .stat {
   display: grid;
-  grid-template-columns: 52px 1fr 128px;
+  grid-template-columns: 52px minmax(0, 1fr) auto 128px;
   align-items: center;
   gap: 10px;
   padding: 5px 0;
@@ -389,6 +389,13 @@ input::placeholder { color: var(--ink-faint); }
   font-size: 13px;
   font-weight: 700;
   color: var(--signal);
+}
+.stat .name {
+  font-size: 12px;
+  color: var(--ink-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .stat .kind {
   font-size: 11.5px;
@@ -1126,6 +1133,35 @@ function renderProg() {
 
 var STATS = [];
 
+/* Nome em jogo de cada FourCC. So os que alguem ja traduziu; o resto da lista
+   mostra o codigo sozinho, que e melhor do que um nome inventado. */
+var STAT_NAMES = {
+  gBRN: "Total Burnouts",
+  gCOL: "Collectables",
+  gCPA: "Totals Cops Activated",
+  gCPL: "Total Cops Lost",
+  gCWN: "Non Career Consecutive Wins",
+  gDAM: "Total damage points",
+  gHOP: "Total Opponents Hit",
+  gHPR: "Total Props Hit",
+  gHTR: "Total Traffic Hit",
+  gNIT: "Total Nitrous",
+  gOUT: "Total Damage Out",
+  gRCP: "Races Completed",
+  gROR: "Total Roar Special Ability",
+  gSST: "Total Slipstream Turbo",
+  gWIN: "Total Numbers of Wins",
+  gWIP: "Total Wipeouts",
+  ghTC: "Total Hours Cruising",
+  ghTP: "Total Hours Played",
+  gk2W: "Two Wheel Driving Distance (miles)",
+  gkDS: "Total Distance Traveled (miles)",
+  gmJD: "Max. Jump Distance (meters)",
+  gsJT: "Total Jump Time (seconds)"
+};
+
+function statName(r) { return STAT_NAMES[r.key] || ""; }
+
 function renderStats() {
   var s = sec("Stats");
   STATS = [];
@@ -1149,15 +1185,38 @@ function drawStats(q) {
   host.innerHTML = "";
   var shown = 0;
   STATS.forEach(function (r) {
-    if (q && r.key.toLowerCase().indexOf(q) === -1) return;
+    /* A busca pega o codigo e o nome em jogo: quem procura "wins" quer gWIN,
+       quem procura "gWIN" nao quer ter que saber o nome. */
+    if (q && r.key.toLowerCase().indexOf(q) === -1 && statName(r).toLowerCase().indexOf(q) === -1) return;
     shown++;
+    /* Nomes vem da tabela STAT_NAMES, que e do repositorio; nada do save entra
+       aqui. A linha e montada com createElement porque o texto vem de dados. */
     var row = document.createElement("div");
     row.className = "stat";
-    row.innerHTML = '<span class="key">' + r.key + "</span>" +
-                    '<span class="kind">' + t(r.isFloat ? "decimal" : "integer") + "</span>" +
-                    '<input type="text" inputmode="decimal" aria-label="' + t("aValue", r.key) + '">';
-    var inp = row.querySelector("input");
+
+    var key = document.createElement("span");
+    key.className = "key";
+    key.textContent = r.key;
+
+    var name = document.createElement("span");
+    name.className = "name";
+    name.textContent = statName(r);
+
+    var kind = document.createElement("span");
+    kind.className = "kind";
+    kind.textContent = t(r.isFloat ? "decimal" : "integer");
+
+    var inp = document.createElement("input");
+    inp.type = "text";
+    inp.inputMode = "decimal";
+    inp.setAttribute("aria-label", t("aValue", r.key));
     inp.value = r.isFloat ? view.getFloat32(r.at + 12).toFixed(4) : u32(r.at + 12);
+
+    row.appendChild(key);
+    row.appendChild(name);
+    row.appendChild(kind);
+    row.appendChild(inp);
+
     inp.addEventListener("input", function () {
       var v = Number(inp.value.replace(",", "."));
       if (inp.value.trim() === "" || !isFinite(v)) return;

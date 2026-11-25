@@ -98,7 +98,7 @@ var MADE = [];
 
 function makeEl(id) {
   var e = {
-    id: id, value: "", textContent: "", innerHTML: "", hidden: false,
+    id: id, value: "", textContent: "", hidden: false,
     className: "", checked: false, dataset: {}, style: {}, files: [], children: [],
     _on: {},
     classList: { add: noop, remove: noop, toggle: noop, contains: function () { return false; } },
@@ -113,6 +113,13 @@ function makeEl(id) {
     querySelector: function () { return makeEl("x"); },
     querySelectorAll: function (sel) { return group(sel); }
   };
+  /* innerHTML = "" limpa os filhos, como no DOM de verdade: drawStats reescreve
+     a lista a cada tecla e o teste conta children pra saber o que sobrou. */
+  var html = "";
+  Object.defineProperty(e, "innerHTML", {
+    get: function () { return html; },
+    set: function (v) { html = v; if (v === "") e.children.length = 0; }
+  });
   return e;
 }
 
@@ -258,6 +265,43 @@ assert.strictEqual(ctx.view.getUint32(careerAt + 0x2D9), 999999,
 
 assert.ok(ctx.STATS.length >= 2, "renderStats nao achou os registros");
 assert.notStrictEqual(dom.byId.roRep.textContent, "", "o rodape nao foi preenchido");
+
+// ---------- nomes e busca ----------
+// A tabela STAT_NAMES e do repositorio; o teste confere que ela casa com o save
+// sintetico (gWIN, tPUR) e que a busca pega os dois lados.
+
+assert.strictEqual(typeof ctx.statName({ key: "gWIN" }), "string", "statName nao existe");
+assert.strictEqual(ctx.statName({ key: "gWIN" }), "Total Numbers of Wins",
+  "o nome de gWIN nao esta na tabela");
+assert.strictEqual(ctx.statName({ key: "tPUR" }), "",
+  "um codigo sem nome inventou um nome");
+
+var statRows = dom.doc.getElementById("stats").children;
+assert.ok(statRows.length >= 2, "drawStats nao montou as linhas");
+var first = statRows[0];
+assert.ok(first.children.length === 4,
+  "a linha do stat nao tem codigo, nome, tipo e campo: " + first.children.length);
+assert.strictEqual(first.children[0].textContent, ctx.STATS[0].key,
+  "o codigo da linha nao e o do primeiro registro");
+assert.strictEqual(first.children[1].textContent, ctx.statName(ctx.STATS[0]),
+  "o nome em jogo nao apareceu na linha");
+
+// busca por codigo e por nome acham a mesma linha
+var filter = dom.doc.getElementById("statFilter");
+filter.value = "gwin";
+filter.oninput.call(filter);
+assert.ok(dom.doc.getElementById("stats").children.length >= 1,
+  "buscar pelo codigo nao achou nada");
+filter.value = "numbers of wins";
+filter.oninput.call(filter);
+assert.ok(dom.doc.getElementById("stats").children.length >= 1,
+  "buscar pelo nome em jogo nao achou nada");
+filter.value = "zzz";
+filter.oninput.call(filter);
+assert.strictEqual(dom.doc.getElementById("stats").children.length, 0,
+  "busca sem resultado deveria esvaziar a lista");
+filter.value = "";
+filter.oninput.call(filter);
 
 // ---------- garagem: trocar o veiculo ----------
 
