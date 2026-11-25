@@ -397,6 +397,11 @@ input::placeholder { color: var(--ink-faint); }
   text-transform: uppercase;
 }
 .stat input { padding: 5px 9px; font-size: 12.5px; text-align: right; }
+/* O bloco Career tem um rotulo comprido (o nome do evento), entao a linha usa
+   duas colunas: texto a esquerda, campo a direita, sem o codigo de 52px. */
+.stat.wide { grid-template-columns: minmax(0, 1fr) 128px; }
+.stat .who { display: grid; gap: 2px; min-width: 0; }
+.stat .who .key { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .empty-note { color: var(--ink-faint); font-size: 13px; padding: 10px 0; }
 .slot.beyond { opacity: 0.42; }
 .btn.mini {
@@ -616,6 +621,7 @@ var STR = {
     sections: "Seções", thName: "Nome", thStart: "Início",
     garage: "Garagem", stats: "Estatísticas", statFilter: "filtrar por código, ex: gWIN",
     career: "Career", timeTrial: "Time Trial", ttEvent: "Evento", ttTarget: "Tempo alvo",
+    ttHollywood: "Hollywood time trial: '99 Eclipse",
     ttRecord: "Recorde", ttHint: "min:seg.centésimos, ex: 02:08.54",
     roCars: "CARROS", roMoney: "DINHEIRO", roRep: "REP", download: "Baixar mc4.sav",
     nSections: "seções", nSlots: "slots", nRecords: "registros", of: "de",
@@ -643,6 +649,7 @@ var STR = {
     sections: "Sections", thName: "Name", thStart: "Start",
     garage: "Garage", stats: "Statistics", statFilter: "filter by code, e.g. gWIN",
     career: "Career", timeTrial: "Time Trial", ttEvent: "Event", ttTarget: "Target time",
+    ttHollywood: "Hollywood time trial: '99 Eclipse",
     ttRecord: "Record", ttHint: "min:sec.hundredths, e.g. 02:08.54",
     roCars: "CARS", roMoney: "MONEY", roRep: "REP", download: "Download mc4.sav",
     nSections: "sections", nSlots: "slots", nRecords: "records", of: "of",
@@ -1217,25 +1224,30 @@ function renderCareer() {
   host.innerHTML = "";
 
   var row = document.createElement("div");
-  row.className = "stat";
+  row.className = "stat wide";
+
+  var who = document.createElement("div");
+  who.className = "who";
 
   var key = document.createElement("span");
   key.className = "key";
-  key.textContent = t("ttRecord");
+  key.textContent = t("ttHollywood");
 
   var kind = document.createElement("span");
   kind.className = "kind";
   kind.textContent = t("ttHint");
+
+  who.appendChild(key);
+  who.appendChild(kind);
 
   var inp = document.createElement("input");
   inp.type = "text";
   inp.inputMode = "decimal";
   inp.id = "careerRecord";
   inp.value = msToText(u32(st.data + OFF.ttRecord));
-  inp.setAttribute("aria-label", t("ttRecord"));
+  inp.setAttribute("aria-label", t("ttHollywood"));
 
-  row.appendChild(key);
-  row.appendChild(kind);
+  row.appendChild(who);
   row.appendChild(inp);
   host.appendChild(row);
 
