@@ -24,9 +24,9 @@ var TUNE_BASE = 1293, TUNE_LV = 95, TUNE_N = 13, TUNE_PCT = 126;
 // ---------- save sintetico ----------
 // Mesmo formato do real, pequeno. Nenhum dado do jogo entra no repositorio.
 
-var CAREER = 4000;        // cobre o bloco de progressao: 0x2E9 + 43*65 = 3540
+var CAREER = 30000;       // cobre a progressao (0x2E9 + 43*65) e a tabela de alvos (0x727D)
 var LOCAL = SLOT0 + SLOT_STRIDE * 2;
-var STATS = 1024;
+var STATS = 2048;         // cobre os recordes de time trial (0x6A8)
 
 function buildSave() {
   var secs = [
@@ -91,6 +91,11 @@ function buildSave() {
 
 function noop() {}
 
+/* createElement/appendChild guardam o que a pagina monta, e getElementById acha
+   por id: os campos que nascem em JS (o recorde do Career) precisam ser
+   alcancaveis pelo teste do mesmo jeito que os do HTML. */
+var MADE = [];
+
 function makeEl(id) {
   var e = {
     id: id, value: "", textContent: "", innerHTML: "", hidden: false,
@@ -98,7 +103,9 @@ function makeEl(id) {
     _on: {},
     classList: { add: noop, remove: noop, toggle: noop, contains: function () { return false; } },
     addEventListener: function (type, fn) { e._on[type] = fn; },
-    removeEventListener: noop, appendChild: noop, removeChild: noop, remove: noop,
+    removeEventListener: noop,
+    appendChild: function (c) { e.children.push(c); MADE.push(c); return c; },
+    removeChild: noop, remove: noop,
     setAttribute: noop, removeAttribute: noop, focus: noop, blur: noop,
     click: noop, scrollIntoView: noop,
     getAttribute: function () { return null; },
@@ -159,6 +166,9 @@ function makeDom() {
   var byId = {};
   var doc = {
     getElementById: function (id) {
+      if (!byId[id]) {
+        for (var i = 0; i < MADE.length; i++) if (MADE[i].id === id) { byId[id] = MADE[i]; break; }
+      }
       if (!byId[id]) byId[id] = makeEl(id);
       return byId[id];
     },
@@ -366,6 +376,58 @@ for (var j = 0; j < CELLS; j++) {
   assert.strictEqual(ctx.bytes[ctx.progAt(j)], 0, "limpar tudo deixou o bloco " + j + " marcado");
 }
 
+// ---------- time trial e career ----------
+
+var statsAt = ctx.secs.list.filter(function (s) { return s.name === "Stats"; })[0].data;
+
+// os campos do Career nascem em JS, entao o teste pega pelo id
+var ttTarget = dom.doc.getElementById("ttTarget");
+var careerRecord = dom.doc.getElementById("careerRecord");
+
+assert.strictEqual(typeof ttTarget._on.input, "function",
+  "render() terminou sem ligar o campo de tempo alvo");
+assert.strictEqual(typeof careerRecord._on.input, "function",
+  "render() terminou sem ligar o campo de recorde");
+
+if (!real) {
+  assert.strictEqual(ttTarget.value, "00:00.00",
+    "o alvo lido do save sintetico esta errado");
+  assert.strictEqual(careerRecord.value, "00:00.00",
+    "o recorde lido do save sintetico esta errado");
+}
+
+// 02:08.54 = 128540 ms, o mesmo tempo do save de referencia
+ttTarget.value = "02:08.54";
+ttTarget._on.input.call(ttTarget);
+assert.strictEqual(ctx.view.getUint32(careerAt + 0x727D), 128540,
+  "digitar no alvo nao gravou na tabela de Career");
+assert.strictEqual(ctx.view.getUint32(statsAt + 0x578), 128540,
+  "digitar no alvo nao gravou o recorde em Stats");
+assert.strictEqual(ctx.view.getUint32(statsAt + 0x6A8), 128540,
+  "digitar no alvo nao gravou a copia do recorde");
+
+// o alvo seguinte da tabela nao pode ser tocado (no save sintetico ele e 0)
+if (!real) {
+  assert.strictEqual(ctx.view.getUint32(careerAt + 0x7281), 0,
+    "o alvo invadiu a entrada seguinte da tabela");
+}
+
+// formato invalido nao grava
+ttTarget.value = "2:99";
+ttTarget._on.input.call(ttTarget);
+assert.strictEqual(ctx.view.getUint32(careerAt + 0x727D), 128540,
+  "um tempo impossivel foi gravado mesmo assim");
+
+// o recorde tem caminho proprio e escreve nas duas copias
+careerRecord.value = "04:15.32";
+careerRecord._on.input.call(careerRecord);
+assert.strictEqual(ctx.view.getUint32(statsAt + 0x578), 255320,
+  "o campo de recorde nao gravou em Stats+0x578");
+assert.strictEqual(ctx.view.getUint32(statsAt + 0x6A8), 255320,
+  "o campo de recorde nao gravou em Stats+0x6A8");
+assert.strictEqual(ctx.view.getUint32(careerAt + 0x727D), 128540,
+  "mudar so o recorde mexeu no alvo da missao");
+
 // ---------- o arquivo tem que sobreviver a tudo isso ----------
 
 var after = ctx.parse(ctx.bytes.buffer);
@@ -374,4 +436,4 @@ assert.strictEqual(ctx.bytes.length, sizeBefore, "o tamanho do arquivo mudou");
 
 console.log("ok - " + (real ? "save real" : "save sintetico") + ": " +
   SLOTS + " slots, " + CELLS + " blocos, " + ctx.STATS.length + " stats. " +
-  "Carteira, veiculo, rotulo, placa, desempenho e progressao gravam; o save segue valido.");
+  "Carteira, veiculo, rotulo, placa, desempenho, progressao, alvo e recorde gravam; o save segue valido.");

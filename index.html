@@ -530,6 +530,20 @@ input::placeholder { color: var(--ink-faint); }
         </div>
 
         <div class="panel">
+          <header><span data-i18n="timeTrial">Time Trial</span></header>
+          <div class="body">
+            <div class="field">
+              <label for="ttEvent"><span data-i18n="ttEvent">Evento</span></label>
+              <select id="ttEvent"></select>
+            </div>
+            <div class="field">
+              <label for="ttTarget"><span data-i18n="ttTarget">Tempo alvo</span> <span class="at" id="ttAt">Career+0x727D</span></label>
+              <input type="text" inputmode="decimal" id="ttTarget" placeholder="02:08.54">
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
           <header><span data-i18n="sections">Seções</span> <span class="count" id="secCount"></span></header>
           <div class="body">
             <table class="sections">
@@ -552,6 +566,13 @@ input::placeholder { color: var(--ink-faint); }
           <div class="body">
             <input class="filter" type="text" id="statFilter" data-i18n-ph="statFilter" placeholder="filtrar por código, ex: gWIN">
             <div class="statlist" id="stats"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <header><span data-i18n="career">Career</span></header>
+          <div class="body">
+            <div class="statlist" id="career"></div>
           </div>
         </div>
       </div>
@@ -594,6 +615,8 @@ var STR = {
     progression: "Progressão", markAll: "Marcar todas", clearAll: "Limpar todas",
     sections: "Seções", thName: "Nome", thStart: "Início",
     garage: "Garagem", stats: "Estatísticas", statFilter: "filtrar por código, ex: gWIN",
+    career: "Career", timeTrial: "Time Trial", ttEvent: "Evento", ttTarget: "Tempo alvo",
+    ttRecord: "Recorde", ttHint: "min:seg.centésimos, ex: 02:08.54",
     roCars: "CARROS", roMoney: "DINHEIRO", roRep: "REP", download: "Baixar mc4.sav",
     nSections: "seções", nSlots: "slots", nRecords: "registros", of: "de",
     empty: "vazio", integer: "inteiro", decimal: "decimal",
@@ -619,6 +642,8 @@ var STR = {
     progression: "Progression", markAll: "Mark all", clearAll: "Clear all",
     sections: "Sections", thName: "Name", thStart: "Start",
     garage: "Garage", stats: "Statistics", statFilter: "filter by code, e.g. gWIN",
+    career: "Career", timeTrial: "Time Trial", ttEvent: "Event", ttTarget: "Target time",
+    ttRecord: "Record", ttHint: "min:sec.hundredths, e.g. 02:08.54",
     roCars: "CARS", roMoney: "MONEY", roRep: "REP", download: "Download mc4.sav",
     nSections: "sections", nSlots: "slots", nRecords: "records", of: "of",
     empty: "empty", integer: "integer", decimal: "decimal",
@@ -667,7 +692,20 @@ var OFF = {
   tuneLv: 95,        // 13 bytes de nivel, dentro do bloco
   tuneN: 13,
   tuneMax: 2,
-  tunePct: 126
+  tunePct: 126,
+
+  /* Recordes de time trial. Fica na secao Stats, mas em registro proprio, nao
+     na lista de stats: k:TB e "total best" e r:TI e o recorde por evento, com o
+     id do evento no campo id. O valor e o tempo em milissegundos. */
+  ttRecord: 0x578,     // Stats, k:TB (record 30)
+  ttEventRec: 0x6A8,   // Stats, r:TI id=4 (record 49)
+
+  /* Alvos das missoes de time trial. Tabela de u32 em Career+0x727C, SEM
+     alinhamento: o primeiro alvo comeca em +0x727D e os passos sao de 4. O
+     jogo le daqui o tempo que a segunda e a terceira tentativa pedem. */
+  ttTarget: 0x727D,    // Career
+  ttTargetStride: 4,
+  ttTargetCount: 4
 };
 
 /* Roster extraido de tune/vehicle/0xe94bde63. So estes nomes carregam. */
@@ -906,6 +944,8 @@ function render() {
 
   renderProg();
   renderStats();
+  renderCareer();
+  renderTimeTrial();
 
   el("money").oninput = function () {
     setU32(car.data + OFF.money, clamp(this.value));
@@ -926,6 +966,26 @@ function render() {
 function clamp(v) {
   var n = Math.floor(Number(v) || 0);
   return Math.max(0, Math.min(2000000000, n));
+}
+
+// ---------- tempo ----------
+
+/* O jogo guarda o tempo em milissegundos e mostra mm:ss.cc. As duas conversoes
+   ficam aqui pra que o resto da tela so veja texto. Os centesimos sao
+   truncados, nao arredondados: 128548 ms aparece como 02:08.54, e nao .55. */
+function msToText(ms) {
+  var c = Math.max(0, Math.floor(ms / 10) * 10);
+  var m = Math.floor(c / 60000), s = Math.floor(c / 1000) % 60, h = (c % 1000) / 10;
+  return (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s + "." + (h < 10 ? "0" : "") + h;
+}
+
+function textToMs(str) {
+  var m = /^\s*(\d+):(\d{1,2})(?:[.,](\d{1,3}))?\s*$/.exec(str || "");
+  if (!m) return null;
+  var min = +m[1], sec = +m[2], frac = m[3] || "";
+  if (sec > 59) return null;
+  var ms = min * 60000 + sec * 1000 + Math.round(("0." + frac) * 1000);
+  return Math.max(0, Math.min(4294967295, ms));
 }
 
 /* O jogo le os slots EM SEQUENCIA a partir do 0 e so ate o contador, entao um
@@ -1101,6 +1161,91 @@ function drawStats(q) {
     host.appendChild(row);
   });
   if (!shown) host.innerHTML = '<p class="empty-note">' + t("noStat") + "</p>";
+}
+
+// ---------- time trial ----------
+
+/* Uma linha por evento. Por ora so a segunda tentativa de Hollywood: o alvo
+   dela fica na tabela de Career e o recorde, nas duas copias de Stats. */
+var TT_EVENTS = [
+  { key: "ttHollywood2", label: "Hollywood time trial: '99 Eclipse - Race 2", target: 0, rec: 0 }
+];
+
+function ttEventName(e) {
+  return e.label || t(e.key);
+}
+
+function renderTimeTrial() {
+  var host = el("ttEvent");
+  host.innerHTML = "";
+  TT_EVENTS.forEach(function (e, i) {
+    var o = document.createElement("option");
+    o.value = i;
+    o.textContent = ttEventName(e);
+    host.appendChild(o);
+  });
+  host.onchange = function () { paintTimeTrial(); };
+  paintTimeTrial();
+}
+
+function paintTimeTrial() {
+  var e = TT_EVENTS[+el("ttEvent").value || 0], car = sec("Career"), st = sec("Stats");
+  var at = car.data + OFF.ttTarget + e.target * OFF.ttTargetStride;
+  el("ttAt").textContent = "Career+0x" + (OFF.ttTarget + e.target * OFF.ttTargetStride).toString(16).toUpperCase();
+  el("ttTarget").value = msToText(u32(at));
+  el("ttTarget").setAttribute("aria-label", t("ttTarget") + " " + ttEventName(e));
+}
+
+el("ttTarget").addEventListener("input", function () {
+  var e = TT_EVENTS[+el("ttEvent").value || 0], car = sec("Career"), st = sec("Stats");
+  var ms = textToMs(this.value);
+  if (ms === null) return;
+  setU32(car.data + OFF.ttTarget + e.target * OFF.ttTargetStride, ms);
+  if (e.rec !== null) {
+    setU32(st.data + OFF.ttRecord, ms);
+    setU32(st.data + OFF.ttEventRec, ms);
+  }
+  mark();
+});
+
+// ---------- career ----------
+
+/* Recorde da corrida, fora da lista de stats porque e o valor que o jogador
+   mais mexe e merece campo proprio. As duas copias andam juntas. */
+function renderCareer() {
+  var st = sec("Stats"), host = el("career");
+  host.innerHTML = "";
+
+  var row = document.createElement("div");
+  row.className = "stat";
+
+  var key = document.createElement("span");
+  key.className = "key";
+  key.textContent = t("ttRecord");
+
+  var kind = document.createElement("span");
+  kind.className = "kind";
+  kind.textContent = t("ttHint");
+
+  var inp = document.createElement("input");
+  inp.type = "text";
+  inp.inputMode = "decimal";
+  inp.id = "careerRecord";
+  inp.value = msToText(u32(st.data + OFF.ttRecord));
+  inp.setAttribute("aria-label", t("ttRecord"));
+
+  row.appendChild(key);
+  row.appendChild(kind);
+  row.appendChild(inp);
+  host.appendChild(row);
+
+  inp.addEventListener("input", function () {
+    var ms = textToMs(this.value);
+    if (ms === null) return;
+    setU32(sec("Stats").data + OFF.ttRecord, ms);
+    setU32(sec("Stats").data + OFF.ttEventRec, ms);
+    mark();
+  });
 }
 
 // ---------- gravar ----------
