@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MCLA Save Editor — edit mc4.sav from Midnight Club: Los Angeles</title>
+<title>MCLA Save Editor - edit mc4.sav from Midnight Club: Los Angeles</title>
 <meta name="description" content="Browser-based save editor for Midnight Club: Los Angeles on PC (MC_LA_Recompiled). Edit money, reputation and the garage in mc4.sav. Nothing is uploaded.">
 <link rel="canonical" href="https://onlyzennnn.github.io/mcla-save-editor/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://onlyzennnn.github.io/mcla-save-editor/">
 <meta property="og:site_name" content="MCLA Save Editor">
-<meta property="og:title" content="MCLA Save Editor — edit mc4.sav from Midnight Club: Los Angeles">
+<meta property="og:title" content="MCLA Save Editor - edit mc4.sav from Midnight Club: Los Angeles">
 <meta property="og:description" content="Edit money, reputation and the garage in mc4.sav. Runs in your browser, nothing is uploaded. The save format is documented too.">
 <meta property="og:image" content="https://onlyzennnn.github.io/mcla-save-editor/og.png">
 <meta property="og:image:width" content="1200">
@@ -18,299 +18,755 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap">
 <style>
-/* Mundo visual: o HUD do proprio MCLA. Painel escuro com borda clara, cabecalho
-   amarelo em caixa alta, selecao ciano, numeros em mono tabular. Tema unico
-   escuro, escolhido pela cena de uso: editar o save ao lado do jogo, a noite. */
+/* Midnight Club: Los Angeles HUD aesthetic
+   - Beveled metallic outer window frame with recessed inner groove
+   - Translucent dark slate interior with subtle horizontal row rules
+   - Yellow (#e6d528) headers, prices and wallet readouts
+   - Cyan (#29c5c0) active row gradients, left triangle cursors and progress bars */
 :root {
-  --void:        #05070a;
-  --panel:       #0e1319;
-  --panel-rise:  #161d26;
-  --edge:        #2b3642;
-  --edge-bright: #8a9aa8;
-  --ink:         #e6edf3;
-  --ink-dim:     #b0c0cd;
-  --ink-faint:   #8fa2b1;  /* 6.3:1 sobre o painel, o tom anterior dava 3.9:1 */
-  --signal:      #48d6c8;
-  --signal-deep: #0f3b3a;
-  --amber:       #f2c230;
-  --alert:       #ff6b5e;
-  --ok:          #6ee787;
+  --void:          #07090c;
+  --bezel-hi:      #889296;
+  --bezel-mid:     #5d6569;
+  --bezel-lo:      #393f43;
+  --groove:        #161b1f;
+  --window-bg:     rgba(15, 19, 23, 0.96);
+  --panel:         rgba(20, 25, 30, 0.90);
+  --panel-deep:    rgba(10, 13, 16, 0.94);
+  --row-line:      rgba(255, 255, 255, 0.065);
+  --edge:          #2f373d;
+  --edge-bright:   #6d7880;
+  --ink:           #edf2f6;
+  --ink-dim:       #aebac4;
+  --ink-faint:     #7d8b96;
+  --cyan:          #29c5c0;
+  --cyan-bright:   #5ce6e1;
+  --cyan-deep:     #0d3b3a;
+  --yellow:        #e6d528;
+  --alert:         #ff5c54;
+  --ok:            #57d972;
 
   --display: "Chakra Petch", "Segoe UI Semibold", system-ui, sans-serif;
   --data: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
 
-  --out: cubic-bezier(0.23, 1, 0.32, 1);
-  --r: 4px;
+  --out: cubic-bezier(0.22, 1, 0.36, 1);
   color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 
-html, body { height: 100%; }
+html, body { min-height: 100%; }
 
 body {
   margin: 0;
   background:
-    radial-gradient(1200px 700px at 72% -12%, #10212b 0%, transparent 62%),
+    radial-gradient(1100px 640px at 50% -10%, rgba(41, 197, 192, 0.10) 0%, transparent 60%),
+    radial-gradient(900px 520px at 85% 105%, rgba(230, 213, 40, 0.06) 0%, transparent 55%),
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.012) 0px,
+      rgba(255, 255, 255, 0.012) 1px,
+      transparent 1px,
+      transparent 4px
+    ),
     var(--void);
   color: var(--ink);
   font-family: var(--display);
   font-size: 15px;
-  line-height: 1.5;
+  line-height: 1.45;
   -webkit-font-smoothing: antialiased;
 }
 
-::selection { background: var(--signal); color: #04100f; }
-::-webkit-scrollbar { width: 11px; height: 11px; }
-::-webkit-scrollbar-track { background: var(--void); }
-::-webkit-scrollbar-thumb { background: var(--edge); border: 3px solid var(--void); border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: var(--edge-bright); }
-* { scrollbar-color: var(--edge) var(--void); scrollbar-width: thin; }
+::selection { background: var(--cyan); color: #041212; }
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-track { background: #0a0d10; }
+::-webkit-scrollbar-thumb { background: #343d44; border: 2px solid #0a0d10; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--cyan); }
+* { scrollbar-color: #343d44 #0a0d10; scrollbar-width: thin; }
 
 :focus-visible {
-  outline: 2px solid var(--signal);
+  outline: 2px solid var(--cyan);
   outline-offset: 2px;
 }
 
 input, select, button { font: inherit; color: inherit; }
-input { caret-color: var(--signal); }
+input { caret-color: var(--cyan); }
 
-.wrap {
-  max-width: 1180px;
+/* ---------- Centered MCLA HUD Window ---------- */
+
+.stage {
+  max-width: 1200px;
   margin: 0 auto;
-  padding-inline: max(18px, env(safe-area-inset-left, 0px)) max(18px, env(safe-area-inset-right, 0px));
-  padding-block: 28px 56px;
+  padding-inline: max(14px, env(safe-area-inset-left, 0px)) max(14px, env(safe-area-inset-right, 0px));
+  padding-block: 22px 40px;
 }
 
-/* ---------- cabecalho ---------- */
+.mcla-frame {
+  border-radius: 16px;
+  padding: 5px;
+  background: linear-gradient(180deg, var(--bezel-hi) 0%, var(--bezel-mid) 45%, var(--bezel-lo) 100%);
+  box-shadow:
+    0 0 0 2px #050709,
+    0 24px 60px rgba(0, 0, 0, 0.85),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.mcla-groove {
+  border-radius: 12px;
+  padding: 3px;
+  background: var(--groove);
+  border: 1px solid #23292e;
+}
+
+.mcla-window {
+  border-radius: 10px;
+  border: 1px solid #434c52;
+  background: var(--window-bg);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- Top Window Title Bar ---------- */
 
 .masthead {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid var(--edge);
-  margin-bottom: 22px;
+  padding: 13px 18px 11px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.0) 100%);
+  border-bottom: 1px solid #2a3238;
+  border-radius: 10px 10px 0 0;
 }
-.mark { flex: none; color: var(--amber); }
+
+.badge-disc {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #3a4248, #14181b 75%);
+  border: 1.5px solid #8a959c;
+  display: grid;
+  place-items: center;
+  flex: none;
+  color: #edf2f6;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+.title-block {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
 .masthead h1 {
   margin: 0;
-  font-size: clamp(19px, 3.4vw, 25px);
+  font-size: clamp(19px, 3vw, 24px);
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
-  color: var(--amber);
+  color: var(--yellow);
+  text-shadow: 0 1px 10px rgba(230, 213, 40, 0.18);
+  line-height: 1.1;
 }
+
+.game-sub {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+
 .filetag {
   margin-left: auto;
   font-family: var(--data);
-  font-size: 12.5px;
-  color: var(--ink-faint);
+  font-size: 12px;
+  color: var(--ink-dim);
+  background: rgba(8, 11, 14, 0.75);
+  border: 1px solid var(--edge);
+  border-radius: 4px;
+  padding: 4px 10px;
   text-align: right;
   min-width: 0;
   overflow-wrap: anywhere;
 }
-.btn.lang {
+
+/* ---------- Language Dropdown Menu ---------- */
+
+.lang-menu {
+  position: relative;
   flex: none;
-  padding: 5px 11px;
-  font-size: 11.5px;
-  letter-spacing: 0.12em;
-  margin-left: 14px;
-}
-@media (max-width: 580px) {
-  .masthead { flex-wrap: wrap; row-gap: 8px; }
-  .masthead h1 { font-size: 23px; }
-  .filetag { order: 3; flex-basis: 100%; margin-left: 0; text-align: left; }
-  .btn.lang { margin-left: auto; }
 }
 
-/* ---------- estado vazio ---------- */
+.btn.lang-trigger {
+  padding: 5px 10px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  background: #14191e;
+  border-color: var(--edge-bright);
+  color: var(--cyan-bright);
+  gap: 6px;
+}
+
+.lang-caret {
+  font-size: 9px;
+  color: var(--ink-dim);
+  transition: transform 140ms var(--out);
+}
+.btn.lang-trigger[aria-expanded="true"] .lang-caret {
+  transform: rotate(180deg);
+}
+
+.lang-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 168px;
+  padding: 4px;
+  border-radius: 6px;
+  border: 1px solid var(--cyan);
+  background: #0d1216;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.85);
+  z-index: 40;
+  display: grid;
+  gap: 2px;
+}
+
+.lang-opt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--ink-dim);
+  font-size: 12.5px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: background 120ms var(--out), color 120ms var(--out);
+}
+
+.lang-opt:hover {
+  background: rgba(41, 197, 192, 0.14);
+  color: var(--ink);
+}
+
+.lang-opt.active {
+  background: linear-gradient(90deg, rgba(41, 197, 192, 0.26) 0%, rgba(41, 197, 192, 0.08) 100%);
+  color: var(--cyan-bright);
+}
+
+.lang-opt .code {
+  font-family: var(--data);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--yellow);
+  width: 22px;
+}
+
+.lang-opt .check {
+  margin-left: auto;
+  font-family: var(--data);
+  font-size: 11px;
+  color: var(--cyan);
+  opacity: 0;
+}
+.lang-opt.active .check { opacity: 1; }
+
+@media (max-width: 680px) {
+  .masthead { flex-wrap: wrap; row-gap: 8px; padding: 12px 14px 10px; }
+  .filetag { order: 3; flex-basis: 100%; margin-left: 0; text-align: left; }
+  .lang-menu { margin-left: auto; }
+}
+
+/* ---------- MCLA Screen Tabs & Active Indicator Track ---------- */
+
+.tabs-wrap {
+  padding: 12px 18px 0;
+}
+
+.nav-tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tab-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  border: 1px solid var(--edge);
+  border-radius: 4px;
+  background: rgba(11, 14, 18, 0.85);
+  color: var(--ink-dim);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 140ms var(--out), color 140ms var(--out), border-color 140ms var(--out);
+}
+
+.tab-btn .chev {
+  color: var(--cyan);
+  font-family: var(--data);
+  font-weight: 700;
+  opacity: 0;
+  transform: translateX(-3px);
+  transition: opacity 140ms var(--out), transform 140ms var(--out);
+}
+
+.tab-btn:hover {
+  border-color: var(--edge-bright);
+  color: var(--ink);
+}
+
+.tab-btn.active {
+  background: linear-gradient(90deg, rgba(41, 197, 192, 0.25) 0%, rgba(41, 197, 192, 0.08) 100%);
+  border-color: var(--cyan);
+  color: var(--cyan-bright);
+}
+
+.tab-btn.active .chev {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.tab-hint {
+  margin-left: auto;
+  font-family: var(--data);
+  font-size: 11px;
+  color: var(--ink-faint);
+}
+
+.mcla-track {
+  position: relative;
+  height: 3px;
+  margin-top: 10px;
+  background: #262d33;
+  border-radius: 2px;
+}
+
+.mcla-thumb {
+  position: absolute;
+  top: -2px;
+  left: 0;
+  width: 140px;
+  height: 7px;
+  border-radius: 2px;
+  background: var(--cyan);
+  box-shadow: 0 0 10px rgba(41, 197, 192, 0.65);
+  transition: left 240ms var(--out), width 240ms var(--out);
+}
+
+@media (max-width: 680px) {
+  .tabs-wrap { padding: 10px 14px 0; }
+  .tab-hint { display: none; }
+}
+
+/* ---------- Empty / Dropzone State ---------- */
+
+.window-body {
+  padding: 16px 18px 18px;
+}
+
+@media (max-width: 680px) {
+  .window-body { padding: 14px; }
+}
 
 .dropzone {
-  border: 1px dashed var(--edge);
-  border-radius: var(--r);
-  background: var(--panel);
-  padding: clamp(36px, 9vw, 76px) 24px;
+  border: 1px dashed var(--edge-bright);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(41, 197, 192, 0.04) 0%, rgba(10, 13, 16, 0.85) 100%);
+  padding: clamp(34px, 7vw, 64px) 24px;
   text-align: center;
-  transition: border-color 180ms var(--out), background 180ms var(--out);
+  transition: border-color 180ms var(--out), background 180ms var(--out), box-shadow 180ms var(--out);
 }
-.dropzone.hot { border-color: var(--signal); background: var(--panel-rise); }
+.dropzone.hot {
+  border-color: var(--cyan);
+  border-style: solid;
+  background: linear-gradient(180deg, rgba(41, 197, 192, 0.14) 0%, rgba(13, 25, 28, 0.9) 100%);
+  box-shadow: inset 0 0 32px rgba(41, 197, 192, 0.16);
+}
+.drop-icon {
+  width: 54px;
+  height: 54px;
+  margin: 0 auto;
+  border-radius: 50%;
+  border: 1.5px solid var(--cyan);
+  background: rgba(41, 197, 192, 0.1);
+  display: grid;
+  place-items: center;
+  color: var(--cyan);
+}
 .dropzone h2 {
   margin: 14px 0 6px;
-  font-size: 17px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
+  color: var(--yellow);
 }
 .dropzone p {
   margin: 0 auto;
-  max-width: 54ch;
+  max-width: 56ch;
   color: var(--ink-dim);
   font-size: 14px;
 }
 .dropzone .path {
-  display: block;
+  display: inline-block;
   margin-top: 14px;
+  padding: 5px 12px;
+  border-radius: 4px;
+  background: rgba(6, 8, 10, 0.85);
+  border: 1px solid var(--edge);
   font-family: var(--data);
-  font-size: 12.5px;
-  color: var(--ink-faint);
+  font-size: 12px;
+  color: var(--cyan);
   overflow-wrap: anywhere;
 }
 
-/* ---------- botoes ---------- */
+/* ---------- Buttons ---------- */
 
 .btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   border: 1px solid var(--edge-bright);
-  border-radius: var(--r);
-  background: var(--panel-rise);
+  border-radius: 4px;
+  background: linear-gradient(180deg, #232a31 0%, #151a1f 100%);
   color: var(--ink);
-  padding: 9px 16px;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
+  padding: 8px 15px;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: transform 140ms var(--out), background 140ms var(--out), border-color 140ms var(--out);
+  transition: transform 120ms var(--out), background 140ms var(--out), border-color 140ms var(--out), box-shadow 140ms var(--out);
 }
 .btn:active { transform: scale(0.97); }
 .btn.primary {
-  background: var(--signal);
-  border-color: var(--signal);
-  color: #04100f;
+  background: linear-gradient(180deg, #33d6d1 0%, #1fa8a3 100%);
+  border-color: var(--cyan-bright);
+  color: #031414;
+  box-shadow: 0 0 16px rgba(41, 197, 192, 0.25);
 }
 .btn.primary:disabled {
-  background: var(--panel-rise);
+  background: #1a2026;
   border-color: var(--edge);
   color: var(--ink-faint);
+  box-shadow: none;
   cursor: not-allowed;
 }
 .btn:disabled { transform: none; }
+
 @media (hover: hover) and (pointer: fine) {
-  .btn:not(:disabled):hover { background: var(--edge); }
-  .btn.primary:not(:disabled):hover { background: #5fe6d8; border-color: #5fe6d8; }
+  .btn:not(:disabled):hover {
+    border-color: var(--cyan);
+    background: linear-gradient(180deg, #2a343d 0%, #192026 100%);
+  }
+  .btn.primary:not(:disabled):hover {
+    background: linear-gradient(180deg, #56eae5 0%, #29c5c0 100%);
+    border-color: #9bf7f4;
+  }
 }
 
-/* ---------- paineis ---------- */
+/* ---------- Sub-Panels (MCLA Shop Cards) ---------- */
 
 .grid {
   display: grid;
   grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
-  gap: 18px;
+  gap: 16px;
   align-items: start;
 }
-@media (max-width: 900px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+.grid.single-col {
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (max-width: 920px) { .grid { grid-template-columns: minmax(0, 1fr); } }
 
-.panel {
-  border: 1px solid var(--edge);
-  border-radius: var(--r);
-  background: var(--panel);
+.col-stack {
+  display: grid;
+  gap: 16px;
   min-width: 0;
 }
+
+.panel {
+  border: 1px solid #384148;
+  border-radius: 8px;
+  background: var(--panel);
+  min-width: 0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+.panel.narrow-center {
+  max-width: 680px;
+}
 .panel > header {
-  padding: 11px 15px;
-  border-bottom: 1px solid var(--edge);
-  font-size: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #2e363c;
+  background: linear-gradient(90deg, rgba(230, 213, 40, 0.08) 0%, rgba(255, 255, 255, 0.01) 65%);
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: var(--amber);
+  color: var(--yellow);
   display: flex;
-  align-items: baseline;
-  gap: 10px;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.panel > header .hdr-icon {
+  color: var(--yellow);
+  opacity: 0.9;
+  flex: none;
 }
 .panel > header .count {
   margin-left: auto;
   font-family: var(--data);
   font-size: 11.5px;
-  font-weight: 400;
-  letter-spacing: 0;
-  color: var(--ink-faint);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--cyan);
 }
-.panel .body { padding: 15px; }
+.panel .body { padding: 14px; }
 
-/* ---------- campos ---------- */
+.is-hidden { display: none !important; }
+
+/* ---------- Fields & Quick Presets ---------- */
 
 .field { display: grid; gap: 6px; }
 .field + .field { margin-top: 15px; }
+.field-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
 .field label {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.09em;
   text-transform: uppercase;
   color: var(--ink-dim);
 }
 .field .at {
   font-family: var(--data);
-  font-size: 11.5px;
+  font-size: 11px;
   color: var(--ink-faint);
   letter-spacing: 0;
   text-transform: none;
   font-weight: 400;
 }
+
 input[type="text"], input[type="number"], select {
   width: 100%;
-  background: var(--void);
+  background: var(--panel-deep);
   border: 1px solid var(--edge);
-  border-radius: var(--r);
-  padding: 9px 11px;
+  border-radius: 4px;
+  padding: 8px 10px;
   font-family: var(--data);
-  font-size: 14px;
+  font-size: 13.5px;
   font-variant-numeric: tabular-nums;
-  transition: border-color 140ms var(--out);
+  color: var(--ink);
+  transition: border-color 140ms var(--out), box-shadow 140ms var(--out);
 }
 input:hover, select:hover { border-color: var(--edge-bright); }
+input:focus, select:focus {
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 2px rgba(41, 197, 192, 0.16);
+  outline: none;
+}
 input::placeholder { color: var(--ink-faint); }
-.hint { font-size: 12px; color: var(--ink-faint); }
-.hint.warn { color: var(--amber); }
 
-/* ---------- mapa de secoes ---------- */
+#money {
+  color: var(--yellow);
+  font-weight: 700;
+}
+#rep {
+  color: var(--cyan-bright);
+  font-weight: 700;
+}
 
-.sections { width: 100%; border-collapse: collapse; font-family: var(--data); font-size: 12px; }
+.preset-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.chip {
+  padding: 4px 8px;
+  border-radius: 3px;
+  border: 1px solid var(--edge);
+  background: #10151a;
+  color: var(--ink-dim);
+  font-family: var(--data);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 120ms var(--out), color 120ms var(--out), background 120ms var(--out);
+}
+.chip:not(:disabled):hover {
+  border-color: var(--cyan);
+  color: var(--cyan-bright);
+  background: rgba(41, 197, 192, 0.12);
+}
+.chip:disabled {
+  opacity: 0.36;
+  cursor: not-allowed;
+}
+
+/* Segmented MCLA Reputation Rank Bar */
+.rank-bar {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 4px;
+  margin-top: 2px;
+}
+.rank-seg {
+  height: 6px;
+  border-radius: 1px;
+  background: #1e252b;
+  border: 1px solid #2d363e;
+  transition: background 180ms var(--out), border-color 180ms var(--out), box-shadow 180ms var(--out);
+}
+.rank-seg.on {
+  background: var(--cyan);
+  border-color: var(--cyan-bright);
+  box-shadow: 0 0 6px rgba(41, 197, 192, 0.45);
+}
+
+/* ---------- Sections Map Table ---------- */
+
+.sections {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--data);
+  font-size: 12.5px;
+}
 .sections th {
-  text-align: left;
   font-family: var(--display);
   font-size: 11.5px;
   letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: var(--ink-faint);
-  font-weight: 600;
-  padding: 0 0 7px;
+  color: var(--yellow);
+  font-weight: 700;
+  padding: 0 10px 8px;
+  border-bottom: 1px solid var(--edge);
 }
-.sections td { padding: 3px 0; color: var(--ink-dim); }
-.sections td:nth-child(2), .sections td:nth-child(3) {
+.sections th:first-child,
+.sections td:first-child {
+  text-align: left;
+  padding-left: 4px;
+}
+.sections th:nth-child(2),
+.sections td:nth-child(2),
+.sections th:nth-child(3),
+.sections td:nth-child(3) {
   text-align: right;
   font-variant-numeric: tabular-nums;
-  padding-left: 14px;
 }
-.sections tr td:first-child { color: var(--ink); }
+.sections th:last-child,
+.sections td:last-child {
+  padding-right: 4px;
+}
+.sections td {
+  padding: 7px 10px;
+  color: var(--ink-dim);
+  border-bottom: 1px solid var(--row-line);
+}
+.sections tbody tr:hover {
+  background: linear-gradient(90deg, rgba(41, 197, 192, 0.16) 0%, transparent 80%);
+}
+.sections tr:last-child td { border-bottom: 0; }
+.sections tr td:first-child {
+  color: var(--cyan);
+  font-weight: 700;
+}
 
-/* ---------- garagem ---------- */
+/* ---------- Garage Slots ---------- */
 
-.slots { display: flex; flex-direction: column; }
+.garage-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+
+.filter-pills {
+  display: inline-flex;
+  border: 1px solid var(--edge);
+  border-radius: 4px;
+  overflow: hidden;
+  background: #0c1014;
+}
+.pill-btn {
+  padding: 4px 9px;
+  border: 0;
+  background: transparent;
+  color: var(--ink-dim);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.pill-btn.active {
+  background: var(--cyan-deep);
+  color: var(--cyan-bright);
+}
+
+.slots {
+  display: flex;
+  flex-direction: column;
+  max-height: 580px;
+  overflow-y: auto;
+}
+
 .slot {
   display: grid;
-  grid-template-columns: 30px minmax(0, 1fr) 118px 92px 64px;
+  grid-template-columns: 14px 26px minmax(0, 1.4fr) minmax(0, 0.85fr) 86px 56px 24px;
   align-items: center;
-  gap: 10px;
-  padding: 7px 15px 7px 0;
-  border-bottom: 1px solid #1b232c;
+  gap: 8px;
+  padding: 7px 12px 7px 8px;
+  border-bottom: 1px solid var(--row-line);
   position: relative;
+  transition: background 130ms var(--out);
 }
 .slot:last-child { border-bottom: 0; }
-.slot::before {
-  content: "";
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 3px;
-  background: transparent;
-  transition: background 160ms var(--out);
+
+.slot:hover,
+.slot:focus-within {
+  background: linear-gradient(90deg, rgba(41, 197, 192, 0.22) 0%, rgba(41, 197, 192, 0.05) 60%, transparent 100%);
 }
-.slot.filled::before { background: var(--signal); }
+
+.slot .cursor {
+  width: 0;
+  height: 0;
+  border-top: 4.5px solid transparent;
+  border-bottom: 4.5px solid transparent;
+  border-left: 7px solid var(--cyan);
+  opacity: 0;
+  transform: translateX(-2px);
+  transition: opacity 120ms var(--out), transform 120ms var(--out);
+  justify-self: center;
+}
+.slot:hover .cursor,
+.slot:focus-within .cursor {
+  opacity: 1;
+  transform: translateX(0);
+}
+
 .slot .n {
   font-family: var(--data);
   font-size: 11.5px;
@@ -318,29 +774,104 @@ input::placeholder { color: var(--ink-faint); }
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
-.slot.filled .n { color: var(--signal); }
-.slot .plate {
-  font-family: var(--data);
-  font-size: 12px;
-  color: var(--ink-faint);
-  letter-spacing: 0.04em;
-  text-align: right;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.slot.filled .n {
+  color: var(--cyan);
+  font-weight: 700;
 }
-.slot select { padding: 6px 9px; font-size: 13px; }
-.slot input.lbl { padding: 6px 9px; font-size: 12.5px; }
-.slot input.plate {
-  padding: 6px 8px;
+
+.slot select {
+  padding: 5px 8px;
+  font-size: 12.5px;
+  font-family: var(--display);
+  font-weight: 600;
+}
+.slot.filled select {
+  color: var(--ink);
+  border-color: #36434c;
+}
+.slot input.lbl {
+  padding: 5px 8px;
   font-size: 12px;
-  letter-spacing: 0.08em;
+  color: var(--yellow);
+}
+.slot input.plate {
+  padding: 5px 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
   text-align: center;
   text-transform: uppercase;
-  color: var(--ink-dim);
+  color: var(--ink);
+  background: #0a0e12;
 }
 .slot input.plate:invalid { border-color: var(--alert); }
 
-/* ---------- progressao ---------- */
+.btn.mini {
+  padding: 4px 8px;
+  font-size: 11px;
+  gap: 4px;
+  font-family: var(--data);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Clean tune percentage button with subtle horizontal fill meter */
+.slot .tune {
+  width: 100%;
+  justify-content: center;
+  color: var(--ink-dim);
+  background-color: #12171c;
+  background-image: linear-gradient(90deg, rgba(41, 197, 192, 0.24) var(--pct, 0%), transparent var(--pct, 0%));
+}
+.slot .tune:hover {
+  border-color: var(--cyan);
+  color: var(--ink);
+}
+.slot .tune[data-full] {
+  color: var(--cyan-bright);
+  border-color: var(--cyan);
+  background-image: linear-gradient(90deg, rgba(41, 197, 192, 0.28) 100%, transparent 100%);
+}
+
+.btn-clear {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--ink-faint);
+  font-family: var(--data);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  visibility: hidden;
+}
+.slot.filled .btn-clear { visibility: visible; }
+.btn-clear:hover {
+  border-color: var(--alert);
+  color: var(--alert);
+  background: rgba(255, 92, 84, 0.12);
+}
+
+.slot.beyond { opacity: 0.44; }
+.slot.filtered-out { display: none; }
+
+@media (max-width: 780px) {
+  .slots { max-height: none; }
+  .slot {
+    grid-template-columns: 12px 24px minmax(0, 1fr) 26px;
+    row-gap: 6px;
+  }
+  .slot select { grid-column: 3; }
+  .slot .btn-clear { grid-column: 4; }
+  .slot input.lbl { grid-column: 3; }
+  .slot input.plate { grid-column: 3; max-width: 110px; }
+  .slot .tune { grid-column: 3; max-width: 72px; }
+}
+
+/* ---------- Progression Grid ---------- */
 
 .prog {
   display: grid;
@@ -348,261 +879,426 @@ input::placeholder { color: var(--ink-faint); }
   gap: 4px;
 }
 .cell {
-  border: 1px solid var(--edge);
+  border: 1px solid #2d363e;
   border-radius: 3px;
-  background: var(--void);
+  background: #0a0d10;
   color: var(--ink-faint);
   font-family: var(--data);
   font-size: 11.5px;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
   padding: 6px 0;
   cursor: pointer;
-  transition: background 130ms var(--out), color 130ms var(--out), border-color 130ms var(--out), transform 130ms var(--out);
+  transition: background 120ms var(--out), color 120ms var(--out), border-color 120ms var(--out), transform 110ms var(--out);
 }
 .cell:active { transform: scale(0.94); }
 .cell[aria-pressed="true"] {
-  background: var(--signal-deep);
-  border-color: var(--signal);
-  color: var(--signal);
+  background: linear-gradient(180deg, rgba(41, 197, 192, 0.34) 0%, rgba(13, 59, 58, 0.95) 100%);
+  border-color: var(--cyan);
+  color: var(--cyan-bright);
+  box-shadow: inset 0 0 8px rgba(41, 197, 192, 0.25);
 }
 @media (hover: hover) and (pointer: fine) {
-  .cell:hover { border-color: var(--edge-bright); }
+  .cell:hover { border-color: var(--cyan); color: var(--ink); }
 }
-.bulk { display: flex; gap: 8px; margin-top: 13px; flex-wrap: wrap; }
-.bulk .btn { padding: 7px 12px; font-size: 12px; }
+.bulk { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.bulk .btn { padding: 6px 11px; font-size: 11.5px; }
 
-/* ---------- stats ---------- */
+/* ---------- Statistics & Career Lists ---------- */
 
-.filter { margin-bottom: 11px; }
-.statlist { max-height: 430px; overflow-y: auto; margin: 0 -15px -15px; padding: 0 15px 15px; }
+.filter { margin-bottom: 10px; }
+.statlist {
+  max-height: 360px;
+  overflow-y: auto;
+  margin: 0 -14px -14px;
+  padding: 0 14px 14px;
+}
 .stat {
   display: grid;
-  grid-template-columns: 52px minmax(0, 1fr) auto 128px;
+  grid-template-columns: 12px 54px minmax(0, 1fr) auto 128px;
   align-items: center;
-  gap: 10px;
-  padding: 5px 0;
-  border-bottom: 1px solid #1b232c;
+  gap: 8px;
+  padding: 6px 6px;
+  border-bottom: 1px solid var(--row-line);
+  transition: background 120ms var(--out);
 }
 .stat:last-child { border-bottom: 0; }
+.stat:hover,
+.stat:focus-within {
+  background: linear-gradient(90deg, rgba(41, 197, 192, 0.2) 0%, transparent 75%);
+}
+.stat .cursor {
+  width: 0;
+  height: 0;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 6px solid var(--cyan);
+  opacity: 0;
+}
+.stat:hover .cursor,
+.stat:focus-within .cursor {
+  opacity: 1;
+}
 .stat .key {
   font-family: var(--data);
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 700;
-  color: var(--signal);
+  color: var(--cyan);
 }
 .stat .name {
-  font-size: 12px;
-  color: var(--ink-dim);
+  font-size: 12.5px;
+  color: var(--ink);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .stat .kind {
-  font-size: 11.5px;
+  font-size: 10.5px;
+  font-weight: 700;
   color: var(--ink-faint);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
 }
-.stat input { padding: 5px 9px; font-size: 12.5px; text-align: right; }
-/* O bloco Career tem um rotulo comprido (o nome do evento), entao a linha usa
-   duas colunas: texto a esquerda, campo a direita, sem o codigo de 52px. */
-.stat.wide { grid-template-columns: minmax(0, 1fr) 128px; }
-.stat .who { display: grid; gap: 2px; min-width: 0; }
-.stat .who .key { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.empty-note { color: var(--ink-faint); font-size: 13px; padding: 10px 0; }
-.slot.beyond { opacity: 0.42; }
-.btn.mini {
-  padding: 5px 9px;
-  font-size: 11px;
-  gap: 4px;
-  font-family: var(--data);
-  font-variant-numeric: tabular-nums;
-}
-.slot .tune { justify-content: center; color: var(--ink-dim); }
-.slot .tune[data-full] { color: var(--signal); border-color: var(--signal); }
-.panel > header .btn.mini { margin-left: auto; letter-spacing: 0.05em; }
-@media (max-width: 620px) {
-  .slot { grid-template-columns: 26px minmax(0, 1fr); row-gap: 6px; }
-  .slot .plate { grid-column: 2; text-align: left; }
-  .slot input.lbl { grid-column: 2; }
-  .slot .tune { grid-column: 2; justify-self: start; }
-}
+.stat input { padding: 5px 8px; font-size: 12.5px; text-align: right; }
 
-/* ---------- barra de acao ---------- */
+.stat.wide { grid-template-columns: 12px minmax(0, 1fr) auto 128px; }
+.stat .who { display: grid; gap: 2px; min-width: 0; }
+.stat .who .key {
+  font-family: var(--display);
+  font-size: 13.5px;
+  color: var(--yellow);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.empty-note { color: var(--ink-faint); font-size: 13px; padding: 12px 4px; }
+
+/* ---------- Bottom Action Bar ---------- */
 
 .actionbar {
-  position: sticky;
-  bottom: 0;
-  margin-top: 18px;
   display: flex;
   align-items: center;
   gap: 14px;
   flex-wrap: wrap;
-  padding: 13px 15px calc(13px + env(safe-area-inset-bottom, 0px));
-  border: 1px solid var(--edge);
-  border-radius: var(--r);
-  background: var(--panel-rise);
+  padding: 11px 18px calc(11px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid #353e45;
+  background: linear-gradient(180deg, #13181d 0%, #0b0e11 100%);
+  border-radius: 0 0 10px 10px;
 }
+
 .readout {
   display: flex;
-  gap: 20px;
+  gap: 18px;
   flex-wrap: wrap;
-  font-family: var(--data);
+  font-family: var(--display);
   font-size: 12.5px;
-  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: var(--ink-dim);
 }
-.readout b { color: var(--amber); font-weight: 700; }
-.actionbar .btn:last-child { margin-left: auto; }
+.readout b {
+  font-family: var(--data);
+  color: var(--yellow);
+  font-weight: 700;
+  margin-left: 5px;
+}
+.readout .cyan-val b {
+  color: var(--cyan-bright);
+}
 
-.status { font-size: 12.5px; }
+.bar-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.status {
+  font-family: var(--data);
+  font-size: 12px;
+  color: var(--cyan);
+}
 .status.bad { color: var(--alert); }
 .status.good { color: var(--ok); }
 
 .notice {
-  margin-top: 14px;
-  border: 1px solid var(--edge);
-  border-left: 1px solid var(--alert);
-  border-radius: var(--r);
-  background: var(--panel);
-  padding: 12px 14px;
+  margin: 14px 18px 0;
+  border: 1px solid #4d2c2a;
+  border-left: 3px solid var(--alert);
+  border-radius: 6px;
+  background: rgba(34, 16, 16, 0.85);
+  padding: 11px 14px;
   font-size: 13px;
-  color: var(--ink-dim);
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
 }
-.notice strong { color: var(--alert); font-weight: 600; }
+.notice strong { color: var(--alert); font-weight: 700; }
 
-/* ---------- um momento autoral: a leitura do save ---------- */
+@media (max-width: 680px) {
+  .actionbar { padding: 11px 14px; }
+  .bar-actions { margin-left: 0; width: 100%; justify-content: flex-end; }
+}
+
+/* ---------- Entry Animation ---------- */
 
 @media (prefers-reduced-motion: no-preference) {
   .reveal > * {
-    animation: rise 420ms var(--out) both;
+    animation: rise 360ms var(--out) both;
   }
-  .reveal > *:nth-child(2) { animation-delay: 55ms; }
+  .reveal > *:nth-child(2) { animation-delay: 50ms; }
   @keyframes rise {
-    from { opacity: 0; transform: translateY(10px); filter: blur(3px); }
-    to   { opacity: 1; transform: none; filter: none; }
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: none; }
   }
 }
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="stage">
+  <div class="mcla-frame">
+    <div class="mcla-groove">
+      <div class="mcla-window">
 
-  <div class="masthead">
-    <svg class="mark" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true">
-      <path d="M12 2.6 20.5 7.3v9.4L12 21.4 3.5 16.7V7.3Z"/>
-      <path d="M12 8.1 15.8 10.2v4.2L12 16.5 8.2 14.4v-4.2Z"/>
-    </svg>
-    <h1 data-i18n="app">Editor de Save</h1>
-    <div class="filetag" id="filetag" data-i18n="noFile">nenhum arquivo aberto</div>
-    <button class="btn lang" id="lang" type="button" title="Português / English">EN</button>
+        <div class="masthead">
+          <div class="badge-disc" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+            </svg>
+          </div>
+          <div class="title-block">
+            <h1 data-i18n="app">Editor de Save</h1>
+            <span class="game-sub">MIDNIGHT CLUB: LOS ANGELES</span>
+          </div>
+          <div class="filetag" id="filetag" data-i18n="noFile">nenhum arquivo aberto</div>
+
+          <div class="lang-menu" id="langMenu">
+            <button class="btn lang-trigger" id="langBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              <span id="langCode">PT</span>
+              <span class="lang-caret" aria-hidden="true">&#9662;</span>
+            </button>
+            <div class="lang-dropdown" id="langList" role="listbox" hidden>
+              <button class="lang-opt" type="button" role="option" data-set-lang="pt">
+                <span class="code">PT</span><span>Portugu&ecirc;s</span><span class="check">&lt;</span>
+              </button>
+              <button class="lang-opt" type="button" role="option" data-set-lang="en">
+                <span class="code">EN</span><span>English</span><span class="check">&lt;</span>
+              </button>
+              <button class="lang-opt" type="button" role="option" data-set-lang="ru">
+                <span class="code">RU</span><span>&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;</span><span class="check">&lt;</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="tabs-wrap" id="tabsWrap" hidden>
+          <nav class="nav-tabs" id="navTabs" aria-label="Editor sections">
+            <button class="tab-btn active" type="button" data-tab="garage">
+              <span class="chev">&gt;</span><span data-i18n="tabGarage">Garagem &amp; Carteira</span>
+            </button>
+            <button class="tab-btn" type="button" data-tab="career">
+              <span class="chev">&gt;</span><span data-i18n="tabCareer">Carreira &amp; Stats</span>
+            </button>
+            <button class="tab-btn" type="button" data-tab="sections">
+              <span class="chev">&gt;</span><span data-i18n="tabSections">Se&ccedil;&otilde;es Hex</span>
+            </button>
+            <span class="tab-hint" data-i18n="tabKeys">Q / E</span>
+          </nav>
+          <div class="mcla-track" id="mclaTrack" aria-hidden="true">
+            <div class="mcla-thumb" id="sliderThumb"></div>
+          </div>
+        </div>
+
+        <div class="notice" id="err" hidden></div>
+        <div class="notice" id="gap" hidden></div>
+
+        <div class="window-body">
+          <section id="empty">
+            <div class="dropzone" id="drop">
+              <div class="drop-icon" aria-hidden="true">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 16V4"/><path d="m7.5 8.5 4.5-4.5 4.5 4.5"/><path d="M4 16v3.2A1.8 1.8 0 0 0 5.8 21h12.4a1.8 1.8 0 0 0 1.8-1.8V16"/>
+                </svg>
+              </div>
+              <h2 data-i18n="dropTitle">Arraste o mc4.sav aqui</h2>
+              <p data-i18n="dropBody">Editor de save do Midnight Club: Los Angeles no PC, pelo runtime MC_LA_Recompiled. Tudo acontece no seu navegador: o arquivo nao sai da sua maquina, e o editor devolve um save do mesmo tamanho do original.</p>
+              <span class="path">userdata\B13EBABEBABEBABE\545407F8\00000001\mc4.sav\mc4.sav</span>
+              <div style="margin-top:20px">
+                <button class="btn primary" id="pick" type="button" data-i18n="pick">Escolher arquivo</button>
+              </div>
+              <input type="file" id="file" hidden>
+            </div>
+          </section>
+
+          <section id="editor" hidden>
+            <div class="grid reveal" id="mainGrid">
+
+              <div class="col-stack" id="leftCol">
+                <!-- Garage & Wallet left column -->
+                <div class="panel" data-group="garage">
+                  <header>
+                    <svg class="hdr-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M14.5 9.5a2.5 2.5 0 0 0-5 0c0 2.5 5 2 5 4.5a2.5 2.5 0 0 1-5 0"/><path d="M12 6v12"/></svg>
+                    <span data-i18n="wallet">Carteira</span>
+                  </header>
+                  <div class="body">
+                    <div class="field">
+                      <div class="field-top">
+                        <label for="money" data-i18n="money">Dinheiro</label>
+                        <span class="at">Career+0x2D9</span>
+                      </div>
+                      <input type="text" inputmode="numeric" id="money" autocomplete="off">
+                      <div class="preset-row">
+                        <button class="chip" type="button" data-add-money="100000">+$100K</button>
+                        <button class="chip" type="button" data-add-money="1000000">+$1M</button>
+                        <button class="chip" type="button" data-set-money="2000000000">MAX ($2B)</button>
+                      </div>
+                    </div>
+                    <div class="field">
+                      <div class="field-top">
+                        <label for="rep" data-i18n="rep">Reputacao</label>
+                        <span class="at">Career+0x2E1</span>
+                      </div>
+                      <input type="text" inputmode="numeric" id="rep" autocomplete="off">
+                      <div class="rank-bar" id="repBar" aria-hidden="true"></div>
+                      <div class="preset-row">
+                        <button class="chip" type="button" data-add-rep="5000">+5K REP</button>
+                        <button class="chip" type="button" data-add-rep="25000">+25K REP</button>
+                        <button class="chip" type="button" data-set-rep="100000">100K</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Career & Stats left column -->
+                <div class="panel" data-group="career">
+                  <header>
+                    <svg class="hdr-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+                    <span data-i18n="progression">Progressao</span>
+                    <span class="count" id="progCount"></span>
+                  </header>
+                  <div class="body">
+                    <div class="prog" id="prog"></div>
+                    <div class="bulk">
+                      <button class="btn" id="progAll" type="button" data-i18n="markAll">Marcar todas</button>
+                      <button class="btn" id="progNone" type="button" data-i18n="clearAll">Limpar todas</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="panel" data-group="career">
+                  <header>
+                    <svg class="hdr-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3 2 6"/><path d="m22 6-3-3"/></svg>
+                    <span data-i18n="timeTrial">Time Trial</span>
+                  </header>
+                  <div class="body">
+                    <div class="field">
+                      <div class="field-top">
+                        <label for="ttEvent" data-i18n="ttEvent">Evento</label>
+                      </div>
+                      <select id="ttEvent"></select>
+                    </div>
+                    <div class="field">
+                      <div class="field-top">
+                        <label for="ttTarget" data-i18n="ttTarget">Tempo alvo</label>
+                        <span class="at" id="ttAt">Career+0x727D</span>
+                      </div>
+                      <input type="text" inputmode="decimal" id="ttTarget" placeholder="02:08.54">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Hex Sections panel -->
+                <div class="panel narrow-center" data-group="sections">
+                  <header>
+                    <svg class="hdr-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                    <span data-i18n="sections">Secoes</span>
+                    <span class="count" id="secCount"></span>
+                  </header>
+                  <div class="body">
+                    <table class="sections">
+                      <thead>
+                        <tr>
+                          <th data-i18n="thName">Nome</th>
+                          <th data-i18n="thStart">Inicio</th>
+                          <th>Bytes</th>
+                        </tr>
+                      </thead>
+                      <tbody id="secBody"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-stack" id="rightCol">
+                <!-- Garage & Wallet right column -->
+                <div class="panel" data-group="garage">
+                  <header>
+                    <svg class="hdr-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
+                    <span data-i18n="garage">Garagem</span>
+                    <span class="count" id="garCount" style="margin-left:4px"></span>
+                    <div class="garage-tools">
+                      <div class="filter-pills" role="group" aria-label="Filter garage slots">
+                        <button class="pill-btn active" type="button" data-gar-filter="all" data-i18n="filterAll">Todos</button>
+                        <button class="pill-btn" type="button" data-gar-filter="filled" data-i18n="filterOwned">Ocupados</button>
+                      </div>
+                      <button class="btn mini" id="maxAll" type="button" data-i18n="maxAll">Tunar todos</button>
+                    </div>
+                  </header>
+                  <div class="slots" id="slots"></div>
+                </div>
+
+                <!-- Career & Stats right column: Statistics then Career below it -->
+                <div class="panel" data-group="career">
+                  <header>
+                    <svg class="hdr-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                    <span data-i18n="stats">Estatisticas</span>
+                    <span class="count" id="statCount"></span>
+                  </header>
+                  <div class="body">
+                    <input class="filter" type="text" id="statFilter" data-i18n-ph="statFilter" placeholder="filtrar por codigo, ex: gWIN">
+                    <div class="statlist" id="stats"></div>
+                  </div>
+                </div>
+
+                <div class="panel" data-group="career">
+                  <header>
+                    <svg class="hdr-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55-.47.98-.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                    <span data-i18n="career">Career</span>
+                    <span class="count" id="careerCount"></span>
+                  </header>
+                  <div class="body">
+                    <input class="filter" type="text" id="careerFilter" data-i18n-ph="careerFilter" placeholder="filtrar registros de carreira">
+                    <div class="statlist" id="career"></div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </section>
+        </div>
+
+        <footer class="actionbar" id="actionbar" hidden>
+          <div class="readout">
+            <span class="cyan-val"><span data-i18n="roCars">CARROS</span><b id="roCars">0</b></span>
+            <span><span data-i18n="roMoney">DINHEIRO</span><b id="roMoney">$0</b></span>
+            <span class="cyan-val"><span data-i18n="roRep">REP</span><b id="roRep">0</b></span>
+          </div>
+          <span class="status" id="status"></span>
+          <div class="bar-actions">
+            <button class="btn" id="reopen" type="button" data-i18n="openOther">Outro arquivo</button>
+            <button class="btn primary" id="save" type="button" data-i18n="download">Baixar mc4.sav</button>
+          </div>
+        </footer>
+
+      </div>
+    </div>
   </div>
-
-  <section id="empty">
-    <div class="dropzone" id="drop">
-      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--edge-bright)" aria-hidden="true">
-        <path d="M12 16V4"/><path d="m7.5 8.5 4.5-4.5 4.5 4.5"/><path d="M4 16v3.2A1.8 1.8 0 0 0 5.8 21h12.4a1.8 1.8 0 0 0 1.8-1.8V16"/>
-      </svg>
-      <h2 data-i18n="dropTitle">Arraste o mc4.sav aqui</h2>
-      <p data-i18n="dropBody">Editor de save do Midnight Club: Los Angeles no PC, pelo runtime MC_LA_Recompiled. Tudo acontece no seu navegador: o arquivo não sai da sua máquina, e o editor devolve um save do mesmo tamanho do original.</p>
-      <span class="path">userdata\B13EBABEBABEBABE\545407F8\00000001\mc4.sav\mc4.sav</span>
-      <div style="margin-top:20px"><button class="btn" id="pick" data-i18n="pick">Escolher arquivo</button></div>
-      <input type="file" id="file" hidden>
-    </div>
-    <div class="notice" id="err" hidden></div>
-  </section>
-
-  <section id="editor" hidden>
-    <div class="grid reveal">
-
-      <div style="display:grid;gap:18px;min-width:0">
-        <div class="panel">
-          <header data-i18n="wallet">Carteira</header>
-          <div class="body">
-            <div class="field">
-              <label for="money"><span data-i18n="money">Dinheiro</span> <span class="at">Career+0x2D9</span></label>
-              <input type="number" id="money" min="0" max="2000000000" step="1">
-            </div>
-            <div class="field">
-              <label for="rep"><span data-i18n="rep">Reputação</span> <span class="at">Career+0x2E1</span></label>
-              <input type="number" id="rep" min="0" max="2000000000" step="1">
-            </div>
-          </div>
-        </div>
-
-        <div class="panel">
-          <header><span data-i18n="progression">Progressão</span> <span class="count" id="progCount"></span></header>
-          <div class="body">
-            <div class="prog" id="prog"></div>
-            <div class="bulk">
-              <button class="btn" id="progAll" data-i18n="markAll">Marcar todas</button>
-              <button class="btn" id="progNone" data-i18n="clearAll">Limpar todas</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="panel">
-          <header><span data-i18n="timeTrial">Time Trial</span></header>
-          <div class="body">
-            <div class="field">
-              <label for="ttEvent"><span data-i18n="ttEvent">Evento</span></label>
-              <select id="ttEvent"></select>
-            </div>
-            <div class="field">
-              <label for="ttTarget"><span data-i18n="ttTarget">Tempo alvo</span> <span class="at" id="ttAt">Career+0x727D</span></label>
-              <input type="text" inputmode="decimal" id="ttTarget" placeholder="02:08.54">
-            </div>
-          </div>
-        </div>
-
-        <div class="panel">
-          <header><span data-i18n="sections">Seções</span> <span class="count" id="secCount"></span></header>
-          <div class="body">
-            <table class="sections">
-              <thead><tr><th data-i18n="thName">Nome</th><th data-i18n="thStart">Início</th><th>Bytes</th></tr></thead>
-              <tbody id="secBody"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <div style="display:grid;gap:18px;min-width:0">
-        <div class="panel">
-          <header><span data-i18n="garage">Garagem</span> <span class="count" id="garCount"></span>
-            <button class="btn mini" id="maxAll" type="button" data-i18n="maxAll">Tunar todos</button></header>
-          <div class="slots" id="slots"></div>
-        </div>
-
-        <div class="panel">
-          <header><span data-i18n="stats">Estatísticas</span> <span class="count" id="statCount"></span></header>
-          <div class="body">
-            <input class="filter" type="text" id="statFilter" data-i18n-ph="statFilter" placeholder="filtrar por código, ex: gWIN">
-            <div class="statlist" id="stats"></div>
-          </div>
-        </div>
-
-        <div class="panel">
-          <header><span data-i18n="career">Career</span></header>
-          <div class="body">
-            <div class="statlist" id="career"></div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <div class="actionbar">
-      <div class="readout">
-        <span><span data-i18n="roCars">CARROS</span> <b id="roCars">0</b></span>
-        <span><span data-i18n="roMoney">DINHEIRO</span> <b id="roMoney">0</b></span>
-        <span><span data-i18n="roRep">REP</span> <b id="roRep">0</b></span>
-      </div>
-      <span class="status" id="status"></span>
-      <button class="btn primary" id="save" data-i18n="download">Baixar mc4.sav</button>
-    </div>
-    <div class="notice" id="gap" hidden></div>
-  </section>
-
 </div>
 
 <script>
@@ -613,39 +1309,46 @@ input::placeholder { color: var(--ink-faint); }
    secao : u32 nameLen | name | u8 flag | u32 size | data[size]   (repete)
    Inteiros big-endian: o jogo e PowerPC. Nao ha checksum, o walk fecha no EOF. */
 
-/* Dois idiomas no mesmo arquivo. A ferramenta nasceu em portugues e o formato
-   que ela documenta interessa a quem nao fala, entao trocar e um clique. */
-
 var LANG = "pt";
+var ACTIVE_TAB = "garage";
+var GARAGE_FILTER = "all";
+var MAX_WALLET = 2000000000;
 
 var STR = {
   pt: {
     app: "Editor de Save", noFile: "nenhum arquivo aberto",
     dropTitle: "Arraste o mc4.sav aqui",
-    dropBody: "Editor de save do Midnight Club: Los Angeles no PC, pelo runtime MC_LA_Recompiled. Tudo acontece no seu navegador: o arquivo não sai da sua máquina, e o editor devolve um save do mesmo tamanho do original.",
-    pick: "Escolher arquivo", wallet: "Carteira", money: "Dinheiro", rep: "Reputação",
-    progression: "Progressão", markAll: "Marcar todas", clearAll: "Limpar todas",
-    sections: "Seções", thName: "Nome", thStart: "Início",
-    garage: "Garagem", stats: "Estatísticas", statFilter: "filtrar por código, ex: gWIN",
-    career: "Career", timeTrial: "Time Trial", ttEvent: "Evento", ttTarget: "Tempo alvo",
+    dropBody: "Editor de save do Midnight Club: Los Angeles no PC, pelo runtime MC_LA_Recompiled. Tudo acontece no seu navegador: o arquivo nao sai da sua maquina, e o editor devolve um save do mesmo tamanho do original.",
+    pick: "Escolher arquivo", wallet: "Carteira", money: "Dinheiro", rep: "Reputacao",
+    progression: "Progressao", markAll: "Marcar todas", clearAll: "Limpar todas",
+    sections: "Secoes", thName: "Nome", thStart: "Inicio",
+    garage: "Garagem", stats: "Estatisticas", statFilter: "filtrar por codigo, ex: gWIN",
+    career: "Career", careerFilter: "filtrar registros de carreira",
+    timeTrial: "Time Trial", ttEvent: "Evento", ttTarget: "Tempo alvo",
     ttHollywood: "Hollywood time trial: '99 Eclipse",
-    ttRecord: "Recorde", ttHint: "min:seg.centésimos, ex: 02:08.54",
+    ttRecord: "Recorde", ttHint: "min:seg.centesimos, ex: 02:08.54",
     roCars: "CARROS", roMoney: "DINHEIRO", roRep: "REP", download: "Baixar mc4.sav",
-    nSections: "seções", nSlots: "slots", nRecords: "registros", of: "de",
-    empty: "vazio", integer: "inteiro", decimal: "decimal",
-    noStat: "Nenhum stat com esse código.",
-    unsaved: "alterações não salvas", downloaded: "baixado",
-    wouldBreak: "a edição quebraria a estrutura, nada foi gravado",
-    badFileTitle: "Esse arquivo não é um mc4.sav válido.",
-    badFileBody: "A leitura das seções parou em 0x{0} e o arquivo tem 0x{1} bytes. Abra o mc4.sav de dentro de userdata, não o .header nem o zip.",
-    hiddenTitle: "{0} carro(s) gravado(s) que o jogo não mostra.",
-    hiddenBody: "O arquivo conta {0} e há {1} slots preenchidos em sequência.",
+    openOther: "Abrir outro",
+    tabGarage: "Garagem & Carteira", tabCareer: "Carreira & Stats", tabSections: "Secoes Hex",
+    tabKeys: "Teclas: Q / E",
+    filterAll: "Todos", filterOwned: "Ocupados",
+    nSections: "secoes", nSlots: "slots", nRecords: "registros", of: "de",
+    empty: "vazio", integer: "inteiro", decimal: "decimal", timeKind: "tempo",
+    noStat: "Nenhum stat com esse codigo.",
+    noCareer: "Nenhum registro encontrado.",
+    unsaved: "alteracoes nao salvas", downloaded: "baixado",
+    wouldBreak: "a edicao quebraria a estrutura, nada foi gravado",
+    badFileTitle: "Esse arquivo nao e um mc4.sav valido.",
+    badFileBody: "A leitura das secoes parou em 0x{0} e o arquivo tem 0x{1} bytes. Abra o mc4.sav de dentro de userdata, nao o .header nem o zip.",
+    hiddenTitle: "{0} carro(s) gravado(s) que o jogo nao mostra.",
+    hiddenBody: "O arquivo conta {0} e ha {1} slots preenchidos em sequencia.",
     countThem: "Contar os {0}",
     orphanTitle: "{0} carro(s) fora de alcance.",
     orphanBody: "O jogo para no slot {0}. Preencha os vazios antes deles ou mova os carros para cima.",
-    aCar: "Carro do slot {0}", aLabel: "Rótulo do slot {0}", aPlate: "Placa do slot {0}",
+    aCar: "Carro do slot {0}", aLabel: "Rotulo do slot {0}", aPlate: "Placa do slot {0}",
     maxAll: "Tunar todos", aTune: "Maximizar o desempenho do carro do slot {0}",
-    aProg: "Progressão {0}", aValue: "Valor de {0}"
+    aClear: "Limpar slot {0}",
+    aProg: "Progressao {0}", aValue: "Valor de {0}"
   },
   en: {
     app: "Save Editor", noFile: "no file open",
@@ -655,13 +1358,19 @@ var STR = {
     progression: "Progression", markAll: "Mark all", clearAll: "Clear all",
     sections: "Sections", thName: "Name", thStart: "Start",
     garage: "Garage", stats: "Statistics", statFilter: "filter by code, e.g. gWIN",
-    career: "Career", timeTrial: "Time Trial", ttEvent: "Event", ttTarget: "Target time",
+    career: "Career", careerFilter: "filter career records",
+    timeTrial: "Time Trial", ttEvent: "Event", ttTarget: "Target time",
     ttHollywood: "Hollywood time trial: '99 Eclipse",
     ttRecord: "Record", ttHint: "min:sec.hundredths, e.g. 02:08.54",
     roCars: "CARS", roMoney: "MONEY", roRep: "REP", download: "Download mc4.sav",
+    openOther: "Open another",
+    tabGarage: "Garage & Wallet", tabCareer: "Career & Stats", tabSections: "Hex Sections",
+    tabKeys: "Keys: Q / E",
+    filterAll: "All", filterOwned: "Owned",
     nSections: "sections", nSlots: "slots", nRecords: "records", of: "of",
-    empty: "empty", integer: "integer", decimal: "decimal",
+    empty: "empty", integer: "integer", decimal: "decimal", timeKind: "time",
     noStat: "No stat matches that code.",
+    noCareer: "No matching career record.",
     unsaved: "unsaved changes", downloaded: "downloaded",
     wouldBreak: "this edit would break the structure, nothing was written",
     badFileTitle: "That file is not a valid mc4.sav.",
@@ -673,7 +1382,43 @@ var STR = {
     orphanBody: "The game stops at slot {0}. Fill the empty slots before them, or move the cars up.",
     aCar: "Car in slot {0}", aLabel: "Label for slot {0}", aPlate: "Plate for slot {0}",
     maxAll: "Max all", aTune: "Max out performance for the car in slot {0}",
+    aClear: "Clear slot {0}",
     aProg: "Progression {0}", aValue: "Value of {0}"
+  },
+  ru: {
+    app: "Редактор сохранений", noFile: "файл не открыт",
+    dropTitle: "Перетащите mc4.sav сюда",
+    dropBody: "Редактор сохранений Midnight Club: Los Angeles для ПК (MC_LA_Recompiled). Все работает локально в браузере: файл никуда не загружается, а на выходе сохраняется точный размер оригинала.",
+    pick: "Выбрать файл", wallet: "Баланс", money: "Деньги", rep: "Репутация",
+    progression: "Прогресс", markAll: "Выбрать все", clearAll: "Сбросить все",
+    sections: "Секции", thName: "Имя", thStart: "Смещение",
+    garage: "Гараж", stats: "Статистика", statFilter: "фильтр по коду, например: gWIN",
+    career: "Career", careerFilter: "фильтр записей карьеры",
+    timeTrial: "Time Trial", ttEvent: "Заезд", ttTarget: "Целевое время",
+    ttHollywood: "Hollywood time trial: '99 Eclipse",
+    ttRecord: "Рекорд", ttHint: "мин:сек.сотые, например: 02:08.54",
+    roCars: "МАШИНЫ", roMoney: "ДЕНЬГИ", roRep: "РЕП", download: "Скачать mc4.sav",
+    openOther: "Другой файл",
+    tabGarage: "Гараж и баланс", tabCareer: "Карьера и статы", tabSections: "Секции Hex",
+    tabKeys: "Вкладки: Q / E",
+    filterAll: "Все", filterOwned: "Занятые",
+    nSections: "секций", nSlots: "слотов", nRecords: "записей", of: "из",
+    empty: "пусто", integer: "целое", decimal: "дробное", timeKind: "время",
+    noStat: "Нет показателя с таким кодом.",
+    noCareer: "Записи не найдены.",
+    unsaved: "есть несохраненные изменения", downloaded: "скачано",
+    wouldBreak: "правка нарушит структуру файла, запись отменена",
+    badFileTitle: "Этот файл не является корректным mc4.sav.",
+    badFileBody: "Чтение секций остановилось на 0x{0} при размере файла 0x{1} байт. Откройте mc4.sav из папки userdata, а не .header или архив.",
+    hiddenTitle: "Скрытых машин в файле: {0}.",
+    hiddenBody: "Счетчик в файле равен {0}, хотя подряд заполнено слотов: {1}.",
+    countThem: "Учитывать все {0}",
+    orphanTitle: "Недоступных машин после пустого слота: {0}.",
+    orphanBody: "Игра читает слоты только до {0}. Заполните пустые слоты перед ними или перенесите машины выше.",
+    aCar: "Машина в слоте {0}", aLabel: "Название в слоте {0}", aPlate: "Номер в слоте {0}",
+    maxAll: "Тюнинг всех", aTune: "Максимальный тюнинг для слота {0}",
+    aClear: "Очистить слот {0}",
+    aProg: "Прогресс {0}", aValue: "Значение {0}"
   }
 };
 
@@ -683,46 +1428,38 @@ function t(k) {
   return s;
 }
 
-function nf(n) { return Number(n).toLocaleString(LANG === "pt" ? "pt-BR" : "en-US"); }
+function nf(n) {
+  var loc = LANG === "pt" ? "pt-BR" : (LANG === "ru" ? "ru-RU" : "en-US");
+  return Number(n).toLocaleString(loc);
+}
 
 var OFF = {
-  money: 0x2D9,      // Career
-  rep: 0x2E1,        // Career
-  progCount: 0x2E5,  // Career
-  progBase: 0x2E9,   // Career, blocos de 65 bytes, flag de concluido em +64
+  money: 0x2D9,
+  rep: 0x2E1,
+  progCount: 0x2E5,
+  progBase: 0x2E9,
   progStride: 65,
-  cars: 0x53F,       // LocalOptions, quantos slots o jogo le, em sequencia do 0
-  carsIdx: 0x543,    // LocalOptions, indice do ultimo (= cars - 1)
-  slot0: 0x24FD,     // LocalOptions
+  cars: 0x53F,
+  carsIdx: 0x543,
+  slot0: 0x24FD,
   slotStride: 8176,
-  slotLabel: 32,     // campo de rotulo dentro do slot
+  slotLabel: 32,
   slotPlate: 2186,
 
-  /* Desempenho. O bloco de tune do carro N comeca um stride ANTES do slot que
-     guarda o nome dele: nomes em 0x24FD, tune em 1293, diferenca de 8176. Sao
-     13 categorias, nivel 0 a 2, e a porcentagem que a loja mostra e a soma
-     sobre 26. Carro com tudo em 2 marca 100%. */
-  tuneBase: 1293,    // LocalOptions
-  tuneLv: 95,        // 13 bytes de nivel, dentro do bloco
+  tuneBase: 1293,
+  tuneLv: 95,
   tuneN: 13,
   tuneMax: 2,
   tunePct: 126,
 
-  /* Recordes de time trial. Fica na secao Stats, mas em registro proprio, nao
-     na lista de stats: k:TB e "total best" e r:TI e o recorde por evento, com o
-     id do evento no campo id. O valor e o tempo em milissegundos. */
-  ttRecord: 0x578,     // Stats, k:TB (record 30)
-  ttEventRec: 0x6A8,   // Stats, r:TI id=4 (record 49)
+  ttRecord: 0x578,
+  ttEventRec: 0x6A8,
 
-  /* Alvos das missoes de time trial. Tabela de u32 em Career+0x727C, SEM
-     alinhamento: o primeiro alvo comeca em +0x727D e os passos sao de 4. O
-     jogo le daqui o tempo que a segunda e a terceira tentativa pedem. */
-  ttTarget: 0x727D,    // Career
+  ttTarget: 0x727D,
   ttTargetStride: 4,
   ttTargetCount: 4
 };
 
-/* Roster extraido de tune/vehicle/0xe94bde63. So estes nomes carregam. */
 var ROSTER = [
   "vp_am_vantage_07","vp_aud_r8_08","vp_aud_rs4_07","vp_buk_grandnational_87",
   "vp_chv_camaro_06","vp_chv_camaro_06_DUB","vp_chv_camaross_69","vp_chv_cobalt_05",
@@ -738,6 +1475,57 @@ var ROSTER = [
   "vp_pon_transam_79","vp_sln_s281_06","vp_sln_s7_06","vp_vw_golf_07",
   "vp_vw_golf_83","vp_vw_scirocco_88"
 ];
+
+var CAR_TITLES = {
+  vp_am_vantage_07: "2007 Aston Martin V8 Vantage",
+  vp_aud_r8_08: "2008 Audi R8",
+  vp_aud_rs4_07: "2007 Audi RS 4",
+  vp_buk_grandnational_87: "1987 Buick Grand National GNX",
+  vp_chv_camaro_06: "2006 Chevrolet Camaro Concept",
+  vp_chv_camaro_06_DUB: "2006 Chevrolet Camaro Concept DUB",
+  vp_chv_camaross_69: "1969 Chevrolet Camaro RS SS",
+  vp_chv_cobalt_05: "2005 Chevrolet Cobalt SS",
+  vp_chv_corvettez06_07: "2007 Chevrolet Corvette Z06",
+  vp_chv_impala_96: "1996 Chevrolet Impala SS",
+  vp_chv_police_96: "1996 Chevrolet Impala Police",
+  vp_citybus_07: "2007 City Bus",
+  vp_cry_300c_06: "2006 Chrysler 300C SRT-8",
+  vp_dge_challenger_06: "2006 Dodge Challenger Concept",
+  vp_dge_challenger_06_DUB: "2006 Dodge Challenger Concept DUB",
+  vp_dge_challenger_70: "1970 Dodge Challenger R/T",
+  vp_dge_charger_06: "2006 Dodge Charger SRT-8",
+  vp_dsn_280z_75: "1975 Datsun 280Z",
+  vp_duc_999r_06: "2006 Ducati 999R",
+  vp_duc_monster_s4r_07: "2007 Ducati Monster S4R",
+  vp_frd_boss302_69: "1969 Ford Mustang Boss 302",
+  vp_frd_cobra_04: "2004 Ford SVT Cobra",
+  vp_frd_focus_04: "2004 Ford Focus SVT",
+  vp_frd_gt_06: "2006 Ford GT",
+  vp_frd_mustang_06: "2006 Ford Mustang GT",
+  vp_kaw_ninja_zx14_06: "2006 Kawasaki Ninja ZX-14",
+  vp_lam_gallardo_06: "2006 Lamborghini Gallardo Spyder",
+  vp_lam_miura_71: "1971 Lamborghini Miura SV",
+  vp_lam_murcielago_06: "2006 Lamborghini Murcielago Roadster",
+  vp_lam_murcielago_06_DUB: "2006 Lamborghini Murcielago Roadster DUB",
+  vp_mbz_s600_07: "2007 Mercedes-Benz S600",
+  vp_mbz_s600_07_DUB: "2007 Mercedes-Benz S600 DUB",
+  vp_mbz_sl65_07: "2007 Mercedes-Benz SL65 AMG",
+  vp_mit_3000gt_99: "1999 Mitsubishi 3000GT VR-4",
+  vp_mit_eclipse_99: "1999 Mitsubishi Eclipse GSX",
+  vp_mit_evo_06: "2006 Mitsubishi Lancer Evolution IX MR",
+  vp_mzd_rx7_95: "1995 Mazda RX-7",
+  vp_mzd_rx8_06: "2006 Mazda RX-8 Shinka",
+  vp_nsn_240sx_98: "1998 Nissan 240SX",
+  vp_nsn_350z_06: "2006 Nissan 350Z Roadster",
+  vp_nsn_skyline_99: "1999 Nissan Skyline GT-R V-Spec",
+  vp_pon_solstice_06: "2006 Pontiac Solstice",
+  vp_pon_transam_79: "1979 Pontiac Firebird Trans Am",
+  vp_sln_s281_06: "2006 Saleen S281 Extreme",
+  vp_sln_s7_06: "2006 Saleen S7 Twin-Turbo",
+  vp_vw_golf_07: "2007 Volkswagen R32",
+  vp_vw_golf_83: "1983 Volkswagen Golf GTI",
+  vp_vw_scirocco_88: "1988 Volkswagen Scirocco"
+};
 
 var bytes = null, view = null, secs = null, fileName = "mc4.sav";
 var el = function (id) { return document.getElementById(id); };
@@ -758,7 +1546,6 @@ function ascii(from, len) {
   return out;
 }
 
-/* Grava texto + \0 e completa com 0xCD, que e o padding do proprio jogo. */
 function writeField(at, width, text) {
   for (var i = 0; i < width; i++) {
     bytes[at + i] = i < text.length ? text.charCodeAt(i) : (i === text.length ? 0 : 0xCD);
@@ -795,12 +1582,9 @@ function u32(at) { return view.getUint32(at); }
 function setU32(at, v) { view.setUint32(at, v >>> 0); }
 
 function slotAt(n) { return sec("LocalOptions").data + OFF.slot0 + n * OFF.slotStride; }
-
 function tuneAt(n) { return sec("LocalOptions").data + OFF.tuneBase + n * OFF.slotStride; }
 function tuneOf(n) { return bytes[tuneAt(n) + OFF.tunePct]; }
 
-/* Poe as 13 categorias no teto. A porcentagem e derivada, mas o jogo guarda ela
-   gravada, entao escrevemos as duas coisas pra nao deixar o save incoerente. */
 function maxTune(n) {
   var o = tuneAt(n);
   for (var i = 0; i < OFF.tuneN; i++) bytes[o + OFF.tuneLv + i] = OFF.tuneMax;
@@ -829,7 +1613,98 @@ function contiguous() {
   return n;
 }
 
-// ---------- carregar ----------
+/* Strict integer validation: digits only, clamped strictly to [0, 2000000000]. */
+function parseClampedInt(raw) {
+  var digits = String(raw == null ? "" : raw).replace(/\D+/g, "");
+  if (!digits) return 0;
+  var n = parseInt(digits, 10);
+  if (!isFinite(n) || n < 0) return 0;
+  return n > MAX_WALLET ? MAX_WALLET : n;
+}
+
+function syncWalletControls() {
+  var mVal = parseClampedInt(el("money").value);
+  var rVal = parseClampedInt(el("rep").value);
+  document.querySelectorAll("[data-add-money]").forEach(function (btn) {
+    btn.disabled = mVal >= MAX_WALLET;
+  });
+  document.querySelectorAll("[data-set-money]").forEach(function (btn) {
+    btn.disabled = mVal === parseClampedInt(btn.dataset.setMoney);
+  });
+  document.querySelectorAll("[data-add-rep]").forEach(function (btn) {
+    btn.disabled = rVal >= MAX_WALLET;
+  });
+  document.querySelectorAll("[data-set-rep]").forEach(function (btn) {
+    btn.disabled = rVal === parseClampedInt(btn.dataset.setRep);
+  });
+  updateRepBar(rVal);
+}
+
+function updateRepBar(repVal) {
+  var bar = el("repBar");
+  if (!bar) return;
+  if (!bar.children.length) {
+    for (var i = 0; i < 10; i++) {
+      var seg = document.createElement("span");
+      seg.className = "rank-seg";
+      bar.appendChild(seg);
+    }
+  }
+  var level = Math.min(10, Math.floor((Number(repVal) || 0) / 2500));
+  for (var j = 0; j < 10; j++) {
+    bar.children[j].classList.toggle("on", j < level);
+  }
+}
+
+// ---------- Tabs & Layout ----------
+
+function updateSliderThumb() {
+  var activeBtn = document.querySelector("#navTabs .tab-btn.active");
+  var track = el("mclaTrack");
+  var thumb = el("sliderThumb");
+  if (!activeBtn || !track || !thumb) return;
+  var trackRect = track.getBoundingClientRect();
+  var btnRect = activeBtn.getBoundingClientRect();
+  if (!trackRect.width || !btnRect.width) return;
+  thumb.style.left = Math.max(0, Math.round(btnRect.left - trackRect.left)) + "px";
+  thumb.style.width = Math.round(btnRect.width) + "px";
+}
+
+function setTab(tab) {
+  ACTIVE_TAB = tab;
+  var tabs = document.querySelectorAll("#navTabs .tab-btn");
+  tabs.forEach(function (b) {
+    b.classList.toggle("active", b.dataset.tab === tab);
+  });
+
+  var panels = document.querySelectorAll("#mainGrid .panel");
+  panels.forEach(function (p) {
+    var grp = p.getAttribute("data-group");
+    p.classList.toggle("is-hidden", grp !== tab);
+  });
+
+  var leftCol = el("leftCol");
+  var rightCol = el("rightCol");
+  var leftVisible = Array.prototype.some.call(leftCol.children, function (c) { return !c.classList.contains("is-hidden"); });
+  var rightVisible = Array.prototype.some.call(rightCol.children, function (c) { return !c.classList.contains("is-hidden"); });
+  leftCol.classList.toggle("is-hidden", !leftVisible);
+  rightCol.classList.toggle("is-hidden", !rightVisible);
+  el("mainGrid").classList.toggle("single-col", !leftVisible || !rightVisible);
+
+  requestAnimationFrame(updateSliderThumb);
+}
+
+function applyGarageFilter() {
+  document.querySelectorAll("[data-gar-filter]").forEach(function (b) {
+    b.classList.toggle("active", b.dataset.garFilter === GARAGE_FILTER);
+  });
+  document.querySelectorAll("#slots .slot").forEach(function (row) {
+    var hide = GARAGE_FILTER === "filled" && !row.classList.contains("filled");
+    row.classList.toggle("filtered-out", hide);
+  });
+}
+
+// ---------- Load ----------
 
 function load(file) {
   var r = new FileReader();
@@ -837,8 +1712,8 @@ function load(file) {
     var p = parse(r.result);
     if (!p.valid) {
       el("err").hidden = false;
-      el("err").innerHTML = "<strong>" + t("badFileTitle") + "</strong> " +
-        t("badFileBody", p.endedAt.toString(16).toUpperCase(), r.result.byteLength.toString(16).toUpperCase());
+      el("err").innerHTML = "<span><strong>" + t("badFileTitle") + "</strong> " +
+        t("badFileBody", p.endedAt.toString(16).toUpperCase(), r.result.byteLength.toString(16).toUpperCase()) + "</span>";
       return;
     }
     el("err").hidden = true;
@@ -849,67 +1724,96 @@ function load(file) {
     setFileTag();
     el("empty").hidden = true;
     el("editor").hidden = false;
+    el("tabsWrap").hidden = false;
+    el("actionbar").hidden = false;
     render();
+    setTab(ACTIVE_TAB);
   };
   r.readAsArrayBuffer(file);
 }
 
-// ---------- montar a tela ----------
+// ---------- Render ----------
 
 function render() {
-  var car = sec("Career"), lo = sec("LocalOptions");
+  var car = sec("Career");
 
-  el("money").value = u32(car.data + OFF.money);
-  el("rep").value = u32(car.data + OFF.rep);
+  var moneyVal = parseClampedInt(u32(car.data + OFF.money));
+  var repVal = parseClampedInt(u32(car.data + OFF.rep));
+  el("money").value = String(moneyVal);
+  el("rep").value = String(repVal);
+  syncWalletControls();
 
   el("secCount").textContent = secs.list.length + " " + t("nSections");
   var rows = "";
   secs.list.forEach(function (s) {
-    rows += "<tr><td>" + s.name + "</td><td>0x" + s.data.toString(16).toUpperCase() +
-            "</td><td>" + s.size.toLocaleString("pt-BR") + "</td></tr>";
+    rows += "<tr>" +
+      "<td>" + s.name + "</td>" +
+      "<td>0x" + s.data.toString(16).toUpperCase() + "</td>" +
+      "<td>" + nf(s.size) + "</td>" +
+      "</tr>";
   });
   el("secBody").innerHTML = rows;
 
-  var opts = '<option value="">' + t("empty") + "</option>";
-  ROSTER.forEach(function (n) { opts += '<option value="' + n + '">' + n + "</option>"; });
+  var opts = '<option value="">- ' + t("empty") + " -</option>";
+  ROSTER.forEach(function (n) {
+    var nice = CAR_TITLES[n] ? (CAR_TITLES[n] + " [" + n + "]") : n;
+    opts += '<option value="' + n + '">' + nice + "</option>";
+  });
 
   var total = slotCount();
-  el("garCount").textContent = total + " " + t("nSlots");
+  el("garCount").textContent = storedCars() + " / " + total + " " + t("nSlots");
   var host = el("slots");
   host.innerHTML = "";
   for (var n = 0; n < total; n++) {
     var s = readSlot(n);
+    var idxStr = (n < 10 ? "0" : "") + n;
+    var pct = tuneOf(n);
     var row = document.createElement("div");
     row.className = "slot" + (s.car ? " filled" : "");
     row.innerHTML =
-      '<span class="n">' + n + '</span>' +
+      '<span class="cursor" aria-hidden="true"></span>' +
+      '<span class="n">' + idxStr + '</span>' +
       '<select data-slot="' + n + '" aria-label="' + t("aCar", n) + '">' + opts + "</select>" +
-      '<input class="lbl" type="text" maxlength="31" data-label="' + n + '" aria-label="' + t("aLabel", n) + '">' +
-      '<input class="plate" type="text" maxlength="7" pattern="[A-Z0-9]{7}" data-plate="' + n + '" aria-label="' + t("aPlate", n) + '">' +
-      '<button class="btn mini tune" type="button" data-tune="' + n + '" aria-label="' + t("aTune", n) + '"' +
-      (tuneOf(n) === 100 ? " data-full" : "") + ">" + tuneOf(n) + "%</button>";
+      '<input class="lbl" type="text" maxlength="31" placeholder="LABEL" data-label="' + n + '" aria-label="' + t("aLabel", n) + '">' +
+      '<input class="plate" type="text" maxlength="7" pattern="[A-Z0-9]{7}" placeholder="PLATE" data-plate="' + n + '" aria-label="' + t("aPlate", n) + '">' +
+      '<button class="btn mini tune" type="button" data-tune="' + n + '" style="--pct:' + pct + '%" aria-label="' + t("aTune", n) + '"' +
+      (pct === 100 ? " data-full" : "") + ">" + pct + "%</button>" +
+      '<button class="btn-clear" type="button" data-clear="' + n + '" title="' + t("aClear", n) + '" aria-label="' + t("aClear", n) + '">x</button>';
     host.appendChild(row);
     row.querySelector("select").value = s.car;
     row.querySelector("input.lbl").value = s.label;
     row.querySelector("input.plate").value = s.plate;
   }
 
+  function setSlotCar(n, val, rowEl) {
+    var o = slotAt(n);
+    var sel = rowEl.querySelector("select");
+    var lbl = rowEl.querySelector("input.lbl");
+    sel.value = val;
+    if (val) {
+      writeField(o, 32, val);
+      lbl.value = autoLabel(val);
+      writeField(o + OFF.slotLabel, 33, lbl.value);
+    } else {
+      writeField(o, 32, "blank");
+      lbl.value = "";
+      writeField(o + OFF.slotLabel, 33, "");
+    }
+    rowEl.classList.toggle("filled", !!val);
+    syncCars();
+    el("garCount").textContent = storedCars() + " / " + total + " " + t("nSlots");
+    applyGarageFilter();
+  }
+
   host.querySelectorAll("select").forEach(function (sel) {
     sel.addEventListener("change", function () {
-      var n = +sel.dataset.slot, o = slotAt(n);
-      var val = sel.value;
-      var lbl = sel.closest(".slot").querySelector("input");
-      if (val) {
-        writeField(o, 32, val);
-        lbl.value = autoLabel(val);
-        writeField(o + OFF.slotLabel, 33, lbl.value);
-      } else {
-        writeField(o, 32, "blank");
-        lbl.value = "";
-        writeField(o + OFF.slotLabel, 33, "");
-      }
-      sel.closest(".slot").classList.toggle("filled", !!val);
-      syncCars();
+      setSlotCar(+sel.dataset.slot, sel.value, sel.closest(".slot"));
+    });
+  });
+
+  host.querySelectorAll("button.btn-clear").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      setSlotCar(+btn.dataset.clear, "", btn.closest(".slot"));
     });
   });
 
@@ -921,8 +1825,6 @@ function render() {
     });
   });
 
-  /* A placa ocupa 7 bytes exatos, com o terminador logo depois e, na sequencia,
-     um byte proprio de cada slot. Gravamos so os 7 e nao encostamos no resto. */
   host.querySelectorAll("input.plate").forEach(function (inp) {
     inp.addEventListener("input", function () {
       inp.value = inp.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 7);
@@ -935,8 +1837,10 @@ function render() {
 
   function paintTune() {
     host.querySelectorAll("button.tune").forEach(function (b) {
-      var pct = tuneOf(+b.dataset.tune);
+      var n = +b.dataset.tune;
+      var pct = tuneOf(n);
       b.textContent = pct + "%";
+      b.style.setProperty("--pct", pct + "%");
       if (pct === 100) b.setAttribute("data-full", ""); else b.removeAttribute("data-full");
     });
   }
@@ -961,32 +1865,82 @@ function render() {
   renderCareer();
   renderTimeTrial();
 
-  el("money").oninput = function () {
-    setU32(car.data + OFF.money, clamp(this.value));
-    mark();
-  };
-  el("rep").oninput = function () {
-    setU32(car.data + OFF.rep, clamp(this.value));
-    mark();
-  };
+  bindIntField(el("money"), car.data + OFF.money);
+  bindIntField(el("rep"), car.data + OFF.rep);
 
+  document.querySelectorAll("[data-add-money]").forEach(function (btn) {
+    btn.onclick = function () {
+      var cur = parseClampedInt(el("money").value);
+      var next = parseClampedInt(cur + Number(btn.dataset.addMoney));
+      el("money").value = String(next);
+      setU32(car.data + OFF.money, next);
+      syncWalletControls();
+      mark();
+    };
+  });
+  document.querySelectorAll("[data-set-money]").forEach(function (btn) {
+    btn.onclick = function () {
+      var next = parseClampedInt(btn.dataset.setMoney);
+      el("money").value = String(next);
+      setU32(car.data + OFF.money, next);
+      syncWalletControls();
+      mark();
+    };
+  });
+  document.querySelectorAll("[data-add-rep]").forEach(function (btn) {
+    btn.onclick = function () {
+      var cur = parseClampedInt(el("rep").value);
+      var next = parseClampedInt(cur + Number(btn.dataset.addRep));
+      el("rep").value = String(next);
+      setU32(car.data + OFF.rep, next);
+      syncWalletControls();
+      mark();
+    };
+  });
+  document.querySelectorAll("[data-set-rep]").forEach(function (btn) {
+    btn.onclick = function () {
+      var next = parseClampedInt(btn.dataset.setRep);
+      el("rep").value = String(next);
+      setU32(car.data + OFF.rep, next);
+      syncWalletControls();
+      mark();
+    };
+  });
+
+  applyGarageFilter();
   reportCars();
-  el("roMoney").textContent = nf(u32(car.data + OFF.money));
-  el("roRep").textContent = nf(u32(car.data + OFF.rep));
+  el("roMoney").textContent = "$" + nf(parseClampedInt(u32(car.data + OFF.money)));
+  el("roRep").textContent = nf(parseClampedInt(u32(car.data + OFF.rep)));
   el("status").textContent = "";
   el("status").className = "status";
 }
 
-function clamp(v) {
-  var n = Math.floor(Number(v) || 0);
-  return Math.max(0, Math.min(2000000000, n));
+function bindIntField(inp, offset) {
+  inp.onkeydown = function (e) {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    var allowed = ["Backspace", "Delete", "Tab", "Escape", "Enter", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"];
+    if (allowed.indexOf(e.key) !== -1) return;
+    if (!/^[0-9]$/.test(e.key)) e.preventDefault();
+  };
+  inp.oninput = function () {
+    var digits = inp.value.replace(/\D+/g, "");
+    var val = parseClampedInt(digits);
+    inp.value = digits === "" ? "" : String(val);
+    setU32(offset, val);
+    syncWalletControls();
+    mark();
+  };
+  inp.onblur = function () {
+    var val = parseClampedInt(inp.value);
+    inp.value = String(val);
+    setU32(offset, val);
+    syncWalletControls();
+    mark();
+  };
 }
 
-// ---------- tempo ----------
+// ---------- Time Conversion ----------
 
-/* O jogo guarda o tempo em milissegundos e mostra mm:ss.cc. As duas conversoes
-   ficam aqui pra que o resto da tela so veja texto. Os centesimos sao
-   truncados, nao arredondados: 128548 ms aparece como 02:08.54, e nao .55. */
 function msToText(ms) {
   var c = Math.max(0, Math.floor(ms / 10) * 10);
   var m = Math.floor(c / 60000), s = Math.floor(c / 1000) % 60, h = (c % 1000) / 10;
@@ -1002,9 +1956,6 @@ function textToMs(str) {
   return Math.max(0, Math.min(4294967295, ms));
 }
 
-/* O jogo le os slots EM SEQUENCIA a partir do 0 e so ate o contador, entao um
-   carro depois de um buraco nunca aparece. */
-
 function storedCars() { return bytes[sec("LocalOptions").data + OFF.cars]; }
 
 function paint(n) {
@@ -1016,18 +1967,16 @@ function paint(n) {
   return orphan;
 }
 
-/* Na abertura so relatamos. Subir o contador sozinho entregaria um carro que o
-   jogador nao pediu, entao isso fica como uma acao que ele escolhe. */
 function reportCars() {
   var n = storedCars(), c = contiguous(), orphan = paint(n), box = el("gap");
   if (c > n) {
     box.hidden = false;
-    box.innerHTML = "<strong>" + t("hiddenTitle", c - n) + "</strong> " + t("hiddenBody", n, c) + " " +
-      '<button class="btn" id="fixCars" style="margin-top:11px">' + t("countThem", c) + "</button>";
+    box.innerHTML = "<span><strong>" + t("hiddenTitle", c - n) + "</strong> " + t("hiddenBody", n, c) + "</span>" +
+      '<button class="btn mini" id="fixCars" type="button">' + t("countThem", c) + "</button>";
     el("fixCars").onclick = syncCars;
   } else if (orphan) {
     box.hidden = false;
-    box.innerHTML = "<strong>" + t("orphanTitle", orphan) + "</strong> " + t("orphanBody", n);
+    box.innerHTML = "<span><strong>" + t("orphanTitle", orphan) + "</strong> " + t("orphanBody", n) + "</span>";
   } else {
     box.hidden = true;
   }
@@ -1037,43 +1986,46 @@ function syncCars() {
   var lo = sec("LocalOptions"), n = contiguous();
   bytes[lo.data + OFF.cars] = n;
   bytes[lo.data + OFF.carsIdx] = n > 0 ? n - 1 : 0;
+  el("garCount").textContent = n + " / " + slotCount() + " " + t("nSlots");
   reportCars();
   mark();
 }
 
 function mark() {
-  el("roMoney").textContent = nf(el("money").value || 0);
-  el("roRep").textContent = nf(el("rep").value || 0);
+  el("roMoney").textContent = "$" + nf(parseClampedInt(el("money").value));
+  el("roRep").textContent = nf(parseClampedInt(el("rep").value));
   el("status").textContent = t("unsaved");
   el("status").className = "status";
 }
 
 function setFileTag() {
   el("filetag").textContent = bytes
-    ? fileName + " · " + nf(bytes.length) + " bytes · " + secs.list.length + " " + t("nSections")
+    ? fileName + " - " + nf(bytes.length) + " bytes - " + secs.list.length + " " + t("nSections")
     : t("noFile");
 }
 
-/* Troca de idioma sem recarregar: reescreve os textos marcados e, com um save
-   aberto, remonta os paineis para pegar tambem o que e gerado em JS. */
 function applyLang() {
-  document.documentElement.lang = LANG === "pt" ? "pt-BR" : "en";
+  document.documentElement.lang = LANG === "pt" ? "pt-BR" : (LANG === "ru" ? "ru" : "en");
   document.querySelectorAll("[data-i18n]").forEach(function (e) {
     e.textContent = t(e.getAttribute("data-i18n"));
   });
   document.querySelectorAll("[data-i18n-ph]").forEach(function (e) {
     e.placeholder = t(e.getAttribute("data-i18n-ph"));
   });
-  el("lang").textContent = LANG === "pt" ? "EN" : "PT";
-  if (bytes) render();
+  el("langCode").textContent = LANG.toUpperCase();
+  document.querySelectorAll("[data-set-lang]").forEach(function (opt) {
+    var active = opt.dataset.setLang === LANG;
+    opt.classList.toggle("active", active);
+    opt.setAttribute("aria-selected", active ? "true" : "false");
+  });
+  if (bytes) {
+    render();
+    setTab(ACTIVE_TAB);
+  }
   setFileTag();
 }
 
-// ---------- progressao ----------
-
-/* 43 blocos de 65 bytes em Career+0x2E9. O ultimo byte de cada bloco e o flag
-   de concluido. Marcar todos nao libera grupo na loja: isso foi testado em
-   jogo e nao e o que destrava a compra. */
+// ---------- Progression ----------
 
 function progBase() { return sec("Career").data + OFF.progBase; }
 function progTotal() { return u32(sec("Career").data + OFF.progCount); }
@@ -1125,16 +2077,10 @@ function renderProg() {
   progPaint();
 }
 
-// ---------- estatisticas ----------
-
-/* Registro de 16 bytes na secao Stats, fourcc em offset absoluto % 16 == 2:
-   fourcc[4] | u32 id @+4 | u8 tipo @+8 | u24 @+9 | valor @+12.
-   Tipo 0x28 e 0x00 guardam float, o resto inteiro. */
+// ---------- Statistics ----------
 
 var STATS = [];
 
-/* Nome em jogo de cada FourCC. So os que alguem ja traduziu; o resto da lista
-   mostra o codigo sozinho, que e melhor do que um nome inventado. */
 var STAT_NAMES = {
   gBRN: "Total Burnouts",
   gCOL: "Collectables",
@@ -1169,8 +2115,6 @@ function renderStats() {
   for (var o = start; o + 16 <= s.data + s.size; o += 16) {
     var k = ascii(o, 4);
     if (!/^[A-Za-z][A-Za-z0-9]{3}$/.test(k)) continue;
-    /* Nao chamar isto de `t`: `var` e de escopo de funcao e sombrearia o t() de
-       traducao no corpo inteiro, derrubando render() antes de ligar os campos. */
     var kind = bytes[o + 8];
     STATS.push({ at: o, key: k, isFloat: kind === 0x28 || kind === 0x00 });
   }
@@ -1185,14 +2129,14 @@ function drawStats(q) {
   host.innerHTML = "";
   var shown = 0;
   STATS.forEach(function (r) {
-    /* A busca pega o codigo e o nome em jogo: quem procura "wins" quer gWIN,
-       quem procura "gWIN" nao quer ter que saber o nome. */
     if (q && r.key.toLowerCase().indexOf(q) === -1 && statName(r).toLowerCase().indexOf(q) === -1) return;
     shown++;
-    /* Nomes vem da tabela STAT_NAMES, que e do repositorio; nada do save entra
-       aqui. A linha e montada com createElement porque o texto vem de dados. */
     var row = document.createElement("div");
     row.className = "stat";
+
+    var cur = document.createElement("span");
+    cur.className = "cursor";
+    cur.setAttribute("aria-hidden", "true");
 
     var key = document.createElement("span");
     key.className = "key";
@@ -1212,6 +2156,7 @@ function drawStats(q) {
     inp.setAttribute("aria-label", t("aValue", r.key));
     inp.value = r.isFloat ? view.getFloat32(r.at + 12).toFixed(4) : u32(r.at + 12);
 
+    row.appendChild(cur);
     row.appendChild(key);
     row.appendChild(name);
     row.appendChild(kind);
@@ -1229,10 +2174,8 @@ function drawStats(q) {
   if (!shown) host.innerHTML = '<p class="empty-note">' + t("noStat") + "</p>";
 }
 
-// ---------- time trial ----------
+// ---------- Time Trial ----------
 
-/* Uma linha por evento. Por ora so a segunda tentativa de Hollywood: o alvo
-   dela fica na tabela de Career e o recorde, nas duas copias de Stats. */
 var TT_EVENTS = [
   { key: "ttHollywood2", label: "Hollywood time trial: '99 Eclipse - Race 2", target: 0, rec: 0 }
 ];
@@ -1255,7 +2198,7 @@ function renderTimeTrial() {
 }
 
 function paintTimeTrial() {
-  var e = TT_EVENTS[+el("ttEvent").value || 0], car = sec("Career"), st = sec("Stats");
+  var e = TT_EVENTS[+el("ttEvent").value || 0], car = sec("Career");
   var at = car.data + OFF.ttTarget + e.target * OFF.ttTargetStride;
   el("ttAt").textContent = "Career+0x" + (OFF.ttTarget + e.target * OFF.ttTargetStride).toString(16).toUpperCase();
   el("ttTarget").value = msToText(u32(at));
@@ -1274,52 +2217,96 @@ el("ttTarget").addEventListener("input", function () {
   mark();
 });
 
-// ---------- career ----------
+// ---------- Career ----------
 
-/* Recorde da corrida, fora da lista de stats porque e o valor que o jogador
-   mais mexe e merece campo proprio. As duas copias andam juntas. */
+var CAREER_RECORDS = [
+  {
+    id: "careerRecord",
+    code: "k:TB",
+    titleKey: "ttHollywood",
+    hintKey: "ttHint",
+    read: function () { return msToText(u32(sec("Stats").data + OFF.ttRecord)); },
+    write: function (val) {
+      var ms = textToMs(val);
+      if (ms === null) return false;
+      var st = sec("Stats");
+      setU32(st.data + OFF.ttRecord, ms);
+      setU32(st.data + OFF.ttEventRec, ms);
+      return true;
+    }
+  }
+];
+
 function renderCareer() {
-  var st = sec("Stats"), host = el("career");
-  host.innerHTML = "";
-
-  var row = document.createElement("div");
-  row.className = "stat wide";
-
-  var who = document.createElement("div");
-  who.className = "who";
-
-  var key = document.createElement("span");
-  key.className = "key";
-  key.textContent = t("ttHollywood");
-
-  var kind = document.createElement("span");
-  kind.className = "kind";
-  kind.textContent = t("ttHint");
-
-  who.appendChild(key);
-  who.appendChild(kind);
-
-  var inp = document.createElement("input");
-  inp.type = "text";
-  inp.inputMode = "decimal";
-  inp.id = "careerRecord";
-  inp.value = msToText(u32(st.data + OFF.ttRecord));
-  inp.setAttribute("aria-label", t("ttHollywood"));
-
-  row.appendChild(who);
-  row.appendChild(inp);
-  host.appendChild(row);
-
-  inp.addEventListener("input", function () {
-    var ms = textToMs(this.value);
-    if (ms === null) return;
-    setU32(sec("Stats").data + OFF.ttRecord, ms);
-    setU32(sec("Stats").data + OFF.ttEventRec, ms);
-    mark();
-  });
+  el("careerCount").textContent = CAREER_RECORDS.length + " " + t("nRecords");
+  el("careerFilter").oninput = function () { drawCareer(this.value); };
+  drawCareer(el("careerFilter").value);
 }
 
-// ---------- gravar ----------
+function drawCareer(q) {
+  q = (q || "").trim().toLowerCase();
+  var host = el("career");
+  host.innerHTML = "";
+  var shown = 0;
+
+  CAREER_RECORDS.forEach(function (rec) {
+    var titleText = t(rec.titleKey);
+    var hintText = t(rec.hintKey);
+    if (q &&
+        rec.code.toLowerCase().indexOf(q) === -1 &&
+        titleText.toLowerCase().indexOf(q) === -1 &&
+        hintText.toLowerCase().indexOf(q) === -1) {
+      return;
+    }
+    shown++;
+
+    var row = document.createElement("div");
+    row.className = "stat wide";
+
+    var cur = document.createElement("span");
+    cur.className = "cursor";
+    cur.setAttribute("aria-hidden", "true");
+
+    var who = document.createElement("div");
+    who.className = "who";
+
+    var key = document.createElement("span");
+    key.className = "key";
+    key.textContent = titleText;
+
+    var kind = document.createElement("span");
+    kind.className = "kind";
+    kind.textContent = hintText;
+
+    who.appendChild(key);
+    who.appendChild(kind);
+
+    var tag = document.createElement("span");
+    tag.className = "kind";
+    tag.textContent = t("timeKind");
+
+    var inp = document.createElement("input");
+    inp.type = "text";
+    inp.inputMode = "decimal";
+    inp.id = rec.id;
+    inp.value = rec.read();
+    inp.setAttribute("aria-label", titleText);
+
+    row.appendChild(cur);
+    row.appendChild(who);
+    row.appendChild(tag);
+    row.appendChild(inp);
+    host.appendChild(row);
+
+    inp.addEventListener("input", function () {
+      if (rec.write(this.value)) mark();
+    });
+  });
+
+  if (!shown) host.innerHTML = '<p class="empty-note">' + t("noCareer") + "</p>";
+}
+
+// ---------- Save & File Input ----------
 
 el("save").addEventListener("click", function () {
   var check = parse(bytes.buffer);
@@ -1337,10 +2324,12 @@ el("save").addEventListener("click", function () {
   el("status").className = "status good";
 });
 
-// ---------- entrada do arquivo ----------
-
 el("pick").addEventListener("click", function () { el("file").click(); });
-el("file").addEventListener("change", function (e) { if (e.target.files[0]) load(e.target.files[0]); });
+el("reopen").addEventListener("click", function () { el("file").click(); });
+el("file").addEventListener("change", function (e) {
+  if (e.target.files[0]) load(e.target.files[0]);
+  e.target.value = "";
+});
 
 var dz = el("drop");
 ["dragenter", "dragover"].forEach(function (ev) {
@@ -1354,21 +2343,97 @@ dz.addEventListener("drop", function (e) {
   if (f) load(f);
 });
 
-// ---------- idioma ----------
-
-el("lang").addEventListener("click", function () {
-  LANG = LANG === "pt" ? "en" : "pt";
-  try { localStorage.setItem("mcla.lang", LANG); } catch (err) {}
-  applyLang();
+document.addEventListener("dragover", function (e) { e.preventDefault(); });
+document.addEventListener("drop", function (e) {
+  if (e.target.closest("#drop")) return;
+  e.preventDefault();
+  var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+  if (f) load(f);
 });
 
-/* Escolha guardada primeiro; sem ela, o idioma do navegador. */
+// ---------- Tabs, Filter & Keyboard Navigation ----------
+
+document.querySelectorAll("#navTabs .tab-btn").forEach(function (b) {
+  b.addEventListener("click", function () { setTab(b.dataset.tab); });
+});
+
+document.querySelectorAll("[data-gar-filter]").forEach(function (b) {
+  b.addEventListener("click", function () {
+    GARAGE_FILTER = b.dataset.garFilter;
+    applyGarageFilter();
+  });
+});
+
+window.addEventListener("resize", function () {
+  if (bytes) updateSliderThumb();
+});
+
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(function () {
+    if (bytes) updateSliderThumb();
+  });
+}
+
+document.addEventListener("keydown", function (e) {
+  var active = document.activeElement;
+  var tag = (active && active.tagName) || "";
+  var isFormField = tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA";
+
+  if (e.key === "Escape") {
+    closeLangMenu();
+    if (isFormField && typeof active.blur === "function") {
+      active.blur();
+    }
+    return;
+  }
+
+  if (!bytes || isFormField || e.ctrlKey || e.metaKey || e.altKey) return;
+
+  var order = ["garage", "career", "sections"];
+  var cur = order.indexOf(ACTIVE_TAB);
+  if (e.code === "KeyQ" || e.key === "q" || e.key === "Q" || e.key === "[") {
+    setTab(order[(cur - 1 + order.length) % order.length]);
+  } else if (e.code === "KeyE" || e.key === "e" || e.key === "E" || e.key === "]") {
+    setTab(order[(cur + 1) % order.length]);
+  }
+});
+
+// ---------- Language Dropdown ----------
+
+function closeLangMenu() {
+  el("langList").hidden = true;
+  el("langBtn").setAttribute("aria-expanded", "false");
+}
+
+el("langBtn").addEventListener("click", function (e) {
+  e.stopPropagation();
+  var opening = el("langList").hidden;
+  el("langList").hidden = !opening;
+  el("langBtn").setAttribute("aria-expanded", opening ? "true" : "false");
+});
+
+document.querySelectorAll("[data-set-lang]").forEach(function (opt) {
+  opt.addEventListener("click", function () {
+    LANG = opt.dataset.setLang;
+    try { localStorage.setItem("mcla.lang", LANG); } catch (err) {}
+    closeLangMenu();
+    applyLang();
+  });
+});
+
+document.addEventListener("click", function (e) {
+  if (!e.target.closest("#langMenu")) closeLangMenu();
+});
+
 function pickLang() {
   try {
     var saved = localStorage.getItem("mcla.lang");
-    if (saved === "pt" || saved === "en") return saved;
+    if (saved === "pt" || saved === "en" || saved === "ru") return saved;
   } catch (err) {}
-  return (navigator.language || "").toLowerCase().indexOf("pt") === 0 ? "pt" : "en";
+  var nav = (navigator.language || "").toLowerCase();
+  if (nav.indexOf("pt") === 0) return "pt";
+  if (nav.indexOf("ru") === 0) return "ru";
+  return "en";
 }
 
 LANG = pickLang();

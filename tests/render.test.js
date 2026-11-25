@@ -101,17 +101,28 @@ function makeEl(id) {
     id: id, value: "", textContent: "", hidden: false,
     className: "", checked: false, dataset: {}, style: {}, files: [], children: [],
     _on: {},
-    classList: { add: noop, remove: noop, toggle: noop, contains: function () { return false; } },
+    classList: {
+      add: noop, remove: noop, toggle: noop,
+      /* contains e real: setTab usa pra saber se a coluna ainda tem painel. */
+      contains: function (c) { return e.className.split(/\s+/).indexOf(c) !== -1; }
+    },
     addEventListener: function (type, fn) { e._on[type] = fn; },
     removeEventListener: noop,
     appendChild: function (c) { e.children.push(c); MADE.push(c); return c; },
     removeChild: noop, remove: noop,
-    setAttribute: noop, removeAttribute: noop, focus: noop, blur: noop,
+    setAttribute: function (k, v) { e.dataset[k] = v; },
+    removeAttribute: noop, focus: noop, blur: noop,
     click: noop, scrollIntoView: noop,
-    getAttribute: function () { return null; },
+    getAttribute: function (k) { return e.dataset[k] !== undefined ? e.dataset[k] : null; },
     closest: function () { return e; },
     querySelector: function () { return makeEl("x"); },
-    querySelectorAll: function (sel) { return group(sel); }
+    querySelectorAll: function (sel) { return group(sel); },
+    /* O painel novo mede posicoes pro deslizador das abas; zero e suficiente. */
+    getBoundingClientRect: function () { return { left: 0, top: 0, width: 0, height: 0, right: 0, bottom: 0 }; },
+    style: {
+      setProperty: function () {}, removeProperty: noop,
+      getPropertyValue: function () { return ""; }
+    }
   };
   /* innerHTML = "" limpa os filhos, como no DOM de verdade: drawStats reescreve
      a lista a cada tecla e o teste conta children pra saber o que sobrou. */
@@ -166,6 +177,8 @@ function group(sel) {
   if (sel === "input.plate") return rows.map(function (r) { return r.plate; });
   if (sel === "button.tune") return rows.map(function (r) { return r.tune; });
   if (sel === ".cell") return cells;
+  /* O painel novo tem abas, filtros e botoes de carteira; o teste nao os usa,
+     mas o script chama querySelectorAll em cada um ao carregar. */
   return [];
 }
 
@@ -184,7 +197,10 @@ function makeDom() {
     querySelector: function () { return makeEl("x"); },
     addEventListener: noop,
     documentElement: makeEl("html"),
-    body: makeEl("body")
+    body: makeEl("body"),
+    /* O painel novo espera fonts prontas e uma janela que redimensiona. */
+    fonts: { ready: { then: function () {} } },
+    activeElement: makeEl("active")
   };
   return { doc: doc, byId: byId };
 }
@@ -204,6 +220,10 @@ var ctx = {
   Blob: function () {},
   FileReader: function () {},
   setTimeout: noop,
+  /* O painel novo escuta resize e pede um frame pra medir as abas. */
+  requestAnimationFrame: noop,
+  addEventListener: noop,
+  removeEventListener: noop,
   console: console
 };
 ctx.window = ctx;
@@ -279,11 +299,14 @@ assert.strictEqual(ctx.statName({ key: "tPUR" }), "",
 var statRows = dom.doc.getElementById("stats").children;
 assert.ok(statRows.length >= 2, "drawStats nao montou as linhas");
 var first = statRows[0];
-assert.ok(first.children.length === 4,
-  "a linha do stat nao tem codigo, nome, tipo e campo: " + first.children.length);
-assert.strictEqual(first.children[0].textContent, ctx.STATS[0].key,
+/* cursor, codigo, nome, tipo, campo: a seta do HUD conta como coluna. */
+assert.ok(first.children.length === 5,
+  "a linha do stat nao tem cursor, codigo, nome, tipo e campo: " + first.children.length);
+assert.strictEqual(first.children[0].className, "cursor",
+  "a linha nao comeca pelo cursor do HUD");
+assert.strictEqual(first.children[1].textContent, ctx.STATS[0].key,
   "o codigo da linha nao e o do primeiro registro");
-assert.strictEqual(first.children[1].textContent, ctx.statName(ctx.STATS[0]),
+assert.strictEqual(first.children[2].textContent, ctx.statName(ctx.STATS[0]),
   "o nome em jogo nao apareceu na linha");
 
 // busca por codigo e por nome acham a mesma linha
