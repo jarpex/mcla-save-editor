@@ -1008,9 +1008,23 @@ input::placeholder { color: var(--ink-faint); }
   overflow: hidden;
 }
 
-.xray-box svg {
+/* Both layers sit in the same grid cell; the base never moves, the active
+   one blinks on top of it. */
+.xray-layer {
+  grid-area: 1 / 1;
   width: 90%;
   height: 86%;
+}
+
+/* One full on/off cycle per second — the game's part highlight is twice as
+   slow as it first looks. */
+.xray-active {
+  animation: xrayBlink 1s ease-in-out infinite;
+}
+
+@keyframes xrayBlink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.15; }
 }
 
 .dyno-box {
@@ -2864,75 +2878,14 @@ function getVehiclePerfProfile(car, moto) {
   };
 }
 
-function buildWireframeSvg(moto, engineGlow, suspGlow) {
-  var eColor = engineGlow ? "#5ce6e1" : "#3b565e";
-  var sColor = suspGlow ? "#29c5c0" : "#2f434a";
-  if (moto) {
-    return (
-      '<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">' +
-      '<g stroke="#4b5a63" stroke-width="1.4">' +
-      '<circle cx="52" cy="70" r="22"/><circle cx="52" cy="70" r="14" stroke-dasharray="3 3"/>' +
-      '<circle cx="206" cy="70" r="22"/><circle cx="206" cy="70" r="14" stroke-dasharray="3 3"/>' +
-      '<path d="M52 70 L98 48 L152 44 L182 26 L195 26"/>' +
-      '<path d="M180 26 L206 70"/>' +
-      '<path d="M98 48 L124 72 L158 68 L174 44"/>' +
-      '<path d="M72 44 L112 36 L146 34 L176 22 L192 34 L166 52"/>' +
-      '</g>' +
-      '<g stroke="' + eColor + '" stroke-width="1.8">' +
-      '<rect x="122" y="48" width="34" height="22" rx="3" fill="rgba(41,197,192,0.12)"/>' +
-      '<path d="M126 68 L92 74 L68 64"/>' +
-      '</g>' +
-      '<g stroke="' + sColor + '" stroke-width="1.6">' +
-      '<line x1="176" y1="30" x2="202" y2="66"/>' +
-      '<line x1="96" y1="50" x2="118" y2="68"/>' +
-      '</g>' +
-      '</svg>'
-    );
-  }
-  return (
-    '<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">' +
-    '<g stroke="#4b5a63" stroke-width="1.3">' +
-    '<path d="M24 34 Q24 22 44 20 L212 20 Q236 22 238 36 L238 64 Q236 78 212 80 L44 80 Q24 78 24 66 Z"/>' +
-    '<path d="M78 24 L164 24 L182 32 L182 68 L164 76 L78 76 L62 66 L62 34 Z" stroke-opacity="0.65"/>' +
-    '<rect x="44" y="13" width="34" height="8" rx="2"/><rect x="44" y="79" width="34" height="8" rx="2"/>' +
-    '<rect x="178" y="13" width="34" height="8" rx="2"/><rect x="178" y="79" width="34" height="8" rx="2"/>' +
-    '</g>' +
-    '<g stroke="' + sColor + '" stroke-width="1.6">' +
-    '<line x1="61" y1="21" x2="61" y2="79"/>' +
-    '<line x1="195" y1="21" x2="195" y2="79"/>' +
-    '</g>' +
-    '<g stroke="' + eColor + '" stroke-width="1.8">' +
-    '<rect x="174" y="36" width="36" height="28" rx="3" fill="rgba(41,197,192,0.14)"/>' +
-    '<line x1="61" y1="50" x2="174" y2="50"/>' +
-    '<path d="M174 42 L134 38 L42 38 L26 34"/>' +
-    '<path d="M174 58 L134 62 L42 62 L26 66"/>' +
-    '</g>' +
-    '</svg>'
-  );
-}
+/* ---------- Performance Shop: X-ray schematic ----------
+   Two stacked layers, both absolutely placed in the same grid cell:
+   `base` is the car itself (mesh, body, chassis) and never changes;
+   `active` is the one category being edited, drawn in cyan and blinking.
+   A category with no entry of its own gets a generic engine/suspension
+   highlight, so the shop still renders while the set is being filled in. */
 
-/* ---------- Performance Shop: per-category X-ray schematics ----------
-   Keyed by TUNE_CATS index. A category with no entry keeps the generic
-   wireframe, so the shop still renders while the set is being filled in. */
-
-var SCHEMATICS = {
-  0: {
-    svg: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <defs>
-          <filter id="exhaustGlow" x="-15%" y="-25%" width="130%" height="150%">
-            <feGaussianBlur stdDeviation="1.4" result="blur"></feGaussianBlur>
-            <feMerge>
-              <feMergeNode in="blur"></feMergeNode>
-              <feMergeNode in="SourceGraphic"></feMergeNode>
-            </feMerge>
-          </filter>
-          <linearGradient id="mufflerGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#5ce6e1" stop-opacity="0.38"></stop>
-            <stop offset="50%" stop-color="#29c5c0" stop-opacity="0.16"></stop>
-            <stop offset="100%" stop-color="#5ce6e1" stop-opacity="0.38"></stop>
-          </linearGradient>
-        </defs>
-
+var XRAY_BASE_CAR = `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
         <!-- X-ray wireframe mesh -->
         <g stroke="#4b5a63" stroke-width="0.6" stroke-opacity="0.18">
           <line x1="76" y1="21" x2="76" y2="79"></line>
@@ -2988,8 +2941,37 @@ var SCHEMATICS = {
           <rect x="28" y="38" width="13" height="21" rx="3" fill="rgba(75,90,99,0.1)"></rect>
           <line x1="34.5" y1="59" x2="34.5" y2="74"></line>
         </g>
+      </svg>`;
 
-        <!-- Exhaust system (volumetric outer tube + core + resonators + rear mufflers) -->
+var XRAY_BASE_MOTO = `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <g stroke="#4b5a63" stroke-width="1.4">
+      <circle cx="52" cy="70" r="22"/><circle cx="52" cy="70" r="14" stroke-dasharray="3 3"/>
+      <circle cx="206" cy="70" r="22"/><circle cx="206" cy="70" r="14" stroke-dasharray="3 3"/>
+      <path d="M52 70 L98 48 L152 44 L182 26 L195 26"/>
+      <path d="M180 26 L206 70"/>
+      <path d="M98 48 L124 72 L158 68 L174 44"/>
+      <path d="M72 44 L112 36 L146 34 L176 22 L192 34 L166 52"/>
+    </g>
+  </svg>`;
+
+var SCHEMATICS = {
+  0: {
+    active: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <defs>
+          <filter id="exhaustGlow" x="-15%" y="-25%" width="130%" height="150%">
+            <feGaussianBlur stdDeviation="1.4" result="blur"></feGaussianBlur>
+            <feMerge>
+              <feMergeNode in="blur"></feMergeNode>
+              <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+          </filter>
+          <linearGradient id="mufflerGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#5ce6e1" stop-opacity="0.38"></stop>
+            <stop offset="50%" stop-color="#29c5c0" stop-opacity="0.16"></stop>
+            <stop offset="100%" stop-color="#5ce6e1" stop-opacity="0.38"></stop>
+          </linearGradient>
+        </defs>
+
         <g filter="url(#exhaustGlow)">
           <!-- Outer soft tube walls -->
           <g stroke="#29c5c0" stroke-width="2.8" stroke-opacity="0.35">
@@ -3024,7 +3006,7 @@ var SCHEMATICS = {
       </svg>`
   },
   1: {
-    svg: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    active: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
     <g stroke="#4b5a63" stroke-width="1.3">
       <path d="M24 34 Q24 22 44 20 L212 20 Q236 22 238 36 L238 64 Q236 78 212 80 L44 80 Q24 78 24 66 Z"></path>
       <path d="M78 24 L164 24 L182 32 L182 68 L164 76 L78 76 L62 66 L62 34 Z" stroke-opacity="0.65"></path>
@@ -3065,10 +3047,53 @@ var SCHEMATICS = {
   }
 };
 
-/* The schematic for one category, or null when there is none yet. */
-function schematicFor(catIdx) {
+/* The base layer for a vehicle: the detailed car body, or the bike frame. */
+function xrayBase(moto) { return moto ? XRAY_BASE_MOTO : XRAY_BASE_CAR; }
+
+/* The dynamic layer for one category, or a generic highlight when the
+   category has no drawing of its own yet. */
+function xrayActive(catIdx, moto, engineGlow, suspGlow) {
   var s = SCHEMATICS[catIdx];
-  return s && s.svg ? s : null;
+  if (s && s.active) return s.active;
+  var eColor = engineGlow ? "#5ce6e1" : "#3b565e";
+  var sColor = suspGlow ? "#29c5c0" : "#2f434a";
+  if (moto) {
+    return (
+      '<svg class="xray-layer xray-active" viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">' +
+      '<g stroke="' + eColor + '" stroke-width="1.8">' +
+      '<rect x="122" y="48" width="34" height="22" rx="3" fill="rgba(41,197,192,0.12)"/>' +
+      '<path d="M126 68 L92 74 L68 64"/>' +
+      '</g>' +
+      '<g stroke="' + sColor + '" stroke-width="1.6">' +
+      '<line x1="176" y1="30" x2="202" y2="66"/>' +
+      '<line x1="96" y1="50" x2="118" y2="68"/>' +
+      '</g>' +
+      '</svg>'
+    );
+  }
+  return (
+    '<svg class="xray-layer xray-active" viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">' +
+    '<g stroke="' + eColor + '" stroke-width="1.8">' +
+    '<rect x="174" y="36" width="36" height="28" rx="3" fill="rgba(41,197,192,0.14)"/>' +
+    '<line x1="61" y1="50" x2="174" y2="50"/>' +
+    '<path d="M174 42 L134 38 L42 38 L26 34"/>' +
+    '<path d="M174 58 L134 62 L42 62 L26 66"/>' +
+    '</g>' +
+    '<g stroke="' + sColor + '" stroke-width="1.6">' +
+    '<line x1="61" y1="21" x2="61" y2="79"/>' +
+    '<line x1="195" y1="21" x2="195" y2="79"/>' +
+    '</g>' +
+    '</svg>'
+  );
+}
+
+/* Paint both layers. The base is replaced only when the vehicle type
+   changes, but rebuilding both is cheap and keeps one code path. */
+function paintXray(catIdx, moto, engineGlow, suspGlow) {
+  var base = xrayBase(moto).replace("<svg ", '<svg class="xray-layer xray-base" ');
+  var active = xrayActive(catIdx, moto, engineGlow, suspGlow)
+    .replace("<svg ", '<svg class="xray-layer xray-active" ');
+  el("shopSchematic").innerHTML = base + active;
 }
 
 function calcShopMetrics() {
@@ -3140,13 +3165,9 @@ function renderShopTelemetry() {
     item.classList.toggle("lit", idx < litCount);
   });
 
-  /* X-ray: the active category's own drawing when it has one, otherwise the
-     generic wireframe. */
+  /* X-ray: the shared base layer plus the active category's own drawing. */
   var activeCat = SHOP_STATE.cats[SHOP_STATE.activeRow];
-  var sch = activeCat ? schematicFor(activeCat.idx) : null;
-  el("shopSchematic").innerHTML = sch
-    ? sch.svg
-    : buildWireframeSvg(SHOP_STATE.moto, m.pwr > 0.05, m.hnd > 0.05);
+  paintXray(activeCat ? activeCat.idx : -1, SHOP_STATE.moto, m.pwr > 0.05, m.hnd > 0.05);
 
   /* Dyno Torque & Horsepower curves */
   var lift = (m.pct / 100) * 32;
