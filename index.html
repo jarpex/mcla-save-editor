@@ -961,7 +961,8 @@ input::placeholder { color: var(--ink-faint); }
 }
 .stat input { padding: 5px 8px; font-size: 12.5px; text-align: right; }
 
-.stat.wide { grid-template-columns: 12px minmax(0, 1fr) auto 128px; }
+/* cursor, texto, campo: tres colunas, o campo fecha a direita. */
+.stat.wide { grid-template-columns: 12px minmax(0, 1fr) 128px; }
 .stat .who { display: grid; gap: 2px; min-width: 0; }
 .stat .who .key {
   font-family: var(--display);
@@ -1325,10 +1326,9 @@ var STR = {
     garage: "Garagem", stats: "Estatisticas", statFilter: "filtrar por codigo, ex: gWIN",
     career: "Career", careerFilter: "filtrar registros de carreira",
     timeTrial: "Time Trial", ttEvent: "Evento", ttTarget: "Tempo alvo",
-    ttHollywood: "Hollywood time trial: '99 Eclipse",
+    ttHollywood: "Hollywood time trial: '99 Eclipse - Record",
     ttRecord: "Recorde", ttHint: "min:seg.centesimos, ex: 02:08.54",
     hintInt: "inteiro", hintDec: "decimal", hintHours: "h:mm",
-    hintRecord: "recorde",
     careerMostWins: "Most consecutive wins", careerConsec: "Career consecutive wins",
     careerSecond: "Number of second place", careerThird: "Number of third place",
     careerRaces: "Races completed", careerWins: "Number of wins",
@@ -1371,10 +1371,9 @@ var STR = {
     garage: "Garage", stats: "Statistics", statFilter: "filter by code, e.g. gWIN",
     career: "Career", careerFilter: "filter career records",
     timeTrial: "Time Trial", ttEvent: "Event", ttTarget: "Target time",
-    ttHollywood: "Hollywood time trial: '99 Eclipse",
+    ttHollywood: "Hollywood time trial: '99 Eclipse - Record",
     ttRecord: "Record", ttHint: "min:sec.hundredths, e.g. 02:08.54",
     hintInt: "integer", hintDec: "decimal", hintHours: "h:mm",
-    hintRecord: "record",
     careerMostWins: "Most consecutive wins", careerConsec: "Career consecutive wins",
     careerSecond: "Number of second place", careerThird: "Number of third place",
     careerRaces: "Races completed", careerWins: "Number of wins",
@@ -1417,10 +1416,9 @@ var STR = {
     garage: "Гараж", stats: "Статистика", statFilter: "фильтр по коду, например: gWIN",
     career: "Career", careerFilter: "фильтр записей карьеры",
     timeTrial: "Time Trial", ttEvent: "Заезд", ttTarget: "Целевое время",
-    ttHollywood: "Hollywood time trial: '99 Eclipse",
+    ttHollywood: "Hollywood time trial: '99 Eclipse - Record",
     ttRecord: "Рекорд", ttHint: "мин:сек.сотые, например: 02:08.54",
     hintInt: "целое", hintDec: "десятичное", hintHours: "ч:мм",
-    hintRecord: "рекорд",
     careerMostWins: "Most consecutive wins", careerConsec: "Career consecutive wins",
     careerSecond: "Number of second place", careerThird: "Number of third place",
     careerRaces: "Races completed", careerWins: "Number of wins",
@@ -1980,15 +1978,6 @@ function msToText(ms) {
   return (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s + "." + (h < 10 ? "0" : "") + h;
 }
 
-function textToMs(str) {
-  var m = /^\s*(\d+):(\d{1,2})(?:[.,](\d{1,3}))?\s*$/.exec(str || "");
-  if (!m) return null;
-  var min = +m[1], sec = +m[2], frac = m[3] || "";
-  if (sec > 59) return null;
-  var ms = min * 60000 + sec * 1000 + Math.round(("0." + frac) * 1000);
-  return Math.max(0, Math.min(4294967295, ms));
-}
-
 function storedCars() { return bytes[sec("LocalOptions").data + OFF.cars]; }
 
 function paint(n) {
@@ -2257,15 +2246,15 @@ el("ttTarget").addEventListener("input", function () {
    valor em +12. Cada entrada acha a sua linha pelo codigo na leitura.
 
    `fmt` diz como o valor e mostrado e aceito, e e a unica fonte do rotulo do
-   tipo: int, dec, record (recorde em mm:ss.cc) ou hours (h:mm). */
-var FMT_LABEL = { int: "hintInt", dec: "hintDec", record: "hintRecord", hours: "hintHours" };
+   tipo: int, dec, time (mm:ss.cc) ou hours (h:mm). */
+var FMT_LABEL = { int: "hintInt", dec: "hintDec", time: "timeKind", hours: "hintHours" };
 
 var CAREER_RECORDS = [
   {
     id: "careerRecord",
     code: "k:TB",
     titleKey: "ttHollywood",
-    fmt: "record",
+    fmt: "time",
     read: function () { return msToText(u32(sec("Stats").data + OFF.ttRecord)); },
     write: function (val) {
       var ms = textToMs(val);
@@ -2314,8 +2303,21 @@ function hoursToText(h) {
   return Math.floor(total / 60) + ":" + (total % 60 < 10 ? "0" : "") + (total % 60);
 }
 
+/* Entrada de tempo no formato mm:ss.cc. Aceita "3:15.32" e devolve
+   "03:15.32": o que o jogador digitou e normalizado, nunca recusado so por
+   falta de um zero a esquerda. null significa lixo. */
+function textToMs(str) {
+  var m = /^\s*(\d{1,3}):(\d{1,2})(?:[.,](\d{1,2}))?\s*$/.exec(str || "");
+  if (!m) return null;
+  var min = +m[1], sec = +m[2], frac = m[3] || "";
+  if (sec > 59) return null;
+  /* Dois digitos de centesimos; um unico vira dezena (".5" = 50). */
+  var cs = frac.length === 1 ? +frac * 10 : +frac;
+  return Math.max(0, Math.min(4294967295, min * 60000 + sec * 1000 + cs * 10));
+}
+
 function textToHours(str) {
-  var m = /^\s*(\d+):(\d{1,2})\s*$/.exec(str || "");
+  var m = /^\s*(\d{1,3}):(\d{1,2})\s*$/.exec(str || "");
   if (!m) return null;
   var h = +m[1], min = +m[2];
   if (min > 59) return null;
@@ -2407,6 +2409,13 @@ function drawCareer(q) {
     inp.addEventListener("input", function () {
       var ok = rec.stat ? careerWrite(rec, this.value) : rec.write(this.value);
       if (ok) mark();
+    });
+
+    /* Ao sair do campo o texto volta ao formato canonico: quem digitou
+       "3:15.32" ve "03:15.32". Enquanto digita nao mexo, pra o cursor nao
+       pular no meio da edicao. */
+    inp.addEventListener("blur", function () {
+      inp.value = rec.stat ? careerRead(rec) : rec.read();
     });
   });
 
