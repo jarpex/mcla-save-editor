@@ -12,11 +12,25 @@ function render() {
   el("secCount").textContent = secs.list.length + " " + t("nSections");
   var rows = "";
   secs.list.forEach(function (s) {
-    rows += "<tr>" +
-      "<td>" + s.name + "</td>" +
+    var notes = SECTION_NOTES[s.name] || [];
+    rows += "<tr class=\"sec-row\" data-sec=\"" + s.name + "\">" +
+      "<td>" + s.name + (notes.length ? '<span class="chev">&gt;</span>' : "") + "</td>" +
       "<td>0x" + s.data.toString(16).toUpperCase() + "</td>" +
       "<td>" + nf(s.size) + "</td>" +
       "</tr>";
+    if (notes.length) {
+      rows += "<tr class=\"sec-detail\" data-for=\"" + s.name + "\" hidden><td colspan=\"3\">" +
+        "<table class=\"offsets\">" +
+        notes.map(function (n) {
+          var at = n.sub ? (n.add || 0) : n.at;
+          var label = t(n.k);
+          if (n.sub && at) label += " \u00b7 +" + at;
+          if (n.back) label += " \u00b7 \u2212" + n.back + " stride";
+          return "<tr><td>0x" + at.toString(16).toUpperCase() + "</td>" +
+            "<td>" + n.size + "</td><td>" + label + "</td></tr>";
+        }).join("") +
+        "</table></td></tr>";
+    }
   });
   el("secBody").innerHTML = rows;
 

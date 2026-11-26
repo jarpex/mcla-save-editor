@@ -29,6 +29,34 @@ var OFF = {
   ttTargetCount: 4
 };
 
+/* ---------- Known offsets, per section ----------
+   Each entry is shown in the Hex Sections panel when the section is expanded.
+   `at` is relative to the section start; `k` is the i18n key with the text. */
+var SECTION_NOTES = {
+  Career: [
+    { at: 0x2D9, size: 4, k: "offMoney" },
+    { at: 0x2E1, size: 4, k: "offRep" },
+    { at: 0x2E5, size: 4, k: "offProgCount" },
+    { at: 0x2E9, size: 65, k: "offProgBase" },
+    { at: 0x727D, size: 4, k: "offTtTarget" }
+  ],
+  Stats: [
+    { at: 0x578, size: 4, k: "offTtRecord" },
+    { at: 0x6A8, size: 4, k: "offTtEventRec" }
+  ],
+  LocalOptions: [
+    { at: 0x53F, size: 1, k: "offCars" },
+    { at: 0x543, size: 4, k: "offCarsIdx" },
+    { at: 0x24FD, size: 8176, k: "offSlot0" },
+    { at: 0x24FD, size: 32, k: "offSlotName", sub: true },
+    { at: 0x24FD, size: 32, k: "offSlotLabel", sub: true, add: 32 },
+    { at: 0x24FD, size: 13, k: "offTuneLv", sub: true, add: 95 },
+    { at: 0x24FD, size: 1, k: "offTunePct", sub: true, add: 126 },
+    { at: 0x24FD, size: 12, k: "offAppear", sub: true, add: 446 },
+    { at: 0x24FD, size: 7, k: "offPlate", sub: true, add: 2186, back: 1 }
+  ]
+};
+
 var ROSTER = [
   "vp_am_vantage_07","vp_aud_r8_08","vp_aud_rs4_07","vp_buk_grandnational_87",
   "vp_chv_camaro_06","vp_chv_camaro_06_DUB","vp_chv_camaross_69","vp_chv_cobalt_05",

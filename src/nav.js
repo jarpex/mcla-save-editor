@@ -110,6 +110,17 @@ document.querySelectorAll("[data-set-lang]").forEach(function (opt) {
 
 document.addEventListener("click", function (e) {
   if (!e.target.closest("#langMenu")) closeLangMenu();
+
+  /* Hex Sections: clicar na linha da secao abre os offsets conhecidos. */
+  var row = e.target.closest(".sec-row");
+  if (row) {
+    var detail = el("secBody").querySelector('.sec-detail[data-for="' + row.dataset.sec + '"]');
+    if (!detail) return;
+    var open = detail.hasAttribute("hidden");
+    if (open) detail.removeAttribute("hidden");
+    else detail.setAttribute("hidden", "");
+    row.classList.toggle("open", open);
+  }
 });
 
 function pickLang() {

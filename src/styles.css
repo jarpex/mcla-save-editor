@@ -666,6 +666,55 @@ input::placeholder { color: var(--ink-faint); }
 .sections tbody tr:hover {
   background: linear-gradient(90deg, rgba(41, 197, 192, 0.16) 0%, transparent 80%);
 }
+
+/* Linha de secao clicavel: a seta gira e a linha acende. */
+.sec-row {
+  cursor: pointer;
+}
+.sec-row .chev {
+  display: inline-block;
+  margin-left: 6px;
+  color: var(--edge);
+  transition: transform 0.12s ease;
+  font-size: 10px;
+}
+.sec-row.open .chev {
+  transform: rotate(90deg);
+  color: var(--yellow);
+}
+.sec-row.open td {
+  color: var(--ink);
+}
+
+/* Detalhe: a tabela de offsets conhecidos da secao. */
+.sec-detail td {
+  padding: 0 0 8px;
+  border-bottom: 1px solid var(--row-line);
+}
+.offsets {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--data);
+  font-size: 11.5px;
+}
+.offsets td {
+  padding: 4px 6px;
+  border-bottom: 1px dotted var(--row-line);
+  color: var(--ink-dim);
+}
+.offsets td:first-child,
+.offsets td:nth-child(2) {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--cyan);
+  white-space: nowrap;
+}
+.offsets td:last-child {
+  padding-right: 4px;
+}
+.offsets tr:last-child td {
+  border-bottom: 0;
+}
 .sections tr:last-child td { border-bottom: 0; }
 .sections tr td:first-child {
   color: var(--cyan);

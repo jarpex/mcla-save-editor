@@ -410,6 +410,26 @@ assert.strictEqual(str(slot1 + OFF_LABEL, 6), "MEU R8", "o rotulo nao foi gravad
 assert.strictEqual(ctx.bytes[slot1 + OFF_LABEL + 6], 0, "faltou o terminador depois do rotulo");
 assert.strictEqual(ctx.bytes[slot1 + OFF_LABEL + 7], 0xCD, "o preenchimento do rotulo nao e 0xCD");
 
+// ---------- secoes hex: offsets conhecidos ----------
+
+assert.ok(ctx.SECTION_NOTES, "a tabela SECTION_NOTES nao carregou");
+var known = Object.keys(ctx.SECTION_NOTES);
+assert.strictEqual(known.length, 3, "so devia haver notas para 3 secoes");
+assert.ok(ctx.SECTION_NOTES.Career.length > 0, "Career sem notas");
+assert.ok(ctx.SECTION_NOTES.LocalOptions.length > 0, "LocalOptions sem notas");
+
+// todo `at` tem que ser um inteiro positivo e caber na secao
+Object.keys(ctx.SECTION_NOTES).forEach(function (name) {
+  var sec = ctx.sec(name);
+  assert.ok(sec, "a secao " + name + " nao existe no save");
+  ctx.SECTION_NOTES[name].forEach(function (n) {
+    assert.ok(Number.isInteger(n.at) && n.at >= 0, name + ": offset ruim " + n.at);
+    assert.ok(n.at < sec.size, name + ": offset fora da secao " + n.at);
+    assert.ok(typeof ctx.t(n.k) === "string" && ctx.t(n.k).length > 0,
+      "a traducao " + n.k + " nao existe");
+  });
+});
+
 // ---------- garagem: placa ----------
 // A placa ocupa 7 bytes exatos. O byte logo depois e de outra coisa e nao pode
 // ser tocado, entao marcamos com uma sentinela e conferimos que sobreviveu.
