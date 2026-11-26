@@ -2944,15 +2944,121 @@ var XRAY_BASE_CAR = `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="roun
       </svg>`;
 
 var XRAY_BASE_MOTO = `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
-    <g stroke="#4b5a63" stroke-width="1.4">
-      <circle cx="52" cy="70" r="22"/><circle cx="52" cy="70" r="14" stroke-dasharray="3 3"/>
-      <circle cx="206" cy="70" r="22"/><circle cx="206" cy="70" r="14" stroke-dasharray="3 3"/>
-      <path d="M52 70 L98 48 L152 44 L182 26 L195 26"/>
-      <path d="M180 26 L206 70"/>
-      <path d="M98 48 L124 72 L158 68 L174 44"/>
-      <path d="M72 44 L112 36 L146 34 L176 22 L192 34 L166 52"/>
-    </g>
-  </svg>`;
+        <!-- X-ray wireframe mesh (tank, tail & fairing) -->
+        <g stroke="#4b5a63" stroke-width="0.6" stroke-opacity="0.22">
+          <!-- Tank mesh -->
+          <path d="M121.9 23.1 Q143.6 21.3 167.5 24.8"></path>
+          <path d="M118.5 28.8 Q143.6 27 169.8 29.9"></path>
+          <path d="M127.6 19.1 Q125.3 27.6 127 35"></path>
+          <path d="M139 17.3 Q137.3 27 139 34.4"></path>
+          <path d="M150.4 17.6 Q149.3 26.5 150.4 33.3"></path>
+          <path d="M160.7 19.6 Q159.5 26.5 160.1 31.6"></path>
+          <!-- Tail mesh -->
+          <path d="M52.4 29.3 Q68.3 27.6 85.4 29.3"></path>
+          <path d="M54.6 33.9 Q72.9 32.7 115.1 36.7"></path>
+          <path d="M61.5 24.2 L60.3 35.6"></path>
+          <path d="M72.9 24.2 L71.7 38.4"></path>
+          <path d="M84.3 25.3 L83.1 40.1"></path>
+          <path d="M96.8 34.4 L95.7 41.9"></path>
+          <path d="M107.1 33.9 L105.9 42.4"></path>
+          <!-- Fairing mesh -->
+          <path d="M172.1 26.5 Q191.4 29.3 208.5 35.6"></path>
+          <path d="M170.9 33.3 Q190.3 36.1 210.8 41.3"></path>
+          <path d="M169.8 40.1 Q186.9 42.4 202.8 45.8"></path>
+          <path d="M180 21.9 L175.5 56.1"></path>
+          <path d="M190.3 23 L185.7 49.3"></path>
+          <path d="M199.4 26.5 L196 47"></path>
+        </g>
+
+        <!-- Sculpted sportbike silhouette, windscreen, mirror & wheels -->
+        <g stroke="#4b5a63" stroke-width="1.25" stroke-opacity="0.75">
+          <!-- Tail cowl & stepped seat -->
+          <path d="M50.1 24.8 Q66 23.1 83.7 24.8 Q88.3 31 94 33.9 Q105.9 35 117.3 32.2 L115.1 43.6 L74 39.6 L54.1 33.9 Z"></path>
+          <path d="M54.1 33.9 L51.8 39.6 L58.6 41.3 L62.1 36.1" stroke-opacity="0.55"></path>
+
+          <!-- Fuel tank -->
+          <path d="M117.3 32.2 C119.6 19.6 133.3 16.8 147 17.3 C158.4 17.9 166.4 21.3 170.9 25.9 L168.6 29.3 Q144.7 34.4 118.5 36.1 Z"></path>
+
+          <!-- Windscreen & mirror -->
+          <path d="M172.1 20.8 L178.3 7.7 Q190.3 13.4 198.9 22.5 L185.7 21.3 Z" stroke-opacity="0.65"></path>
+          <path d="M189.7 17.9 L193.7 9.9 L193.2 3.1 Q197.7 2 201.1 5.9 L202.8 9.9 L195.4 10.3 L191.7 18.7"></path>
+
+          <!-- Clip-on handlebar -->
+          <path d="M168.6 22.5 L160.1 27 L161.2 28.8 L170.4 24.2" stroke-opacity="0.65"></path>
+
+          <!-- Nose cowl, headlight & full side fairing / belly pan -->
+          <path d="M170.9 25.9 L172.1 20.8 L198.9 22.5 Q208.5 28.2 212.5 37.3 Q211.4 43 204 45.3 L186.9 48.7 L178.3 57.8 L172.6 78.3 Q170.9 84 164.1 84.6 L118.5 84.6 Q111.6 84 109.9 77.8 L115.6 58.4 L127.6 44.1 L168.6 33.9 Z"></path>
+          <path d="M200.6 33.9 Q208 35 210.3 39.6 Q205.1 41.9 199.4 39.6 Z" stroke-opacity="0.55"></path>
+          <path d="M129.9 47 L165.2 39 L162.9 55 L153.8 57.2 L153.8 73.2 L121.9 73.2 L123 57.2 Z" stroke-width="0.9" stroke-opacity="0.4"></path>
+
+          <!-- Front fender -->
+          <path d="M173.8 60.1 Q183.5 49.8 197.1 50.4 Q209.1 51 216 60.1 Q206.3 56.7 194.3 56.7 Q182.3 56.7 173.8 60.1 Z" fill="rgba(75,90,99,0.12)"></path>
+
+          <!-- Rear wheel -->
+          <circle cx="80.9" cy="74.3" r="23.4"></circle>
+          <circle cx="80.9" cy="74.3" r="17.3" stroke-opacity="0.55"></circle>
+          <circle cx="80.9" cy="74.3" r="15.7" stroke-opacity="0.35"></circle>
+          <circle cx="80.9" cy="74.3" r="4.1"></circle>
+          <line x1="80.9" y1="70.2" x2="80.9" y2="58.6" stroke-opacity="0.6"></line>
+          <line x1="84.4" y1="72.3" x2="94.5" y2="66.5" stroke-opacity="0.6"></line>
+          <line x1="84.4" y1="76.3" x2="94.5" y2="82.1" stroke-opacity="0.6"></line>
+          <line x1="80.9" y1="78.4" x2="80.9" y2="90" stroke-opacity="0.6"></line>
+          <line x1="77.4" y1="76.3" x2="67.3" y2="82.1" stroke-opacity="0.6"></line>
+          <line x1="77.4" y1="72.3" x2="67.3" y2="66.5" stroke-opacity="0.6"></line>
+
+          <!-- Front wheel -->
+          <circle cx="194.9" cy="74.9" r="22.8"></circle>
+          <circle cx="194.9" cy="74.9" r="16.9" stroke-opacity="0.55"></circle>
+          <circle cx="194.9" cy="74.9" r="15.3" stroke-opacity="0.35"></circle>
+          <circle cx="194.9" cy="74.9" r="3.9"></circle>
+          <line x1="194.9" y1="71" x2="194.9" y2="59.6" stroke-opacity="0.6"></line>
+          <line x1="198.3" y1="73" x2="208.1" y2="67.3" stroke-opacity="0.6"></line>
+          <line x1="198.3" y1="76.8" x2="208.1" y2="82.5" stroke-opacity="0.6"></line>
+          <line x1="194.9" y1="78.8" x2="194.9" y2="90.2" stroke-opacity="0.6"></line>
+          <line x1="191.5" y1="76.8" x2="181.7" y2="82.5" stroke-opacity="0.6"></line>
+          <line x1="191.5" y1="73" x2="181.7" y2="67.3" stroke-opacity="0.6"></line>
+        </g>
+
+        <!-- Ghosted twin-spar frame, USD forks, swingarm, engine & brakes -->
+        <g stroke="#4b5a63" stroke-width="1" stroke-opacity="0.38">
+          <!-- Front USD forks & triple clamps -->
+          <line x1="169.2" y1="21.3" x2="193.5" y2="74.9" stroke-width="1.65"></line>
+          <line x1="172.3" y1="20.2" x2="196.2" y2="74.1" stroke-width="1.25" stroke-opacity="0.6"></line>
+          <line x1="167.5" y1="23.1" x2="174.3" y2="21.3" stroke-width="1.5"></line>
+          <line x1="172.6" y1="33.9" x2="179.5" y2="32.2" stroke-width="1.5"></line>
+
+          <!-- Twin-spar perimeter frame & subframe -->
+          <path d="M173.2 29.9 L127.6 42.4 L115.1 43.6 L111.6 67.5 L117.3 68.1 L120.8 48.7 L169.8 36.1 Z" fill="rgba(75,90,99,0.14)"></path>
+          <path d="M115.1 43.6 L59.2 30.5 M113.9 55 L75.2 39.6 M93.4 34.4 L90 42.4"></path>
+
+          <!-- Rear monoshock & reservoir -->
+          <line x1="112.8" y1="47.6" x2="101.4" y2="66.4" stroke-width="2"></line>
+          <rect x="86.6" y="44.7" width="10.8" height="4.3" rx="2" transform="rotate(22 86.6 44.7)" fill="rgba(75,90,99,0.16)"></rect>
+
+          <!-- Braced rear swingarm & chain -->
+          <path d="M112.8 62.4 L80.9 72.6 L80.9 76.1 L113.9 68.1 Z" fill="rgba(75,90,99,0.16)"></path>
+          <path d="M112.8 62.4 L96.8 57.8 L83.1 72.1"></path>
+          <line x1="115.1" y1="66.9" x2="80.9" y2="70.7" stroke-width="0.75" stroke-opacity="0.45"></line>
+          <line x1="115.1" y1="70.4" x2="80.9" y2="78" stroke-width="0.75" stroke-opacity="0.45"></line>
+
+          <!-- Radiator -->
+          <path d="M173.8 38.4 L177.8 39.6 L172.1 63.5 L168.1 62.4 Z" fill="rgba(75,90,99,0.14)"></path>
+
+          <!-- Inclined inline-4 engine block & crankcase -->
+          <path d="M143.6 37.3 L158.4 35 L166.4 42.4 L156.1 56.1 L139 53.3 Z" fill="rgba(75,90,99,0.16)"></path>
+          <line x1="141.9" y1="41.9" x2="162.9" y2="45.3"></line>
+          <line x1="140.7" y1="47" x2="160.1" y2="50.2"></line>
+          <path d="M121.9 53.3 L157.2 55.5 L160.7 68.6 L153.8 75.5 L125.3 75.5 L120.8 67.5 Z" fill="rgba(75,90,99,0.16)"></path>
+          <circle cx="134.4" cy="65.8" r="7.4" fill="rgba(75,90,99,0.15)"></circle>
+          <circle cx="149.8" cy="65.8" r="5.5"></circle>
+
+          <!-- Brake rotors & front caliper -->
+          <circle cx="80.9" cy="74.3" r="11.6" stroke-opacity="0.45"></circle>
+          <circle cx="194.9" cy="74.9" r="13" stroke-opacity="0.5"></circle>
+          <circle cx="194.9" cy="74.9" r="8.4" stroke-opacity="0.3"></circle>
+          <path d="M181.8 66.9 L185.7 65.8 L187.5 76.1 L182.9 77.2 Z" fill="rgba(75,90,99,0.18)"></path>
+        </g>
+      </svg>`;
 
 var SCHEMATICS = {
   0: {
@@ -3774,13 +3880,68 @@ var SCHEMATICS = {
 
 };
 
+
+/* Motorcycle schematics, keyed by TUNE_CATS index like the car ones but
+   kept apart: a bike has six categories and its own base drawing. */
+var MOTO_SCHEMATICS = {
+  0: {
+    active: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <defs>
+          <filter id="motoExhaustGlow" x="-20%" y="-25%" width="140%" height="150%">
+            <feGaussianBlur stdDeviation="1.5" result="blur"></feGaussianBlur>
+            <feMerge>
+              <feMergeNode in="blur"></feMergeNode>
+              <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+          </filter>
+          <linearGradient id="motoMufflerGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#5ce6e1" stop-opacity="0.48"></stop>
+            <stop offset="50%" stop-color="#29c5c0" stop-opacity="0.2"></stop>
+            <stop offset="100%" stop-color="#5ce6e1" stop-opacity="0.48"></stop>
+          </linearGradient>
+        </defs>
+
+        <g filter="url(#motoExhaustGlow)">
+          <!-- Far-side secondary muffler peeking above primary canister -->
+          <g stroke="#5ce6e1" stroke-width="1.15" stroke-opacity="0.65">
+            <path d="M94.5 62.9 L88.3 60.4 L63.8 50.6 Q61.3 49.8 60.5 51.9 Q59.8 53.9 62.2 55 L86.6 64.7 Z" fill="url(#motoMufflerGrad)"></path>
+          </g>
+
+          <!-- Outer soft glow for headers, collector & primary muffler -->
+          <g stroke="#29c5c0" stroke-width="3.1" stroke-opacity="0.35">
+            <path d="M158.4 49.3 C164.7 50.4 166.9 57.2 166.9 68.6 C166.9 77.2 165.2 80.6 159.5 81.2 L118.5 81.8"></path>
+            <path d="M161.2 51.5 C168.1 52.7 170.4 59.5 170.4 70.9 C170.4 79.5 168.1 83.5 161.2 84 L117.3 84.6 L90 66.9"></path>
+            <path d="M90 66.9 L85.4 60.9 L47.2 46.1 Q42.8 46.5 42.3 49 Q41.9 51.8 44.2 53.9 L82.3 68.8 Z"></path>
+          </g>
+
+          <!-- Inner bright core: twin downpipes, collector & angled slip-on canister -->
+          <g stroke="#5ce6e1" stroke-width="1.35">
+            <!-- Inner header pipe -->
+            <path d="M158.4 49.3 C164.7 50.4 166.9 57.2 166.9 68.6 C166.9 77.2 165.2 80.6 159.5 81.2 L118.5 81.8"></path>
+            <!-- Outer header pipe & mid-pipe collector -->
+            <path d="M161.2 51.5 C168.1 52.7 170.4 59.5 170.4 70.9 C170.4 79.5 168.1 83.5 161.2 84 L117.3 84.6 L90 66.9"></path>
+            <!-- Collector clamp -->
+            <line x1="117.9" y1="80.7" x2="117.1" y2="85.5" stroke-width="1.2" stroke-opacity="0.75"></line>
+
+            <!-- Primary angled muffler canister -->
+            <path d="M90 66.9 L85.4 60.9 L47.2 46.1 Q42.8 46.5 42.3 49 Q41.9 51.8 44.2 53.9 L82.3 68.8 Z" fill="url(#motoMufflerGrad)"></path>
+            <!-- End-cap seam & mounting band -->
+            <line x1="48" y1="46.5" x2="45.1" y2="54.2" stroke-width="0.9" stroke-opacity="0.65"></line>
+            <line x1="67" y1="53.8" x2="64" y2="61.6" stroke-width="0.95" stroke-opacity="0.65"></line>
+            <line x1="84.7" y1="61.2" x2="81.9" y2="68.5" stroke-width="0.9" stroke-opacity="0.6"></line>
+          </g>
+        </g>
+      </svg>`
+  }
+};
+
 /* The base layer for a vehicle: the detailed car body, or the bike frame. */
 function xrayBase(moto) { return moto ? XRAY_BASE_MOTO : XRAY_BASE_CAR; }
 
 /* The dynamic layer for one category, or a generic highlight when the
    category has no drawing of its own yet. */
 function xrayActive(catIdx, moto, engineGlow, suspGlow) {
-  var s = SCHEMATICS[catIdx];
+  var s = (moto ? MOTO_SCHEMATICS[catIdx] : SCHEMATICS[catIdx]);
   if (s && s.active) return s.active;
   var eColor = engineGlow ? "#5ce6e1" : "#3b565e";
   var sColor = suspGlow ? "#29c5c0" : "#2f434a";
@@ -3818,7 +3979,7 @@ function xrayActive(catIdx, moto, engineGlow, suspGlow) {
    the blinking highlight. Only the last layer carries .xray-active, so the
    greyed-out parts of the exhaust stay lit while the headers pulse. */
 function paintXray(catIdx, moto, engineGlow, suspGlow) {
-  var s = SCHEMATICS[catIdx];
+  var s = (moto ? MOTO_SCHEMATICS[catIdx] : SCHEMATICS[catIdx]);
   var html = xrayBase(moto).replace("<svg ", '<svg class="xray-layer xray-base" ');
   if (s && s.ghost) {
     html += s.ghost.replace("<svg ", '<svg class="xray-layer xray-ghost" ');
