@@ -29,7 +29,7 @@ var OFF = {
 var ROSTER = [
   "vp_am_vantage_07","vp_aud_r8_08","vp_aud_rs4_07","vp_buk_grandnational_87",
   "vp_chv_camaro_06","vp_chv_camaro_06_DUB","vp_chv_camaross_69","vp_chv_cobalt_05",
-  "vp_chv_corvettez06_07","vp_chv_impala_96","vp_chv_plc_96","vp_citybus_07",
+  "vp_chv_corvettez06_07","vp_chv_impala_96","vp_chv_police_96","vp_citybus_07",
   "vp_cry_300c_06","vp_dge_challenger_06","vp_dge_challenger_06_DUB",
   "vp_dge_challenger_70","vp_dge_charger_06","vp_dsn_280z_75","vp_duc_999r_06",
   "vp_duc_monster_s4r_07","vp_frd_boss302_69","vp_frd_cobra_04","vp_frd_focus_04",
