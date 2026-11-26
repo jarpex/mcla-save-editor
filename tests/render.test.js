@@ -83,6 +83,13 @@ function buildSave() {
     dv.setUint32(r + 12, 7 + n);
   });
 
+  /* khTC: horas de jogo, float. A tela mostra h:mm e aceita h:mm de volta,
+     entao o teste precisa de uma linha que exista de verdade. */
+  var hr = st + 2 * 16;
+  "khTC".split("").forEach(function (c, i) { b[hr + i] = c.charCodeAt(0); });
+  b[hr + 8] = 0x00;                        // float
+  dv.setUint32(hr + 12, 0x3FE00000);       // 1.75 horas = 1:45
+
   return { buf: buf, at: at };
 }
 
@@ -494,6 +501,36 @@ assert.strictEqual(ctx.view.getUint32(statsAt + 0x6A8), 255320,
   "o campo de recorde nao gravou em Stats+0x6A8");
 assert.strictEqual(ctx.view.getUint32(careerAt + 0x727D), 128540,
   "mudar so o recorde mexeu no alvo da missao");
+
+// ---------- horas de jogo (h:mm) ----------
+// khTC guarda horas fracionarias; a tela mostra h:mm e aceita h:mm de volta.
+
+assert.strictEqual(ctx.hoursToText(1.9862), "1:59", "1.9862 horas nao virou 1:59");
+assert.strictEqual(ctx.hoursToText(2.5), "2:30", "2.5 horas nao virou 2:30");
+assert.strictEqual(ctx.textToHours("2:30"), 2.5, "2:30 nao virou 2.5 horas");
+assert.strictEqual(ctx.textToHours("2:5"), 2 + 5 / 60, "2:5 nao virou 2:05");
+assert.strictEqual(ctx.textToHours("2:99"), null, "minuto 99 foi aceito");
+assert.strictEqual(ctx.textToHours("abc"), null, "texto foi aceito como horas");
+
+// o campo existe, le o valor do save e grava de volta
+var hoursInput = dom.doc.getElementById("careerHours");
+assert.ok(hoursInput, "o campo de horas nao foi montado");
+assert.ok(hoursInput._on.input, "o campo de horas nao foi ligado");
+assert.ok(hoursInput._on.blur, "o campo de horas nao normaliza ao sair");
+
+hoursInput.value = "2:5";
+hoursInput._on.input.call(hoursInput);
+hoursInput._on.blur.call(hoursInput);
+assert.strictEqual(hoursInput.value, "2:05",
+  "sair do campo nao normalizou 2:5 em 2:05");
+
+// lixo nao grava: o valor do save continua o mesmo
+var hoursAt = ctx.statValueAt("khTC");
+var hoursBefore = ctx.view.getFloat32(hoursAt);
+hoursInput.value = "abc";
+hoursInput._on.input.call(hoursInput);
+assert.strictEqual(ctx.view.getFloat32(hoursAt), hoursBefore,
+  "texto invalido mudou as horas no save");
 
 // ---------- o arquivo tem que sobreviver a tudo isso ----------
 
