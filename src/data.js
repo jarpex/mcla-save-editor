@@ -45,7 +45,10 @@ var ROSTER = [
   "vp_se_chv_plc_96",
   "vpd_am_db9_08","vpd_aud_s5_08","vpd_cad_xlrv_08","vpd_duc_1098_07",
   "vpd_mbz_clk63amg_08","vpd_mbz_cl65amg_08","vpd_mit_eclipse_09",
-  "vpd_mit_evox_08"
+  "vpd_mit_evox_08",
+  "vpd_lr_hse_08","vpd_lr_sport_08",
+  "vp_se_dge_chp_06","vp_se_dge_plc_06","vp_se_dge_ubp_06",
+  "vp_se_chv_chp_96"
 ];
 
 var CAR_TITLES = {
@@ -111,7 +114,13 @@ var CAR_TITLES = {
   vpd_mbz_clk63amg_08: "2008 Mercedes-Benz CLK 63 AMG Black",
   vpd_mbz_cl65amg_08: "2008 Mercedes-Benz CL 65 AMG",
   vpd_mit_eclipse_09: "2009 Mitsubishi Eclipse Spyder GT",
-  vpd_mit_evox_08: "2008 Mitsubishi Lancer Evolution X"
+  vpd_mit_evox_08: "2008 Mitsubishi Lancer Evolution X",
+  vpd_lr_hse_08: "2008 Land Rover Range Rover Supercharged",
+  vpd_lr_sport_08: "2008 Land Rover Range Rover Sport Supercharged",
+  vp_se_dge_chp_06: "2006 Dodge Charger SRT-8 Police CHP",
+  vp_se_dge_plc_06: "2006 Dodge Charger SRT-8 Police",
+  vp_se_dge_ubp_06: "2006 Dodge Charger SRT-8 Police Border Patrol",
+  vp_se_chv_chp_96: "1996 Chevrolet Impala SS Police CHP"
 };
 
 /* Заготовки стоковых (stock) и максимальных (max) характеристик для полосок
@@ -186,6 +195,12 @@ var VEHICLE_PERF_STATS = {
   vpd_mbz_cl65amg_08: { accel: [37, 47], speed: [61, 81], hand: [33, 49] },
   vpd_mit_eclipse_09: { accel: [25, 40], speed: [48, 66], hand: [35, 66] },
   vpd_mit_evox_08: { accel: [27, 42], speed: [54, 81], hand: [52, 68] },
+  vpd_lr_hse_08: { accel: [23, 34], speed: [38, 60], hand: [30, 43] },
+  vpd_lr_sport_08: { accel: [19, 30], speed: [35, 57], hand: [30, 45] },
+  vp_se_dge_chp_06: { accel: [45, 57], speed: [75, 75], hand: [57, 57] },
+  vp_se_dge_plc_06: { accel: [31, 43], speed: [53, 75], hand: [37, 57] },
+  vp_se_dge_ubp_06: { accel: [39, 47], speed: [65, 77], hand: [49, 59] },
+  vp_se_chv_chp_96: { accel: [33, 33], speed: [57, 57], hand: [76, 76] },
 };
 
 
