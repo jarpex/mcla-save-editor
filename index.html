@@ -2913,43 +2913,117 @@ function buildWireframeSvg(moto, engineGlow, suspGlow) {
 
 /* ---------- Performance Shop: per-category X-ray schematics ----------
    Keyed by TUNE_CATS index. A category with no entry keeps the generic
-   wireframe, so the shop still renders while the set is being filled in.
-   `tag` is what the little label above the drawing shows. */
+   wireframe, so the shop still renders while the set is being filled in. */
 
 var SCHEMATICS = {
   0: {
-    tag: "EXHAUST SYSTEM",
     svg: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
-    <g stroke="#4b5a63" stroke-width="1.3">
-      <path d="M24 34 Q24 22 44 20 L212 20 Q236 22 238 36 L238 64 Q236 78 212 80 L44 80 Q24 78 24 66 Z"></path>
-      <path d="M78 24 L164 24 L182 32 L182 68 L164 76 L78 76 L62 66 L62 34 Z" stroke-opacity="0.65"></path>
-      <rect x="44" y="13" width="34" height="8" rx="2"></rect>
-      <rect x="44" y="79" width="34" height="8" rx="2"></rect>
-      <rect x="178" y="13" width="34" height="8" rx="2"></rect>
-      <rect x="178" y="79" width="34" height="8" rx="2"></rect>
-    </g>
-    <g stroke="#4b5a63" stroke-width="1.2" stroke-opacity="0.45">
-      <line x1="61" y1="21" x2="61" y2="79"></line>
-      <line x1="195" y1="21" x2="195" y2="79"></line>
-      <line x1="61" y1="50" x2="180" y2="50"></line>
-      <rect x="180" y="38" width="28" height="24" rx="3"></rect>
-    </g>
-    <g stroke="#5ce6e1" stroke-width="1.8">
-      <path d="M204 41 L204 31 Q204 27 199 27 L191 27 Q187 27 184 31 L177 38"></path>
-      <rect x="155" y="34" width="22" height="8" rx="2" fill="rgba(41,197,192,0.16)"></rect>
-      <path d="M155 38 L145 27 L72 27 L67 24 L55 24 L50 27"></path>
-      <rect x="33" y="24.5" width="17" height="5" rx="1.5" fill="rgba(41,197,192,0.16)"></rect>
-      <line x1="33" y1="27" x2="25" y2="27"></line>
-      <path d="M204 59 L204 69 Q204 73 199 73 L191 73 Q187 73 184 69 L177 62"></path>
-      <rect x="155" y="58" width="22" height="8" rx="2" fill="rgba(41,197,192,0.16)"></rect>
-      <path d="M155 62 L145 73 L72 73 L67 76 L55 76 L50 73"></path>
-      <rect x="33" y="70.5" width="17" height="5" rx="1.5" fill="rgba(41,197,192,0.16)"></rect>
-      <line x1="33" y1="73" x2="25" y2="73"></line>
-    </g>
-  </svg>`
+        <defs>
+          <filter id="exhaustGlow" x="-15%" y="-25%" width="130%" height="150%">
+            <feGaussianBlur stdDeviation="1.4" result="blur"></feGaussianBlur>
+            <feMerge>
+              <feMergeNode in="blur"></feMergeNode>
+              <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+          </filter>
+          <linearGradient id="mufflerGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#5ce6e1" stop-opacity="0.38"></stop>
+            <stop offset="50%" stop-color="#29c5c0" stop-opacity="0.16"></stop>
+            <stop offset="100%" stop-color="#5ce6e1" stop-opacity="0.38"></stop>
+          </linearGradient>
+        </defs>
+
+        <!-- X-ray wireframe mesh -->
+        <g stroke="#4b5a63" stroke-width="0.6" stroke-opacity="0.18">
+          <line x1="76" y1="21" x2="76" y2="79"></line>
+          <line x1="94" y1="21" x2="94" y2="79"></line>
+          <line x1="112" y1="21" x2="112" y2="79"></line>
+          <line x1="130" y1="21" x2="130" y2="79"></line>
+          <line x1="148" y1="21" x2="148" y2="79"></line>
+          <line x1="166" y1="22" x2="166" y2="78"></line>
+          <line x1="42" y1="33" x2="178" y2="33"></line>
+          <line x1="42" y1="42" x2="178" y2="42"></line>
+          <line x1="42" y1="58" x2="178" y2="58"></line>
+          <line x1="42" y1="67" x2="178" y2="67"></line>
+        </g>
+
+        <!-- Sculpted body silhouette, glasshouse and wheels -->
+        <g stroke="#4b5a63" stroke-width="1.2" stroke-opacity="0.75">
+          <path d="M18 32 Q22 20 42 18 Q62 16 82 18 L170 18 Q195 16 216 19 Q238 23 243 38 L243 62 Q238 77 216 81 Q195 84 170 82 L82 82 Q62 84 42 82 Q22 80 18 68 Z"></path>
+          <path d="M18 35 L15 35 L15 65 L18 65" stroke-opacity="0.45"></path>
+          <path d="M168 18 L164 11 L169 11 L173 18"></path>
+          <path d="M168 82 L164 89 L169 89 L173 82"></path>
+          <path d="M44 27 Q62 24 80 25 L154 25 Q170 26 178 32 L178 68 Q170 74 154 75 L80 75 Q62 76 44 73 Q40 50 44 27 Z" stroke-opacity="0.45"></path>
+          <path d="M64 25 Q60 50 64 75" stroke-opacity="0.35"></path>
+          <path d="M152 25 Q158 50 152 75" stroke-opacity="0.35"></path>
+          <path d="M178 33 Q208 32 232 37" stroke-opacity="0.3"></path>
+          <path d="M178 67 Q208 68 232 63" stroke-opacity="0.3"></path>
+
+          <rect x="44" y="13" width="36" height="9" rx="3"></rect>
+          <rect x="49" y="15.5" width="26" height="4" rx="1.5" stroke-opacity="0.4"></rect>
+          <rect x="44" y="78" width="36" height="9" rx="3"></rect>
+          <rect x="49" y="80.5" width="26" height="4" rx="1.5" stroke-opacity="0.4"></rect>
+
+          <rect x="176" y="13" width="36" height="9" rx="3"></rect>
+          <rect x="181" y="15.5" width="26" height="4" rx="1.5" stroke-opacity="0.4"></rect>
+          <rect x="176" y="78" width="36" height="9" rx="3"></rect>
+          <rect x="181" y="80.5" width="26" height="4" rx="1.5" stroke-opacity="0.4"></rect>
+        </g>
+
+        <!-- Ghosted drivetrain, suspension and fuel tank -->
+        <g stroke="#4b5a63" stroke-width="1" stroke-opacity="0.35">
+          <line x1="62" y1="22" x2="62" y2="78"></line>
+          <line x1="56" y1="25" x2="56" y2="75" stroke-opacity="0.22"></line>
+          <path d="M62 42 L51 24 M62 58 L51 76"></path>
+          <path d="M72 45 L62 42 L56 44 L56 56 L62 58 L72 55 Z" fill="rgba(75,90,99,0.12)"></path>
+          <line x1="72" y1="50" x2="154" y2="50" stroke-width="1.8"></line>
+          <path d="M186 40 L172 43 L154 45 L154 55 L172 57 L186 60 Z" fill="rgba(75,90,99,0.12)"></path>
+          <rect x="186" y="37" width="30" height="26" rx="3" fill="rgba(75,90,99,0.14)"></rect>
+          <rect x="190" y="39.5" width="22" height="5" rx="1.5"></rect>
+          <rect x="190" y="55.5" width="22" height="5" rx="1.5"></rect>
+          <line x1="194" y1="22" x2="194" y2="78"></line>
+          <path d="M190 37 L184 23 M190 63 L184 77"></path>
+          <rect x="226" y="37" width="3.5" height="26" rx="1"></rect>
+          <circle cx="221" cy="50" r="5.5" stroke-opacity="0.28"></circle>
+          <rect x="28" y="38" width="13" height="21" rx="3" fill="rgba(75,90,99,0.1)"></rect>
+          <line x1="34.5" y1="59" x2="34.5" y2="74"></line>
+        </g>
+
+        <!-- Exhaust system (volumetric outer tube + core + resonators + rear mufflers) -->
+        <g filter="url(#exhaustGlow)">
+          <!-- Outer soft tube walls -->
+          <g stroke="#29c5c0" stroke-width="2.8" stroke-opacity="0.35">
+            <path d="M206 39 C209 39 209 36 209 31 C209 25 205 23.5 198 23.5 C190 23.5 184 26.5 178 32 C174 35 171 36 167 36"></path>
+            <path d="M148 36 C143 36 141 33 138 29 C135 25.5 132 24.5 126 24.5 L78 24.5 C72 24.5 70 22 64 22 L56 22 C51 22 49 24.5 44 24.5"></path>
+            <line x1="29" y1="24.5" x2="20" y2="24.5"></line>
+
+            <path d="M206 61 C209 61 209 64 209 69 C209 75 205 76.5 198 76.5 C190 76.5 184 73.5 178 68 C174 65 171 64 167 64"></path>
+            <path d="M148 64 C143 64 141 67 138 71 C135 74.5 132 75.5 126 75.5 L78 75.5 C72 75.5 70 78 64 78 L56 78 C51 78 49 75.5 44 75.5"></path>
+            <line x1="29" y1="75.5" x2="20" y2="75.5"></line>
+          </g>
+
+          <!-- Inner bright core & chambers -->
+          <g stroke="#5ce6e1" stroke-width="1.35">
+            <path d="M206 39 C209 39 209 36 209 31 C209 25 205 23.5 198 23.5 C190 23.5 184 26.5 178 32 C174 35 171 36 167 36"></path>
+            <rect x="148" y="32.5" width="19" height="7" rx="1.6" fill="url(#mufflerGrad)"></rect>
+            <line x1="150.5" y1="33.2" x2="150.5" y2="38.8" stroke-width="0.9" stroke-opacity="0.6"></line>
+            <line x1="164.5" y1="33.2" x2="164.5" y2="38.8" stroke-width="0.9" stroke-opacity="0.6"></line>
+            <path d="M148 36 C143 36 141 33 138 29 C135 25.5 132 24.5 126 24.5 L78 24.5 C72 24.5 70 22 64 22 L56 22 C51 22 49 24.5 44 24.5"></path>
+            <path d="M44 23.3 L42 22.5 L31 22.5 L29 23.6 L29 25.4 L31 26.5 L42 26.5 L44 25.7 Z" fill="url(#mufflerGrad)"></path>
+            <line x1="29" y1="24.5" x2="20" y2="24.5"></line>
+
+            <path d="M206 61 C209 61 209 64 209 69 C209 75 205 76.5 198 76.5 C190 76.5 184 73.5 178 68 C174 65 171 64 167 64"></path>
+            <rect x="148" y="60.5" width="19" height="7" rx="1.6" fill="url(#mufflerGrad)"></rect>
+            <line x1="150.5" y1="61.2" x2="150.5" y2="66.8" stroke-width="0.9" stroke-opacity="0.6"></line>
+            <line x1="164.5" y1="61.2" x2="164.5" y2="66.8" stroke-width="0.9" stroke-opacity="0.6"></line>
+            <path d="M148 64 C143 64 141 67 138 71 C135 74.5 132 75.5 126 75.5 L78 75.5 C72 75.5 70 78 64 78 L56 78 C51 78 49 75.5 44 75.5"></path>
+            <path d="M44 74.3 L42 73.5 L31 73.5 L29 74.6 L29 76.4 L31 77.5 L42 77.5 L44 76.7 Z" fill="url(#mufflerGrad)"></path>
+            <line x1="29" y1="75.5" x2="20" y2="75.5"></line>
+          </g>
+        </g>
+      </svg>`
   },
   1: {
-    tag: "HEADERS",
     svg: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
     <g stroke="#4b5a63" stroke-width="1.3">
       <path d="M24 34 Q24 22 44 20 L212 20 Q236 22 238 36 L238 64 Q236 78 212 80 L44 80 Q24 78 24 66 Z"></path>
@@ -3067,7 +3141,7 @@ function renderShopTelemetry() {
   });
 
   /* X-ray: the active category's own drawing when it has one, otherwise the
-     generic wireframe. The tag follows the same choice. */
+     generic wireframe. */
   var activeCat = SHOP_STATE.cats[SHOP_STATE.activeRow];
   var sch = activeCat ? schematicFor(activeCat.idx) : null;
   el("shopSchematic").innerHTML = sch
