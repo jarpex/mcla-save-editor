@@ -1022,6 +1022,11 @@ input::placeholder { color: var(--ink-faint); }
   animation: xrayBlink 2s ease-in-out infinite;
 }
 
+/* Parts that are not being edited stay visible but out of the way. */
+.xray-dim {
+  opacity: 0.22;
+}
+
 @keyframes xrayBlink {
   0%, 100% { opacity: 0.8; }
   50%      { opacity: 0.2; }
@@ -3061,8 +3066,7 @@ var XRAY_BASE_MOTO = `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="rou
       </svg>`;
 
 var SCHEMATICS = {
-  0: {
-    active: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  0: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
         <defs>
           <filter id="exhaustGlow" x="-15%" y="-25%" width="130%" height="150%">
             <feGaussianBlur stdDeviation="1.4" result="blur"></feGaussianBlur>
@@ -3109,26 +3113,8 @@ var SCHEMATICS = {
             <line x1="29" y1="75.5" x2="20" y2="75.5"></line>
           </g>
         </g>
-      </svg>`
-  },
-  1: {
-    ghost: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
-      <g stroke="#4b5a63" stroke-width="1.1" stroke-opacity="0.3">
-      <g stroke="#4b5a63" stroke-width="1.1" stroke-opacity="0.3">
-        <path d="M198 23.5 C190 23.5 184 26.5 178 32 C174 35 171 36 167 36"></path>
-        <rect x="148" y="32.5" width="19" height="7" rx="1.6" fill="rgba(75,90,99,0.1)"></rect>
-        <path d="M148 36 C143 36 141 33 138 29 C135 25.5 132 24.5 126 24.5 L78 24.5 C72 24.5 70 22 64 22 L56 22 C51 22 49 24.5 44 24.5"></path>
-        <path d="M44 23.3 L42 22.5 L31 22.5 L29 23.6 L29 25.4 L31 26.5 L42 26.5 L44 25.7 Z" fill="rgba(75,90,99,0.1)"></path>
-        <line x1="29" y1="24.5" x2="20" y2="24.5"></line>
-
-        <path d="M198 76.5 C190 76.5 184 73.5 178 68 C174 65 171 64 167 64"></path>
-        <rect x="148" y="60.5" width="19" height="7" rx="1.6" fill="rgba(75,90,99,0.1)"></rect>
-        <path d="M148 64 C143 64 141 67 138 71 C135 74.5 132 75.5 126 75.5 L78 75.5 C72 75.5 70 78 64 78 L56 78 C51 78 49 75.5 44 75.5"></path>
-        <path d="M44 74.3 L42 73.5 L31 73.5 L29 74.6 L29 76.4 L31 77.5 L42 77.5 L44 76.7 Z" fill="rgba(75,90,99,0.1)"></path>
-        <line x1="29" y1="75.5" x2="20" y2="75.5"></line>
-      </g>
-  </svg>`,
-    active: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      </svg>`,
+  1: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <defs>
         <filter id="headerGlow" x="-20%" y="-25%" width="140%" height="150%">
           <feGaussianBlur stdDeviation="1.4" result="blur"></feGaussianBlur>
@@ -3171,26 +3157,8 @@ var SCHEMATICS = {
           <line x1="198.9" y1="70.4" x2="202.1" y2="70.4" stroke-width="0.85" stroke-opacity="0.65"></line>
         </g>
       </g>
-    </svg>`
-  },
-  2: {
-    ghost: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <g stroke="#4b5a63" stroke-width="1.1" stroke-opacity="0.28">
-      <g stroke="#4b5a63" stroke-width="1.1" stroke-opacity="0.28">
-        <path d="M206 39 C209 39 209 36 209 31 C209 25 205 23.5 198 23.5 C190 23.5 184 26.5 178 32 C174 35 171 36 167 36"></path>
-        <rect x="148" y="32.5" width="19" height="7" rx="1.6" fill="rgba(75,90,99,0.08)"></rect>
-        <path d="M148 36 C143 36 141 33 138 29 C135 25.5 132 24.5 126 24.5 L78 24.5 C72 24.5 70 22 64 22 L56 22 C51 22 49 24.5 44 24.5"></path>
-        <path d="M44 23.3 L42 22.5 L31 22.5 L29 23.6 L29 25.4 L31 26.5 L42 26.5 L44 25.7 Z" fill="rgba(75,90,99,0.08)"></path>
-        <line x1="29" y1="24.5" x2="20" y2="24.5"></line>
-
-        <path d="M206 61 C209 61 209 64 209 69 C209 75 205 76.5 198 76.5 C190 76.5 184 73.5 178 68 C174 65 171 64 167 64"></path>
-        <rect x="148" y="60.5" width="19" height="7" rx="1.6" fill="rgba(75,90,99,0.08)"></rect>
-        <path d="M148 64 C143 64 141 67 138 71 C135 74.5 132 75.5 126 75.5 L78 75.5 C72 75.5 70 78 64 78 L56 78 C51 78 49 75.5 44 75.5"></path>
-        <path d="M44 74.3 L42 73.5 L31 73.5 L29 74.6 L29 76.4 L31 77.5 L42 77.5 L44 76.7 Z" fill="rgba(75,90,99,0.08)"></path>
-        <line x1="29" y1="75.5" x2="20" y2="75.5"></line>
-      </g>
-      </svg>`,
-    active: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    </svg>`,
+  2: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <defs>
         <filter id="intakeGlow" x="-20%" y="-25%" width="140%" height="150%">
           <feGaussianBlur stdDeviation="1.4" result="blur"></feGaussianBlur>
@@ -3237,26 +3205,8 @@ var SCHEMATICS = {
           <line x1="230" y1="57.8" x2="230" y2="60.3" stroke-width="0.75" stroke-opacity="0.6"></line>
         </g>
       </g>
-    </svg>`
-  },
-  3: {
-    ghost: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <g stroke="#4b5a63" stroke-width="1.1" stroke-opacity="0.28">
-      <g stroke="#4b5a63" stroke-width="1.1" stroke-opacity="0.28">
-        <path d="M206 39 C209 39 209 36 209 31 C209 25 205 23.5 198 23.5 C190 23.5 184 26.5 178 32 C174 35 171 36 167 36"></path>
-        <rect x="148" y="32.5" width="19" height="7" rx="1.6" fill="rgba(75,90,99,0.08)"></rect>
-        <path d="M148 36 C143 36 141 33 138 29 C135 25.5 132 24.5 126 24.5 L78 24.5 C72 24.5 70 22 64 22 L56 22 C51 22 49 24.5 44 24.5"></path>
-        <path d="M44 23.3 L42 22.5 L31 22.5 L29 23.6 L29 25.4 L31 26.5 L42 26.5 L44 25.7 Z" fill="rgba(75,90,99,0.08)"></path>
-        <line x1="29" y1="24.5" x2="20" y2="24.5"></line>
-
-        <path d="M206 61 C209 61 209 64 209 69 C209 75 205 76.5 198 76.5 C190 76.5 184 73.5 178 68 C174 65 171 64 167 64"></path>
-        <rect x="148" y="60.5" width="19" height="7" rx="1.6" fill="rgba(75,90,99,0.08)"></rect>
-        <path d="M148 64 C143 64 141 67 138 71 C135 74.5 132 75.5 126 75.5 L78 75.5 C72 75.5 70 78 64 78 L56 78 C51 78 49 75.5 44 75.5"></path>
-        <path d="M44 74.3 L42 73.5 L31 73.5 L29 74.6 L29 76.4 L31 77.5 L42 77.5 L44 76.7 Z" fill="rgba(75,90,99,0.08)"></path>
-        <line x1="29" y1="75.5" x2="20" y2="75.5"></line>
-      </g>
-      </svg>`,
-    active: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    </svg>`,
+  3: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <defs>
         <filter id="forcedGlow" x="-20%" y="-25%" width="140%" height="150%">
           <feGaussianBlur stdDeviation="1.4" result="blur"></feGaussianBlur>
@@ -3289,26 +3239,8 @@ var SCHEMATICS = {
           <rect x="218.1" y="40.4" width="3.6" height="1.3" rx="0.5" fill="#5ce6e1" stroke="none"></rect>
         </g>
       </g>
-    </svg>`
-  },
-  4: {
-    ghost: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <g stroke="#4b5a63" stroke-width="1.1" stroke-opacity="0.28">
-      <g stroke="#4b5a63" stroke-width="1.1" stroke-opacity="0.28">
-        <path d="M206 39 C209 39 209 36 209 31 C209 25 205 23.5 198 23.5 C190 23.5 184 26.5 178 32 C174 35 171 36 167 36"></path>
-        <rect x="148" y="32.5" width="19" height="7" rx="1.6" fill="rgba(75,90,99,0.08)"></rect>
-        <path d="M148 36 C143 36 141 33 138 29 C135 25.5 132 24.5 126 24.5 L78 24.5 C72 24.5 70 22 64 22 L56 22 C51 22 49 24.5 44 24.5"></path>
-        <path d="M44 23.3 L42 22.5 L31 22.5 L29 23.6 L29 25.4 L31 26.5 L42 26.5 L44 25.7 Z" fill="rgba(75,90,99,0.08)"></path>
-        <line x1="29" y1="24.5" x2="20" y2="24.5"></line>
-
-        <path d="M206 61 C209 61 209 64 209 69 C209 75 205 76.5 198 76.5 C190 76.5 184 73.5 178 68 C174 65 171 64 167 64"></path>
-        <rect x="148" y="60.5" width="19" height="7" rx="1.6" fill="rgba(75,90,99,0.08)"></rect>
-        <path d="M148 64 C143 64 141 67 138 71 C135 74.5 132 75.5 126 75.5 L78 75.5 C72 75.5 70 78 64 78 L56 78 C51 78 49 75.5 44 75.5"></path>
-        <path d="M44 74.3 L42 73.5 L31 73.5 L29 74.6 L29 76.4 L31 77.5 L42 77.5 L44 76.7 Z" fill="rgba(75,90,99,0.08)"></path>
-        <line x1="29" y1="75.5" x2="20" y2="75.5"></line>
-      </g>
-      </svg>`,
-    active: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    </svg>`,
+  4: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <defs>
         <filter id="engineGlow" x="-20%" y="-25%" width="140%" height="150%">
           <feGaussianBlur stdDeviation="1.4" result="blur"></feGaussianBlur>
@@ -3354,26 +3286,8 @@ var SCHEMATICS = {
           <path d="M219 47.6 L223.6 48.6 L223.6 51.4 L219 52.4 Z" fill="url(#engineGrad)" stroke-width="1.1"></path>
         </g>
       </g>
-    </svg>`
-  },
-  5: {
-    ghost: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <g stroke="#4b5a63" stroke-width="1.1" stroke-opacity="0.28">
-      <g stroke="#4b5a63" stroke-width="1.1" stroke-opacity="0.28">
-        <path d="M206 39 C209 39 209 36 209 31 C209 25 205 23.5 198 23.5 C190 23.5 184 26.5 178 32 C174 35 171 36 167 36"></path>
-        <rect x="148" y="32.5" width="19" height="7" rx="1.6" fill="rgba(75,90,99,0.08)"></rect>
-        <path d="M148 36 C143 36 141 33 138 29 C135 25.5 132 24.5 126 24.5 L78 24.5 C72 24.5 70 22 64 22 L56 22 C51 22 49 24.5 44 24.5"></path>
-        <path d="M44 23.3 L42 22.5 L31 22.5 L29 23.6 L29 25.4 L31 26.5 L42 26.5 L44 25.7 Z" fill="rgba(75,90,99,0.08)"></path>
-        <line x1="29" y1="24.5" x2="20" y2="24.5"></line>
-
-        <path d="M206 61 C209 61 209 64 209 69 C209 75 205 76.5 198 76.5 C190 76.5 184 73.5 178 68 C174 65 171 64 167 64"></path>
-        <rect x="148" y="60.5" width="19" height="7" rx="1.6" fill="rgba(75,90,99,0.08)"></rect>
-        <path d="M148 64 C143 64 141 67 138 71 C135 74.5 132 75.5 126 75.5 L78 75.5 C72 75.5 70 78 64 78 L56 78 C51 78 49 75.5 44 75.5"></path>
-        <path d="M44 74.3 L42 73.5 L31 73.5 L29 74.6 L29 76.4 L31 77.5 L42 77.5 L44 76.7 Z" fill="rgba(75,90,99,0.08)"></path>
-        <line x1="29" y1="75.5" x2="20" y2="75.5"></line>
-      </g>
-      </svg>`,
-    active: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    </svg>`,
+  5: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <defs>
         <filter id="electronicsGlow" x="-20%" y="-25%" width="140%" height="150%">
           <feGaussianBlur stdDeviation="1.4" result="blur"></feGaussianBlur>
@@ -3409,26 +3323,8 @@ var SCHEMATICS = {
           <line x1="178.7" y1="71.6" x2="180.3" y2="71.6" stroke-width="0.75" stroke-opacity="0.65"></line>
         </g>
       </g>
-    </svg>`
-  },
-  6: {
-    ghost: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <g stroke="#4b5a63" stroke-width="1.1" stroke-opacity="0.28">
-      <g stroke="#4b5a63" stroke-width="1.1" stroke-opacity="0.28">
-        <path d="M206 39 C209 39 209 36 209 31 C209 25 205 23.5 198 23.5 C190 23.5 184 26.5 178 32 C174 35 171 36 167 36"></path>
-        <rect x="148" y="32.5" width="19" height="7" rx="1.6" fill="rgba(75,90,99,0.08)"></rect>
-        <path d="M148 36 C143 36 141 33 138 29 C135 25.5 132 24.5 126 24.5 L78 24.5 C72 24.5 70 22 64 22 L56 22 C51 22 49 24.5 44 24.5"></path>
-        <path d="M44 23.3 L42 22.5 L31 22.5 L29 23.6 L29 25.4 L31 26.5 L42 26.5 L44 25.7 Z" fill="rgba(75,90,99,0.08)"></path>
-        <line x1="29" y1="24.5" x2="20" y2="24.5"></line>
-
-        <path d="M206 61 C209 61 209 64 209 69 C209 75 205 76.5 198 76.5 C190 76.5 184 73.5 178 68 C174 65 171 64 167 64"></path>
-        <rect x="148" y="60.5" width="19" height="7" rx="1.6" fill="rgba(75,90,99,0.08)"></rect>
-        <path d="M148 64 C143 64 141 67 138 71 C135 74.5 132 75.5 126 75.5 L78 75.5 C72 75.5 70 78 64 78 L56 78 C51 78 49 75.5 44 75.5"></path>
-        <path d="M44 74.3 L42 73.5 L31 73.5 L29 74.6 L29 76.4 L31 77.5 L42 77.5 L44 76.7 Z" fill="rgba(75,90,99,0.08)"></path>
-        <line x1="29" y1="75.5" x2="20" y2="75.5"></line>
-      </g>
-      </svg>`,
-    active: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    </svg>`,
+  6: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <defs>
         <filter id="nitrousGlow" x="-20%" y="-25%" width="140%" height="150%">
           <feGaussianBlur stdDeviation="1.4" result="blur"></feGaussianBlur>
@@ -3473,26 +3369,8 @@ var SCHEMATICS = {
           <circle cx="198" cy="54.5" r="1.2" fill="#5ce6e1" stroke="none"></circle>
         </g>
       </g>
-    </svg>`
-  },
-  7: {
-    ghost: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <g stroke="#4b5a63" stroke-width="1.1" stroke-opacity="0.28">
-      <g stroke="#4b5a63" stroke-width="1.1" stroke-opacity="0.28">
-        <path d="M206 39 C209 39 209 36 209 31 C209 25 205 23.5 198 23.5 C190 23.5 184 26.5 178 32 C174 35 171 36 167 36"></path>
-        <rect x="148" y="32.5" width="19" height="7" rx="1.6" fill="rgba(75,90,99,0.08)"></rect>
-        <path d="M148 36 C143 36 141 33 138 29 C135 25.5 132 24.5 126 24.5 L78 24.5 C72 24.5 70 22 64 22 L56 22 C51 22 49 24.5 44 24.5"></path>
-        <path d="M44 23.3 L42 22.5 L31 22.5 L29 23.6 L29 25.4 L31 26.5 L42 26.5 L44 25.7 Z" fill="rgba(75,90,99,0.08)"></path>
-        <line x1="29" y1="24.5" x2="20" y2="24.5"></line>
-
-        <path d="M206 61 C209 61 209 64 209 69 C209 75 205 76.5 198 76.5 C190 76.5 184 73.5 178 68 C174 65 171 64 167 64"></path>
-        <rect x="148" y="60.5" width="19" height="7" rx="1.6" fill="rgba(75,90,99,0.08)"></rect>
-        <path d="M148 64 C143 64 141 67 138 71 C135 74.5 132 75.5 126 75.5 L78 75.5 C72 75.5 70 78 64 78 L56 78 C51 78 49 75.5 44 75.5"></path>
-        <path d="M44 74.3 L42 73.5 L31 73.5 L29 74.6 L29 76.4 L31 77.5 L42 77.5 L44 76.7 Z" fill="rgba(75,90,99,0.08)"></path>
-        <line x1="29" y1="75.5" x2="20" y2="75.5"></line>
-      </g>
-      </svg>`,
-    active: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    </svg>`,
+  7: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <defs>
         <filter id="clutchGlow" x="-60%" y="-25%" width="220%" height="150%">
           <feGaussianBlur stdDeviation="1.4" result="blur"></feGaussianBlur>
@@ -3521,26 +3399,8 @@ var SCHEMATICS = {
           <line x1="184.8" y1="39.3" x2="184.8" y2="60.7" stroke-width="0.8" stroke-opacity="0.6"></line>
         </g>
       </g>
-    </svg>`
-  },
-  8: {
-    ghost: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <g stroke="#4b5a63" stroke-width="1.1" stroke-opacity="0.28">
-      <g stroke="#4b5a63" stroke-width="1.1" stroke-opacity="0.28">
-        <path d="M206 39 C209 39 209 36 209 31 C209 25 205 23.5 198 23.5 C190 23.5 184 26.5 178 32 C174 35 171 36 167 36"></path>
-        <rect x="148" y="32.5" width="19" height="7" rx="1.6" fill="rgba(75,90,99,0.08)"></rect>
-        <path d="M148 36 C143 36 141 33 138 29 C135 25.5 132 24.5 126 24.5 L78 24.5 C72 24.5 70 22 64 22 L56 22 C51 22 49 24.5 44 24.5"></path>
-        <path d="M44 23.3 L42 22.5 L31 22.5 L29 23.6 L29 25.4 L31 26.5 L42 26.5 L44 25.7 Z" fill="rgba(75,90,99,0.08)"></path>
-        <line x1="29" y1="24.5" x2="20" y2="24.5"></line>
-
-        <path d="M206 61 C209 61 209 64 209 69 C209 75 205 76.5 198 76.5 C190 76.5 184 73.5 178 68 C174 65 171 64 167 64"></path>
-        <rect x="148" y="60.5" width="19" height="7" rx="1.6" fill="rgba(75,90,99,0.08)"></rect>
-        <path d="M148 64 C143 64 141 67 138 71 C135 74.5 132 75.5 126 75.5 L78 75.5 C72 75.5 70 78 64 78 L56 78 C51 78 49 75.5 44 75.5"></path>
-        <path d="M44 74.3 L42 73.5 L31 73.5 L29 74.6 L29 76.4 L31 77.5 L42 77.5 L44 76.7 Z" fill="rgba(75,90,99,0.08)"></path>
-        <line x1="29" y1="75.5" x2="20" y2="75.5"></line>
-      </g>
-      </svg>`,
-    active: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    </svg>`,
+  8: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <defs>
         <filter id="gearGlow" x="-20%" y="-25%" width="140%" height="150%">
           <feGaussianBlur stdDeviation="1.4" result="blur"></feGaussianBlur>
@@ -3581,26 +3441,8 @@ var SCHEMATICS = {
           <rect x="115" y="49.1" width="19" height="1.8" rx="0.9" fill="url(#gearGrad)" stroke-width="1.1"></rect>
         </g>
       </g>
-    </svg>`
-  },
-  9: {
-    ghost: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <g stroke="#4b5a63" stroke-width="1.1" stroke-opacity="0.28">
-      <g stroke="#4b5a63" stroke-width="1.1" stroke-opacity="0.28">
-        <path d="M206 39 C209 39 209 36 209 31 C209 25 205 23.5 198 23.5 C190 23.5 184 26.5 178 32 C174 35 171 36 167 36"></path>
-        <rect x="148" y="32.5" width="19" height="7" rx="1.6" fill="rgba(75,90,99,0.08)"></rect>
-        <path d="M148 36 C143 36 141 33 138 29 C135 25.5 132 24.5 126 24.5 L78 24.5 C72 24.5 70 22 64 22 L56 22 C51 22 49 24.5 44 24.5"></path>
-        <path d="M44 23.3 L42 22.5 L31 22.5 L29 23.6 L29 25.4 L31 26.5 L42 26.5 L44 25.7 Z" fill="rgba(75,90,99,0.08)"></path>
-        <line x1="29" y1="24.5" x2="20" y2="24.5"></line>
-
-        <path d="M206 61 C209 61 209 64 209 69 C209 75 205 76.5 198 76.5 C190 76.5 184 73.5 178 68 C174 65 171 64 167 64"></path>
-        <rect x="148" y="60.5" width="19" height="7" rx="1.6" fill="rgba(75,90,99,0.08)"></rect>
-        <path d="M148 64 C143 64 141 67 138 71 C135 74.5 132 75.5 126 75.5 L78 75.5 C72 75.5 70 78 64 78 L56 78 C51 78 49 75.5 44 75.5"></path>
-        <path d="M44 74.3 L42 73.5 L31 73.5 L29 74.6 L29 76.4 L31 77.5 L42 77.5 L44 76.7 Z" fill="rgba(75,90,99,0.08)"></path>
-        <line x1="29" y1="75.5" x2="20" y2="75.5"></line>
-      </g>
-      </svg>`,
-    active: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    </svg>`,
+  9: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <defs>
         <filter id="suspGlow" x="-20%" y="-25%" width="140%" height="150%">
           <feGaussianBlur stdDeviation="1.4" result="blur"></feGaussianBlur>
@@ -3657,26 +3499,8 @@ var SCHEMATICS = {
           <line x1="192.6" y1="75" x2="195.4" y2="75" stroke-width="0.8" stroke-opacity="0.7"></line>
         </g>
       </g>
-    </svg>`
-  },
-  10: {
-    ghost: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <g stroke="#4b5a63" stroke-width="1.1" stroke-opacity="0.28">
-      <g stroke="#4b5a63" stroke-width="1.1" stroke-opacity="0.28">
-        <path d="M206 39 C209 39 209 36 209 31 C209 25 205 23.5 198 23.5 C190 23.5 184 26.5 178 32 C174 35 171 36 167 36"></path>
-        <rect x="148" y="32.5" width="19" height="7" rx="1.6" fill="rgba(75,90,99,0.08)"></rect>
-        <path d="M148 36 C143 36 141 33 138 29 C135 25.5 132 24.5 126 24.5 L78 24.5 C72 24.5 70 22 64 22 L56 22 C51 22 49 24.5 44 24.5"></path>
-        <path d="M44 23.3 L42 22.5 L31 22.5 L29 23.6 L29 25.4 L31 26.5 L42 26.5 L44 25.7 Z" fill="rgba(75,90,99,0.08)"></path>
-        <line x1="29" y1="24.5" x2="20" y2="24.5"></line>
-
-        <path d="M206 61 C209 61 209 64 209 69 C209 75 205 76.5 198 76.5 C190 76.5 184 73.5 178 68 C174 65 171 64 167 64"></path>
-        <rect x="148" y="60.5" width="19" height="7" rx="1.6" fill="rgba(75,90,99,0.08)"></rect>
-        <path d="M148 64 C143 64 141 67 138 71 C135 74.5 132 75.5 126 75.5 L78 75.5 C72 75.5 70 78 64 78 L56 78 C51 78 49 75.5 44 75.5"></path>
-        <path d="M44 74.3 L42 73.5 L31 73.5 L29 74.6 L29 76.4 L31 77.5 L42 77.5 L44 76.7 Z" fill="rgba(75,90,99,0.08)"></path>
-        <line x1="29" y1="75.5" x2="20" y2="75.5"></line>
-      </g>
-      </svg>`,
-    active: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    </svg>`,
+  10: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <defs>
         <filter id="swayGlow" x="-20%" y="-25%" width="140%" height="150%">
           <feGaussianBlur stdDeviation="1.4" result="blur"></feGaussianBlur>
@@ -3720,26 +3544,8 @@ var SCHEMATICS = {
           <circle cx="193.5" cy="80.5" r="1.15" fill="#5ce6e1" stroke="none"></circle>
         </g>
       </g>
-    </svg>`
-  },
-  11: {
-    ghost: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <g stroke="#4b5a63" stroke-width="1.1" stroke-opacity="0.28">
-      <g stroke="#4b5a63" stroke-width="1.1" stroke-opacity="0.28">
-        <path d="M206 39 C209 39 209 36 209 31 C209 25 205 23.5 198 23.5 C190 23.5 184 26.5 178 32 C174 35 171 36 167 36"></path>
-        <rect x="148" y="32.5" width="19" height="7" rx="1.6" fill="rgba(75,90,99,0.08)"></rect>
-        <path d="M148 36 C143 36 141 33 138 29 C135 25.5 132 24.5 126 24.5 L78 24.5 C72 24.5 70 22 64 22 L56 22 C51 22 49 24.5 44 24.5"></path>
-        <path d="M44 23.3 L42 22.5 L31 22.5 L29 23.6 L29 25.4 L31 26.5 L42 26.5 L44 25.7 Z" fill="rgba(75,90,99,0.08)"></path>
-        <line x1="29" y1="24.5" x2="20" y2="24.5"></line>
-
-        <path d="M206 61 C209 61 209 64 209 69 C209 75 205 76.5 198 76.5 C190 76.5 184 73.5 178 68 C174 65 171 64 167 64"></path>
-        <rect x="148" y="60.5" width="19" height="7" rx="1.6" fill="rgba(75,90,99,0.08)"></rect>
-        <path d="M148 64 C143 64 141 67 138 71 C135 74.5 132 75.5 126 75.5 L78 75.5 C72 75.5 70 78 64 78 L56 78 C51 78 49 75.5 44 75.5"></path>
-        <path d="M44 74.3 L42 73.5 L31 73.5 L29 74.6 L29 76.4 L31 77.5 L42 77.5 L44 76.7 Z" fill="rgba(75,90,99,0.08)"></path>
-        <line x1="29" y1="75.5" x2="20" y2="75.5"></line>
-      </g>
-      </svg>`,
-    active: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    </svg>`,
+  11: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <defs>
         <filter id="brakesGlow" x="-20%" y="-25%" width="140%" height="150%">
           <feGaussianBlur stdDeviation="1.4" result="blur"></feGaussianBlur>
@@ -3797,26 +3603,8 @@ var SCHEMATICS = {
           <line x1="191.2" y1="82.5" x2="203.5" y2="82.5" stroke-width="0.7" stroke-opacity="0.6"></line>
         </g>
       </g>
-    </svg>`
-  },
-  12: {
-    ghost: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <g stroke="#4b5a63" stroke-width="1.1" stroke-opacity="0.28">
-      <g stroke="#4b5a63" stroke-width="1.1" stroke-opacity="0.28">
-        <path d="M206 39 C209 39 209 36 209 31 C209 25 205 23.5 198 23.5 C190 23.5 184 26.5 178 32 C174 35 171 36 167 36"></path>
-        <rect x="148" y="32.5" width="19" height="7" rx="1.6" fill="rgba(75,90,99,0.08)"></rect>
-        <path d="M148 36 C143 36 141 33 138 29 C135 25.5 132 24.5 126 24.5 L78 24.5 C72 24.5 70 22 64 22 L56 22 C51 22 49 24.5 44 24.5"></path>
-        <path d="M44 23.3 L42 22.5 L31 22.5 L29 23.6 L29 25.4 L31 26.5 L42 26.5 L44 25.7 Z" fill="rgba(75,90,99,0.08)"></path>
-        <line x1="29" y1="24.5" x2="20" y2="24.5"></line>
-
-        <path d="M206 61 C209 61 209 64 209 69 C209 75 205 76.5 198 76.5 C190 76.5 184 73.5 178 68 C174 65 171 64 167 64"></path>
-        <rect x="148" y="60.5" width="19" height="7" rx="1.6" fill="rgba(75,90,99,0.08)"></rect>
-        <path d="M148 64 C143 64 141 67 138 71 C135 74.5 132 75.5 126 75.5 L78 75.5 C72 75.5 70 78 64 78 L56 78 C51 78 49 75.5 44 75.5"></path>
-        <path d="M44 74.3 L42 73.5 L31 73.5 L29 74.6 L29 76.4 L31 77.5 L42 77.5 L44 76.7 Z" fill="rgba(75,90,99,0.08)"></path>
-        <line x1="29" y1="75.5" x2="20" y2="75.5"></line>
-      </g>
-      </svg>`,
-    active: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    </svg>`,
+  12: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <defs>
         <filter id="tiresGlow" x="-20%" y="-25%" width="140%" height="150%">
           <feGaussianBlur stdDeviation="1.4" result="blur"></feGaussianBlur>
@@ -3874,8 +3662,7 @@ var SCHEMATICS = {
           <rect x="181" y="80.5" width="26" height="4" rx="1.5" stroke-width="0.75" stroke-opacity="0.35"></rect>
         </g>
       </g>
-    </svg>`
-  },
+    </svg>`,
 
 
 };
@@ -3884,8 +3671,7 @@ var SCHEMATICS = {
 /* Motorcycle schematics, keyed by TUNE_CATS index like the car ones but
    kept apart: a bike has six categories and its own base drawing. */
 var MOTO_SCHEMATICS = {
-  0: {
-    active: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  0: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
         <defs>
           <filter id="motoExhaustGlow" x="-20%" y="-25%" width="140%" height="150%">
             <feGaussianBlur stdDeviation="1.5" result="blur"></feGaussianBlur>
@@ -3931,10 +3717,8 @@ var MOTO_SCHEMATICS = {
             <line x1="84.7" y1="61.2" x2="81.9" y2="68.5" stroke-width="0.9" stroke-opacity="0.6"></line>
           </g>
         </g>
-      </svg>`
-  },
-  4: {
-    active: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      </svg>`,
+  4: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <defs>
         <filter id="motoEngineGlow" x="-20%" y="-25%" width="140%" height="150%">
           <feGaussianBlur stdDeviation="1.4" result="blur"></feGaussianBlur>
@@ -4000,10 +3784,8 @@ var MOTO_SCHEMATICS = {
           <circle cx="80.9" cy="74.3" r="3.9" stroke-width="0.85" stroke-opacity="0.75"></circle>
         </g>
       </g>
-    </svg>`
-  },
-  5: {
-    active: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    </svg>`,
+  5: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <defs>
         <filter id="motoEngineGlow" x="-20%" y="-25%" width="140%" height="150%">
           <feGaussianBlur stdDeviation="1.4" result="blur"></feGaussianBlur>
@@ -4069,10 +3851,8 @@ var MOTO_SCHEMATICS = {
           <circle cx="80.9" cy="74.3" r="3.9" stroke-width="0.85" stroke-opacity="0.75"></circle>
         </g>
       </g>
-    </svg>`
-  },
-  8: {
-    active: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    </svg>`,
+  8: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <defs>
         <filter id="motoEngineGlow" x="-20%" y="-25%" width="140%" height="150%">
           <feGaussianBlur stdDeviation="1.4" result="blur"></feGaussianBlur>
@@ -4138,10 +3918,8 @@ var MOTO_SCHEMATICS = {
           <circle cx="80.9" cy="74.3" r="3.9" stroke-width="0.85" stroke-opacity="0.75"></circle>
         </g>
       </g>
-    </svg>`
-  },
-  6: {
-    active: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    </svg>`,
+  6: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <defs>
         <filter id="motoNitrousGlow" x="-30%" y="-30%" width="160%" height="160%">
           <feGaussianBlur stdDeviation="1.5" result="blur"></feGaussianBlur>
@@ -4171,18 +3949,8 @@ var MOTO_SCHEMATICS = {
           <path d="M98.3 45.1 L101.2 45.1 Q103.2 45.1 104.8 47.4" stroke-width="1.15"></path>
         </g>
       </g>
-    </svg>`
-  },
-  12: {
-    ghost: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <g stroke="#4b5a63" stroke-width="1.1" stroke-opacity="0.28">
-      <g stroke="#4b5a63" stroke-width="1.1" stroke-opacity="0.28">
-        <path d="M149 48 C154.5 49 156.5 55 156.5 65 C156.5 72.5 155 75.5 150 76 L114 76.5"></path>
-        <path d="M151.5 50 C157.5 51 159.5 57 159.5 67 C159.5 74.5 157.5 78 151.5 78.5 L113 79 L90 63.5"></path>
-        <path d="M90 66.9 L85.4 60.9 L47.2 46.1 Q42.8 46.5 42.3 49 Q41.9 51.8 44.2 53.9 L82.3 68.8 Z" fill="rgba(75,90,99,0.08)"></path>
-      </g>
-      </svg>`,
-    active: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    </svg>`,
+  12: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <defs>
         <filter id="motoTiresGlow" x="-25%" y="-25%" width="150%" height="150%">
           <feGaussianBlur stdDeviation="1.4" result="blur"></feGaussianBlur>
@@ -4226,8 +3994,7 @@ var MOTO_SCHEMATICS = {
           <circle cx="194.9" cy="74.9" r="16.9" stroke-width="1.1"></circle>
         </g>
       </g>
-    </svg>`
-  },
+    </svg>`,
 
 
 };
@@ -4235,54 +4002,26 @@ var MOTO_SCHEMATICS = {
 /* The base layer for a vehicle: the detailed car body, or the bike frame. */
 function xrayBase(moto) { return moto ? XRAY_BASE_MOTO : XRAY_BASE_CAR; }
 
-/* The dynamic layer for one category, or a generic highlight when the
-   category has no drawing of its own yet. */
-function xrayActive(catIdx, moto, engineGlow, suspGlow) {
+/* One category's drawing, lit or dimmed. Every part is always on screen:
+   the active one pulses in cyan, the rest sit back in grey, so switching
+   categories never makes anything appear or vanish. */
+function xrayPart(catIdx, moto, lit) {
   var s = (moto ? MOTO_SCHEMATICS[catIdx] : SCHEMATICS[catIdx]);
-  if (s && s.active) return s.active;
-  var eColor = engineGlow ? "#5ce6e1" : "#3b565e";
-  var sColor = suspGlow ? "#29c5c0" : "#2f434a";
-  if (moto) {
-    return (
-      '<svg class="xray-layer xray-active" viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">' +
-      '<g stroke="' + eColor + '" stroke-width="1.8">' +
-      '<rect x="122" y="48" width="34" height="22" rx="3" fill="rgba(41,197,192,0.12)"/>' +
-      '<path d="M126 68 L92 74 L68 64"/>' +
-      '</g>' +
-      '<g stroke="' + sColor + '" stroke-width="1.6">' +
-      '<line x1="176" y1="30" x2="202" y2="66"/>' +
-      '<line x1="96" y1="50" x2="118" y2="68"/>' +
-      '</g>' +
-      '</svg>'
-    );
-  }
-  return (
-    '<svg class="xray-layer xray-active" viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">' +
-    '<g stroke="' + eColor + '" stroke-width="1.8">' +
-    '<rect x="174" y="36" width="36" height="28" rx="3" fill="rgba(41,197,192,0.14)"/>' +
-    '<line x1="61" y1="50" x2="174" y2="50"/>' +
-    '<path d="M174 42 L134 38 L42 38 L26 34"/>' +
-    '<path d="M174 58 L134 62 L42 62 L26 66"/>' +
-    '</g>' +
-    '<g stroke="' + sColor + '" stroke-width="1.6">' +
-    '<line x1="61" y1="21" x2="61" y2="79"/>' +
-    '<line x1="195" y1="21" x2="195" y2="79"/>' +
-    '</g>' +
-    '</svg>'
-  );
+  if (!s) return "";
+  return s.replace("<svg ", '<svg class="xray-layer ' + (lit ? "xray-active" : "xray-dim") + '" ');
 }
 
-/* Paint the stack: base, then the category's ghosted context (static), then
-   the blinking highlight. Only the last layer carries .xray-active, so the
-   greyed-out parts of the exhaust stay lit while the headers pulse. */
-function paintXray(catIdx, moto, engineGlow, suspGlow) {
-  var s = (moto ? MOTO_SCHEMATICS[catIdx] : SCHEMATICS[catIdx]);
+/* Paint the stack: base, then every part the vehicle has, lit one last so it
+   sits on top. */
+var CAR_CAT_IDX = TUNE_CATS.map(function (_, i) { return i; });
+
+function paintXray(catIdx, moto) {
+  var list = moto ? MOTO_CATS : CAR_CAT_IDX;
   var html = xrayBase(moto).replace("<svg ", '<svg class="xray-layer xray-base" ');
-  if (s && s.ghost) {
-    html += s.ghost.replace("<svg ", '<svg class="xray-layer xray-ghost" ');
+  for (var i = 0; i < list.length; i++) {
+    if (list[i] !== catIdx) html += xrayPart(list[i], moto, false);
   }
-  html += xrayActive(catIdx, moto, engineGlow, suspGlow)
-    .replace("<svg ", '<svg class="xray-layer xray-active" ');
+  html += xrayPart(catIdx, moto, true);
   el("shopSchematic").innerHTML = html;
 }
 
@@ -4357,7 +4096,7 @@ function renderShopTelemetry() {
 
   /* X-ray: the shared base layer plus the active category's own drawing. */
   var activeCat = SHOP_STATE.cats[SHOP_STATE.activeRow];
-  paintXray(activeCat ? activeCat.idx : -1, SHOP_STATE.moto, m.pwr > 0.05, m.hnd > 0.05);
+  paintXray(activeCat ? activeCat.idx : -1, SHOP_STATE.moto);
 
   /* Dyno Torque & Horsepower curves */
   var lift = (m.pct / 100) * 32;
