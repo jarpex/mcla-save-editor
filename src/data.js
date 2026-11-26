@@ -94,7 +94,7 @@ var CAR_TITLES = {
   vp_vw_golf_07: "2007 Volkswagen R32",
   vp_vw_golf_83: "1983 Volkswagen Golf GTI",
   vp_vw_scirocco_88: "1988 Volkswagen Scirocco",
-  vp_se_chv_plc_96: "1996 Chevrolet Impala SS Police CHP",
+  vp_se_chv_plc_96: "1996 Chevrolet Impala SS Police",
   vpd_buk_riviera_63: "1963 Buick Riviera",
   vpd_chv_belair_55: "1955 Chevrolet Bel Air",
   vpd_chv_chevelle_70: "1970 Chevrolet Chevelle SS",
@@ -160,7 +160,7 @@ var VEHICLE_PERF_STATS = {
   vp_vw_golf_07: { accel: [25, 40], speed: [48, 75], hand: [40, 57] },
   vp_vw_golf_83: { accel: [18, 28], speed: [37, 49], hand: [23, 39] },
   vp_vw_scirocco_88: { accel: [23, 37], speed: [30, 48], hand: [13, 27] },
-  vp_se_chv_plc_96: { accel: [33, 33], speed: [57, 57], hand: [76, 76] },
+  vp_se_chv_plc_96: { accel: [23, 33], speed: [35, 57], hand: [46, 76] },
   vpd_buk_riviera_63: { accel: [23, 40], speed: [33, 52], hand: [10, 24] },
   vpd_chv_belair_55: { accel: [16, 25], speed: [17, 50], hand: [8, 19] },
   vpd_chv_chevelle_70: { accel: [35, 53], speed: [37, 60], hand: [22, 37] },
@@ -178,9 +178,10 @@ var VEHICLE_PERF_STATS = {
    Prefab names below are INFERRED from the vp_<maker>_<model>_<yy> pattern and
    are NOT verified against the game's own vehicle.lst — fix them before use.
    The seven a real save confirmed (Bel Air, Riviera, Impala '64, Malibu, GTO,
-   Chevelle, Impala Police CHP) moved up into ROSTER, with their numbers in
-   VEHICLE_PERF_STATS. The CHP is stock-only: 57/33/76 -> 57/33/76, so its
-   tuned values equal the stock ones.
+   Chevelle, Impala SS Police) moved up into ROSTER, with their numbers in
+   VEHICLE_PERF_STATS. The save's vp_se_chv_plc_96 is the D-Class $20,000
+   regular car (35/23/46 -> 57/33/76); the B-Class $40,000 CHP is a different
+   prefab and is still missing.
    Columns: prefab | name | class | group | type | cost | stock speed/accel/hand
             -> max speed/accel/hand
    (the table's own column order, speed first; VEHICLE_PERF_STATS stores
