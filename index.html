@@ -1327,7 +1327,8 @@ var STR = {
     timeTrial: "Time Trial", ttEvent: "Evento", ttTarget: "Tempo alvo",
     ttHollywood: "Hollywood time trial: '99 Eclipse",
     ttRecord: "Recorde", ttHint: "min:seg.centesimos, ex: 02:08.54",
-    hintInt: "inteiro", hintDec: "decimal",
+    hintInt: "inteiro", hintDec: "decimal", hintHours: "h:mm",
+    hintRecord: "recorde",
     careerMostWins: "Most consecutive wins", careerConsec: "Career consecutive wins",
     careerSecond: "Number of second place", careerThird: "Number of third place",
     careerRaces: "Races completed", careerWins: "Number of wins",
@@ -1372,7 +1373,8 @@ var STR = {
     timeTrial: "Time Trial", ttEvent: "Event", ttTarget: "Target time",
     ttHollywood: "Hollywood time trial: '99 Eclipse",
     ttRecord: "Record", ttHint: "min:sec.hundredths, e.g. 02:08.54",
-    hintInt: "integer", hintDec: "decimal",
+    hintInt: "integer", hintDec: "decimal", hintHours: "h:mm",
+    hintRecord: "record",
     careerMostWins: "Most consecutive wins", careerConsec: "Career consecutive wins",
     careerSecond: "Number of second place", careerThird: "Number of third place",
     careerRaces: "Races completed", careerWins: "Number of wins",
@@ -1417,7 +1419,8 @@ var STR = {
     timeTrial: "Time Trial", ttEvent: "Заезд", ttTarget: "Целевое время",
     ttHollywood: "Hollywood time trial: '99 Eclipse",
     ttRecord: "Рекорд", ttHint: "мин:сек.сотые, например: 02:08.54",
-    hintInt: "целое", hintDec: "десятичное",
+    hintInt: "целое", hintDec: "десятичное", hintHours: "ч:мм",
+    hintRecord: "рекорд",
     careerMostWins: "Most consecutive wins", careerConsec: "Career consecutive wins",
     careerSecond: "Number of second place", careerThird: "Number of third place",
     careerRaces: "Races completed", careerWins: "Number of wins",
@@ -2251,13 +2254,18 @@ el("ttTarget").addEventListener("input", function () {
 
 /* A tela de carreira do jogo. Tudo isso mora nas RECORDS da secao Stats (nao
    no cabecalho, que e so um cache): uma linha de 16 bytes por FourCC, com o
-   valor em +12. Cada entrada acha a sua linha pelo codigo na leitura. */
+   valor em +12. Cada entrada acha a sua linha pelo codigo na leitura.
+
+   `fmt` diz como o valor e mostrado e aceito, e e a unica fonte do rotulo do
+   tipo: int, dec, record (recorde em mm:ss.cc) ou hours (h:mm). */
+var FMT_LABEL = { int: "hintInt", dec: "hintDec", record: "hintRecord", hours: "hintHours" };
+
 var CAREER_RECORDS = [
   {
     id: "careerRecord",
     code: "k:TB",
     titleKey: "ttHollywood",
-    hintKey: "ttHint",
+    fmt: "record",
     read: function () { return msToText(u32(sec("Stats").data + OFF.ttRecord)); },
     write: function (val) {
       var ms = textToMs(val);
@@ -2268,23 +2276,23 @@ var CAREER_RECORDS = [
       return true;
     }
   },
-  { code: "kCCW", titleKey: "careerMostWins", hintKey: "hintInt", stat: "kCCW" },
-  { code: "kCWN", titleKey: "careerConsec", hintKey: "hintInt", stat: "kCWN" },
-  { code: "k2ND", titleKey: "careerSecond", hintKey: "hintInt", stat: "k2ND" },
-  { code: "k3RD", titleKey: "careerThird", hintKey: "hintInt", stat: "k3RD" },
-  { code: "kRCP", titleKey: "careerRaces", hintKey: "hintInt", stat: "kRCP" },
-  { code: "kWIN", titleKey: "careerWins", hintKey: "hintInt", stat: "kWIN" },
-  { code: "kLED", titleKey: "careerLead", hintKey: "hintInt", stat: "kLED" },
-  { code: "kHOK", titleKey: "careerHookmen", hintKey: "hintInt", stat: "kHOK" },
-  { code: "kDLT", titleKey: "careerDeliveries", hintKey: "hintInt", stat: "kDLT" },
-  { code: "kTRS", titleKey: "careerRestarts", hintKey: "hintInt", stat: "kTRS" },
-  { code: "kARS", titleKey: "careerAvgRestart", hintKey: "hintDec", stat: "kARS" },
-  { code: "kFWN", titleKey: "careerFreeway", hintKey: "hintInt", stat: "kFWN" },
-  { code: "kRLW", titleKey: "careerRedlight", hintKey: "hintInt", stat: "kRLW" },
-  { code: "kMUW", titleKey: "careerMuscle", hintKey: "hintInt", stat: "kMUW" },
-  { code: "kTUW", titleKey: "careerTuner", hintKey: "hintInt", stat: "kTUW" },
-  { code: "kLOW", titleKey: "careerLowrider", hintKey: "hintInt", stat: "kLOW" },
-  { code: "khTC", titleKey: "careerHours", hintKey: "hintDec", stat: "khTC" }
+  { code: "kCCW", titleKey: "careerMostWins", fmt: "int", stat: "kCCW" },
+  { code: "kCWN", titleKey: "careerConsec", fmt: "int", stat: "kCWN" },
+  { code: "k2ND", titleKey: "careerSecond", fmt: "int", stat: "k2ND" },
+  { code: "k3RD", titleKey: "careerThird", fmt: "int", stat: "k3RD" },
+  { code: "kRCP", titleKey: "careerRaces", fmt: "int", stat: "kRCP" },
+  { code: "kWIN", titleKey: "careerWins", fmt: "int", stat: "kWIN" },
+  { code: "kLED", titleKey: "careerLead", fmt: "int", stat: "kLED" },
+  { code: "kHOK", titleKey: "careerHookmen", fmt: "int", stat: "kHOK" },
+  { code: "kDLT", titleKey: "careerDeliveries", fmt: "int", stat: "kDLT" },
+  { code: "kTRS", titleKey: "careerRestarts", fmt: "int", stat: "kTRS" },
+  { code: "kARS", titleKey: "careerAvgRestart", fmt: "dec", stat: "kARS" },
+  { code: "kFWN", titleKey: "careerFreeway", fmt: "int", stat: "kFWN" },
+  { code: "kRLW", titleKey: "careerRedlight", fmt: "int", stat: "kRLW" },
+  { code: "kMUW", titleKey: "careerMuscle", fmt: "int", stat: "kMUW" },
+  { code: "kTUW", titleKey: "careerTuner", fmt: "int", stat: "kTUW" },
+  { code: "kLOW", titleKey: "careerLowrider", fmt: "int", stat: "kLOW" },
+  { code: "khTC", titleKey: "careerHours", fmt: "hours", stat: "khTC" }
 ];
 
 /* Acha a linha de um FourCC na secao Stats e devolve o offset absoluto do
@@ -2299,18 +2307,41 @@ function statValueAt(code) {
   return -1;
 }
 
+/* Horas de jogo no formato do relogio: 1.9862 vira "1:59", 2.5 vira "2:30".
+   A parte inteira e a hora, a fracao e o minuto (0.9862 * 60 = 59.17). */
+function hoursToText(h) {
+  var total = Math.max(0, Math.round(h * 60));
+  return Math.floor(total / 60) + ":" + (total % 60 < 10 ? "0" : "") + (total % 60);
+}
+
+function textToHours(str) {
+  var m = /^\s*(\d+):(\d{1,2})\s*$/.exec(str || "");
+  if (!m) return null;
+  var h = +m[1], min = +m[2];
+  if (min > 59) return null;
+  return h + min / 60;
+}
+
 function careerRead(rec) {
   var at = statValueAt(rec.stat);
   if (at < 0) return "";
-  return rec.hintKey === "hintDec" ? view.getFloat32(at).toFixed(4) : u32(at);
+  if (rec.fmt === "hours") return hoursToText(view.getFloat32(at));
+  if (rec.fmt === "dec") return view.getFloat32(at).toFixed(4);
+  return u32(at);
 }
 
 function careerWrite(rec, val) {
   var at = statValueAt(rec.stat);
   if (at < 0) return false;
+  if (rec.fmt === "hours") {
+    var h = textToHours(val);
+    if (h === null) return false;
+    view.setFloat32(at, h);
+    return true;
+  }
   var n = Number(String(val).replace(",", "."));
   if (!isFinite(n)) return false;
-  if (rec.hintKey === "hintDec") view.setFloat32(at, n);
+  if (rec.fmt === "dec") view.setFloat32(at, n);
   else setU32(at, Math.max(0, Math.min(4294967295, Math.floor(n))));
   return true;
 }
@@ -2329,11 +2360,11 @@ function drawCareer(q) {
 
   CAREER_RECORDS.forEach(function (rec) {
     var titleText = t(rec.titleKey);
-    var hintText = t(rec.hintKey);
+    var typeText = t(FMT_LABEL[rec.fmt]);
     if (q &&
         rec.code.toLowerCase().indexOf(q) === -1 &&
         titleText.toLowerCase().indexOf(q) === -1 &&
-        hintText.toLowerCase().indexOf(q) === -1) {
+        typeText.toLowerCase().indexOf(q) === -1) {
       return;
     }
     shown++;
@@ -2352,16 +2383,14 @@ function drawCareer(q) {
     key.className = "key";
     key.textContent = titleText;
 
+    /* O rotulo do tipo sai de FMT_LABEL, o mesmo mapa que o leitor usa: um
+    campo so, sem texto repetido na tela. */
     var kind = document.createElement("span");
     kind.className = "kind";
-    kind.textContent = hintText;
+    kind.textContent = typeText;
 
     who.appendChild(key);
     who.appendChild(kind);
-
-    var tag = document.createElement("span");
-    tag.className = "kind";
-    tag.textContent = rec.stat ? t(rec.hintKey) : t("timeKind");
 
     var inp = document.createElement("input");
     inp.type = "text";
@@ -2372,7 +2401,6 @@ function drawCareer(q) {
 
     row.appendChild(cur);
     row.appendChild(who);
-    row.appendChild(tag);
     row.appendChild(inp);
     host.appendChild(row);
 
