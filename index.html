@@ -1327,6 +1327,16 @@ var STR = {
     timeTrial: "Time Trial", ttEvent: "Evento", ttTarget: "Tempo alvo",
     ttHollywood: "Hollywood time trial: '99 Eclipse",
     ttRecord: "Recorde", ttHint: "min:seg.centesimos, ex: 02:08.54",
+    hintInt: "inteiro", hintDec: "decimal",
+    careerMostWins: "Most consecutive wins", careerConsec: "Career consecutive wins",
+    careerSecond: "Number of second place", careerThird: "Number of third place",
+    careerRaces: "Races completed", careerWins: "Number of wins",
+    careerLead: "Most lead changes", careerHookmen: "Hookmen beaten",
+    careerDeliveries: "Total Deliveries", careerRestarts: "Total Restarts",
+    careerAvgRestart: "Average restarts", careerFreeway: "Freeway wins",
+    careerRedlight: "Red lights wins", careerMuscle: "Muscle wins",
+    careerTuner: "Tuner Wins", careerLowrider: "Lowrider wins",
+    careerHours: "Hours cruising",
     roCars: "CARROS", roMoney: "DINHEIRO", roRep: "REP", download: "Baixar mc4.sav",
     openOther: "Abrir outro",
     tabGarage: "Garagem & Carteira", tabCareer: "Carreira & Stats", tabSections: "Secoes Hex",
@@ -1362,6 +1372,16 @@ var STR = {
     timeTrial: "Time Trial", ttEvent: "Event", ttTarget: "Target time",
     ttHollywood: "Hollywood time trial: '99 Eclipse",
     ttRecord: "Record", ttHint: "min:sec.hundredths, e.g. 02:08.54",
+    hintInt: "integer", hintDec: "decimal",
+    careerMostWins: "Most consecutive wins", careerConsec: "Career consecutive wins",
+    careerSecond: "Number of second place", careerThird: "Number of third place",
+    careerRaces: "Races completed", careerWins: "Number of wins",
+    careerLead: "Most lead changes", careerHookmen: "Hookmen beaten",
+    careerDeliveries: "Total Deliveries", careerRestarts: "Total Restarts",
+    careerAvgRestart: "Average restarts", careerFreeway: "Freeway wins",
+    careerRedlight: "Red lights wins", careerMuscle: "Muscle wins",
+    careerTuner: "Tuner Wins", careerLowrider: "Lowrider wins",
+    careerHours: "Hours cruising",
     roCars: "CARS", roMoney: "MONEY", roRep: "REP", download: "Download mc4.sav",
     openOther: "Open another",
     tabGarage: "Garage & Wallet", tabCareer: "Career & Stats", tabSections: "Hex Sections",
@@ -1397,6 +1417,16 @@ var STR = {
     timeTrial: "Time Trial", ttEvent: "Заезд", ttTarget: "Целевое время",
     ttHollywood: "Hollywood time trial: '99 Eclipse",
     ttRecord: "Рекорд", ttHint: "мин:сек.сотые, например: 02:08.54",
+    hintInt: "целое", hintDec: "десятичное",
+    careerMostWins: "Most consecutive wins", careerConsec: "Career consecutive wins",
+    careerSecond: "Number of second place", careerThird: "Number of third place",
+    careerRaces: "Races completed", careerWins: "Number of wins",
+    careerLead: "Most lead changes", careerHookmen: "Hookmen beaten",
+    careerDeliveries: "Total Deliveries", careerRestarts: "Total Restarts",
+    careerAvgRestart: "Average restarts", careerFreeway: "Freeway wins",
+    careerRedlight: "Red lights wins", careerMuscle: "Muscle wins",
+    careerTuner: "Tuner Wins", careerLowrider: "Lowrider wins",
+    careerHours: "Hours cruising",
     roCars: "МАШИНЫ", roMoney: "ДЕНЬГИ", roRep: "РЕП", download: "Скачать mc4.sav",
     openOther: "Другой файл",
     tabGarage: "Гараж и баланс", tabCareer: "Карьера и статы", tabSections: "Секции Hex",
@@ -2219,6 +2249,9 @@ el("ttTarget").addEventListener("input", function () {
 
 // ---------- Career ----------
 
+/* A tela de carreira do jogo. Tudo isso mora nas RECORDS da secao Stats (nao
+   no cabecalho, que e so um cache): uma linha de 16 bytes por FourCC, com o
+   valor em +12. Cada entrada acha a sua linha pelo codigo na leitura. */
 var CAREER_RECORDS = [
   {
     id: "careerRecord",
@@ -2234,8 +2267,53 @@ var CAREER_RECORDS = [
       setU32(st.data + OFF.ttEventRec, ms);
       return true;
     }
-  }
+  },
+  { code: "kCCW", titleKey: "careerMostWins", hintKey: "hintInt", stat: "kCCW" },
+  { code: "kCWN", titleKey: "careerConsec", hintKey: "hintInt", stat: "kCWN" },
+  { code: "k2ND", titleKey: "careerSecond", hintKey: "hintInt", stat: "k2ND" },
+  { code: "k3RD", titleKey: "careerThird", hintKey: "hintInt", stat: "k3RD" },
+  { code: "kRCP", titleKey: "careerRaces", hintKey: "hintInt", stat: "kRCP" },
+  { code: "kWIN", titleKey: "careerWins", hintKey: "hintInt", stat: "kWIN" },
+  { code: "kLED", titleKey: "careerLead", hintKey: "hintInt", stat: "kLED" },
+  { code: "kHOK", titleKey: "careerHookmen", hintKey: "hintInt", stat: "kHOK" },
+  { code: "kDLT", titleKey: "careerDeliveries", hintKey: "hintInt", stat: "kDLT" },
+  { code: "kTRS", titleKey: "careerRestarts", hintKey: "hintInt", stat: "kTRS" },
+  { code: "kARS", titleKey: "careerAvgRestart", hintKey: "hintDec", stat: "kARS" },
+  { code: "kFWN", titleKey: "careerFreeway", hintKey: "hintInt", stat: "kFWN" },
+  { code: "kRLW", titleKey: "careerRedlight", hintKey: "hintInt", stat: "kRLW" },
+  { code: "kMUW", titleKey: "careerMuscle", hintKey: "hintInt", stat: "kMUW" },
+  { code: "kTUW", titleKey: "careerTuner", hintKey: "hintInt", stat: "kTUW" },
+  { code: "kLOW", titleKey: "careerLowrider", hintKey: "hintInt", stat: "kLOW" },
+  { code: "khTC", titleKey: "careerHours", hintKey: "hintDec", stat: "khTC" }
 ];
+
+/* Acha a linha de um FourCC na secao Stats e devolve o offset absoluto do
+   valor. As linhas tem 16 bytes e comecam no primeiro offset da secao onde
+   (offset % 16) == 2, o mesmo calculo de renderStats. */
+function statValueAt(code) {
+  var s = sec("Stats");
+  var start = s.data + (((2 - (s.data % 16)) % 16) + 16) % 16;
+  for (var o = start; o + 16 <= s.data + s.size; o += 16) {
+    if (ascii(o, 4) === code) return o + 12;
+  }
+  return -1;
+}
+
+function careerRead(rec) {
+  var at = statValueAt(rec.stat);
+  if (at < 0) return "";
+  return rec.hintKey === "hintDec" ? view.getFloat32(at).toFixed(4) : u32(at);
+}
+
+function careerWrite(rec, val) {
+  var at = statValueAt(rec.stat);
+  if (at < 0) return false;
+  var n = Number(String(val).replace(",", "."));
+  if (!isFinite(n)) return false;
+  if (rec.hintKey === "hintDec") view.setFloat32(at, n);
+  else setU32(at, Math.max(0, Math.min(4294967295, Math.floor(n))));
+  return true;
+}
 
 function renderCareer() {
   el("careerCount").textContent = CAREER_RECORDS.length + " " + t("nRecords");
@@ -2283,13 +2361,13 @@ function drawCareer(q) {
 
     var tag = document.createElement("span");
     tag.className = "kind";
-    tag.textContent = t("timeKind");
+    tag.textContent = rec.stat ? t(rec.hintKey) : t("timeKind");
 
     var inp = document.createElement("input");
     inp.type = "text";
     inp.inputMode = "decimal";
-    inp.id = rec.id;
-    inp.value = rec.read();
+    if (rec.id) inp.id = rec.id;
+    inp.value = rec.stat ? careerRead(rec) : rec.read();
     inp.setAttribute("aria-label", titleText);
 
     row.appendChild(cur);
@@ -2299,7 +2377,8 @@ function drawCareer(q) {
     host.appendChild(row);
 
     inp.addEventListener("input", function () {
-      if (rec.write(this.value)) mark();
+      var ok = rec.stat ? careerWrite(rec, this.value) : rec.write(this.value);
+      if (ok) mark();
     });
   });
 
