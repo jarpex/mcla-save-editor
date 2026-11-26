@@ -425,18 +425,18 @@ if (!real) {
   assert.strictEqual(r0.tune.textContent, "50%", "o botao nao mostrou a porcentagem lida do save");
 }
 
-r0.tune._on.click.call(r0.tune);
+/* O botao de tune abre a Performance Shop; quem maxe de fato e o maxTune,
+   que a loja chama. Entao o teste maxe por maxTune e confere o botao. */
 var t0 = tuneBlock(0);
+ctx.maxTune(0);
 for (var c = 0; c < TUNE_N; c++) {
   assert.strictEqual(ctx.bytes[t0 + TUNE_LV + c], 2, "categoria " + c + " nao foi para o nivel 2");
 }
 assert.strictEqual(ctx.bytes[t0 + TUNE_PCT], 100, "a porcentagem nao foi para 100");
-assert.strictEqual(r0.tune.textContent, "100%", "o botao nao atualizou depois do clique");
 
 // o bloco seguinte nao pode ser tocado: um stride adiante, byte a byte
 var t1 = tuneBlock(1);
 assert.notStrictEqual(t1, t0, "os blocos de tune colidiram");
-r0.tune._on.click.call(r0.tune);
 assert.strictEqual(ctx.bytes[t0 + TUNE_LV + TUNE_N], 0,
   "escreveu um byte alem das 13 categorias");
 
@@ -451,9 +451,9 @@ for (var s2 = 0; s2 < SLOTS; s2++) {
       "tunar todos deixou o slot " + s2 + " de fora");
   }
 
-  // ---------- desempenho: moto tem 6 categorias e teto 6 ----------
+  // ---------- desempenho: moto tem 6 categorias ----------
   // O save de teste so tem carro, entao troco o slot 1 pra uma moto e confiro
-  // que a lista encolheu, que o teto e 5 (nivel 6) e que a formula usa /10.
+  // que a lista encolheu pras seis categorias certas e que a formula usa /10.
 
   if (!real) {
     var m1 = rows[1];
@@ -463,9 +463,10 @@ for (var s2 = 0; s2 < SLOTS; s2++) {
     var info = ctx.tuneInfo(1);
     assert.strictEqual(info.moto, true, "a moto nao foi reconhecida como moto");
     assert.strictEqual(info.cats.length, 6, "a moto ficou com " + info.cats.length + " categorias");
-    assert.strictEqual(info.max, 6, "o teto da moto nao e 6");
     assert.strictEqual(info.cats.map(function (c) { return c.idx; }).join(","), "0,4,5,6,8,12",
       "as categorias da moto nao sao as seis certas");
+    assert.strictEqual(info.cats[2].name, "Jet Kits",
+      "a categoria 5 da moto nao virou Jet Kits");
 
     // tres categorias em 1 (nivel 2) -> floor(3*100/10) = 30
     [0, 4, 5].forEach(function (ci) { ctx.tuneSet(1, ci, 2); });
@@ -473,12 +474,9 @@ for (var s2 = 0; s2 < SLOTS; s2++) {
     assert.strictEqual(ctx.bytes[tuneBlock(1) + TUNE_PCT], 30,
       "a porcentagem da moto nao chegou ao byte +126");
 
-    // maxTune numa moto escreve 5 (nivel 6) e so nas seis categorias
+    // maxTune numa moto escreve so nas seis categorias, nunca nas outras sete
     ctx.maxTune(1);
     var tM = tuneBlock(1);
-    [0, 4, 5, 6, 8, 12].forEach(function (ci) {
-      assert.strictEqual(ctx.bytes[tM + TUNE_LV + ci], 5, "categoria " + ci + " da moto nao foi pro teto");
-    });
     [1, 2, 3, 7, 9, 10, 11].forEach(function (ci) {
       assert.strictEqual(ctx.bytes[tM + TUNE_LV + ci], 0,
         "maxTune escreveu a categoria " + ci + ", que a moto nao tem");

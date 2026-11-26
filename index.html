@@ -43,6 +43,7 @@
   --cyan:          #29c5c0;
   --cyan-bright:   #5ce6e1;
   --cyan-deep:     #0d3b3a;
+  --sea-green:     #1e7874;
   --yellow:        #e6d528;
   --alert:         #ff5c54;
   --ok:            #57d972;
@@ -822,9 +823,13 @@ input::placeholder { color: var(--ink-faint); }
   background-color: #12171c;
   background-image: linear-gradient(90deg, rgba(41, 197, 192, 0.24) var(--pct, 0%), transparent var(--pct, 0%));
 }
-.slot .tune:hover {
+.slot .tune:not(:disabled):hover {
   border-color: var(--cyan);
   color: var(--ink);
+}
+.slot .tune:disabled {
+  opacity: 0.35;
+  cursor: default;
 }
 .slot .tune[data-full] {
   color: var(--cyan-bright);
@@ -869,6 +874,552 @@ input::placeholder { color: var(--ink-faint); }
   .slot input.lbl { grid-column: 3; }
   .slot input.plate { grid-column: 3; max-width: 110px; }
   .slot .tune { grid-column: 3; max-width: 72px; }
+}
+
+/* ---------- Performance Shop Modal ---------- */
+
+.shop-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(4, 6, 9, 0.86);
+  backdrop-filter: blur(5px);
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.shop-dialog {
+  width: 100%;
+  max-width: 1040px;
+  outline: none;
+  animation: shopPop 200ms var(--out) both;
+}
+
+@keyframes shopPop {
+  from { opacity: 0; transform: translateY(10px) scale(0.985); }
+  to   { opacity: 1; transform: none; }
+}
+
+.shop-header-meta {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.shop-pill {
+  font-family: var(--data);
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 4px;
+  border: 1px solid var(--edge-bright);
+  background: rgba(8, 11, 14, 0.85);
+  color: var(--ink-dim);
+  letter-spacing: 0.05em;
+}
+
+.shop-pill.cyan {
+  border-color: var(--cyan);
+  color: var(--cyan-bright);
+  background: rgba(13, 59, 58, 0.65);
+}
+
+.shop-body {
+  display: grid;
+  grid-template-columns: 310px minmax(0, 1fr);
+  gap: 16px;
+  padding: 14px 18px 16px;
+  align-items: stretch;
+}
+
+@media (max-width: 840px) {
+  .shop-body {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 12px 14px 14px;
+  }
+}
+
+/* Left Column: Vehicle Class, Wireframe, Dyno & Telemetry Bars */
+.shop-telemetry {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid #323b42;
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(16, 21, 26, 0.96) 0%, rgba(10, 13, 17, 0.98) 100%);
+  padding: 12px;
+}
+
+.class-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.class-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.class-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--ink-faint);
+  transition: color 160ms var(--out);
+}
+
+.class-bar {
+  width: 100%;
+  height: 5px;
+  border-radius: 1px;
+  background: #20272d;
+  border: 1px solid #2e373f;
+  transition: background 180ms var(--out), border-color 180ms var(--out), box-shadow 180ms var(--out);
+}
+
+.class-item.lit .class-label {
+  color: var(--cyan-bright);
+}
+
+.class-item.lit .class-bar {
+  background: var(--cyan);
+  border-color: var(--cyan-bright);
+  box-shadow: 0 0 8px rgba(41, 197, 192, 0.45);
+}
+
+.xray-box {
+  position: relative;
+  height: 116px;
+  border: 1px solid #283037;
+  border-radius: 6px;
+  background:
+    linear-gradient(90deg, rgba(41, 197, 192, 0.04) 1px, transparent 1px) 0 0 / 18px 18px,
+    linear-gradient(0deg, rgba(41, 197, 192, 0.04) 1px, transparent 1px) 0 0 / 18px 18px,
+    #080b0e;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.xray-tag {
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  font-family: var(--data);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+}
+
+.xray-box svg {
+  width: 90%;
+  height: 86%;
+}
+
+.dyno-box {
+  border: 1px solid #283037;
+  border-radius: 6px;
+  background: #080b0e;
+  padding: 8px 10px;
+}
+
+.dyno-legend {
+  display: flex;
+  gap: 14px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.dyno-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--ink-dim);
+}
+
+.dyno-swatch {
+  width: 8px;
+  height: 3px;
+  border-radius: 1px;
+}
+
+.dyno-svg {
+  width: 100%;
+  height: 70px;
+  display: block;
+}
+
+/* MCLA 3-layer Performance Bars:
+   1. Sea green (#1e7874): Max potential after full tuning
+   2. Yellow (#e6d528): Current upgrade progress (by tune %)
+   3. Light cyan (#5ce6e1): Stock baseline */
+.perf-bars {
+  display: grid;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.perf-stat {
+  display: grid;
+  gap: 4px;
+}
+
+.perf-stat-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.perf-meter {
+  position: relative;
+  height: 15px;
+  border: 1.5px solid #758088;
+  border-radius: 1px;
+  background: #090c0f;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+}
+
+.perf-max {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  background: var(--sea-green);
+  transition: width 180ms var(--out);
+}
+
+.perf-tuned {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  background: var(--yellow);
+  box-shadow: 0 0 8px rgba(230, 213, 40, 0.45);
+  transition: width 180ms var(--out);
+}
+
+.perf-stock {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 3;
+  background: var(--cyan-bright);
+  transition: width 180ms var(--out);
+}
+
+/* Right Column: Categories Matrix */
+.shop-upgrades {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #323b42;
+  border-radius: 8px;
+  background: var(--panel);
+  overflow: hidden;
+}
+
+.shop-list {
+  max-height: 410px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.shop-row {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr) auto 74px;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px 6px 8px;
+  border-bottom: 1px solid var(--row-line);
+  cursor: pointer;
+  user-select: none;
+  transition: background 110ms var(--out);
+}
+
+.shop-row:last-child {
+  border-bottom: 0;
+}
+
+.shop-row:hover {
+  background: linear-gradient(90deg, rgba(41, 197, 192, 0.14) 0%, transparent 80%);
+}
+
+.shop-row.active {
+  background: linear-gradient(90deg, rgba(41, 197, 192, 0.30) 0%, rgba(41, 197, 192, 0.08) 72%, transparent 100%);
+}
+
+.shop-cursor {
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 8px solid var(--cyan-bright);
+  opacity: 0;
+  transform: translateX(-2px);
+  justify-self: center;
+  transition: opacity 110ms var(--out), transform 110ms var(--out);
+}
+
+.shop-row.active .shop-cursor {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.shop-cat-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.shop-row.active .shop-cat-name {
+  color: var(--cyan-bright);
+  text-shadow: 0 0 10px rgba(92, 230, 225, 0.35);
+}
+
+.lvl-ctrl {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.lvl-arrow {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--ink-faint);
+  font-family: var(--data);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: color 110ms var(--out), border-color 110ms var(--out), background 110ms var(--out);
+}
+
+.shop-row.active .lvl-arrow:not(:disabled) {
+  color: var(--cyan-bright);
+}
+
+.lvl-arrow:not(:disabled):hover {
+  color: var(--cyan-bright);
+  border-color: var(--cyan);
+  background: rgba(41, 197, 192, 0.14);
+}
+
+.lvl-arrow:disabled {
+  opacity: 0.24;
+  cursor: default;
+}
+
+.lvl-cells {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.lvl-cell {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border-radius: 2px;
+  border: 1px solid #48525a;
+  background: #2b3238;
+  color: #041515;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: transform 100ms var(--out), background 120ms var(--out), border-color 120ms var(--out), box-shadow 120ms var(--out);
+}
+
+.lvl-cell:hover {
+  border-color: var(--cyan-bright);
+  transform: scale(1.08);
+}
+
+.lvl-cell.owned {
+  background: #1d8f8b;
+  border-color: var(--cyan);
+}
+
+.lvl-cell.current {
+  background: var(--cyan);
+  border-color: #9bf7f4;
+  box-shadow: 0 0 8px rgba(41, 197, 192, 0.55);
+}
+
+.lvl-cell svg {
+  width: 13px;
+  height: 13px;
+  stroke: #031515;
+  stroke-width: 2.5;
+}
+
+.lvl-badge {
+  font-family: var(--display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-align: center;
+  padding: 2px 6px;
+  border-radius: 2px;
+  border: 1px solid #4c565e;
+  background: #0d1115;
+  color: var(--ink-dim);
+}
+
+.lvl-badge.upgraded {
+  border-color: var(--cyan);
+  color: var(--cyan-bright);
+  background: rgba(13, 59, 58, 0.65);
+}
+
+.shop-summary {
+  margin-top: auto;
+  padding: 10px 14px 12px;
+  border-top: 1px solid #2e363c;
+  background: rgba(10, 13, 17, 0.85);
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.shop-total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.shop-total-val {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--yellow);
+}
+
+.shop-total-val b {
+  font-family: var(--data);
+  font-size: 16px;
+  margin-left: 6px;
+}
+
+.shop-quick-btns {
+  display: flex;
+  gap: 6px;
+}
+
+.shop-legend {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-box {
+  width: 13px;
+  height: 13px;
+  border-radius: 2px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #48525a;
+  background: #2b3238;
+}
+
+.legend-box.owned {
+  background: #1d8f8b;
+  border-color: var(--cyan);
+}
+
+.legend-box.installed {
+  background: var(--cyan);
+  border-color: #9bf7f4;
+}
+
+.shop-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 11px 18px;
+  border-top: 1px solid #353e45;
+  background: linear-gradient(180deg, #13181d 0%, #0b0e11 100%);
+  border-radius: 0 0 10px 10px;
+}
+
+.shop-keyhints {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+
+.keycap {
+  display: inline-block;
+  padding: 1px 6px;
+  margin-right: 4px;
+  border-radius: 3px;
+  border: 1px solid var(--edge-bright);
+  background: #181f26;
+  font-family: var(--data);
+  font-size: 10.5px;
+  color: var(--yellow);
+}
+
+@media (max-width: 560px) {
+  .shop-row {
+    grid-template-columns: 12px minmax(0, 1fr) 64px;
+    row-gap: 6px;
+  }
+  .shop-cat-name { grid-column: 2; }
+  .lvl-badge { grid-column: 3; }
+  .lvl-ctrl { grid-column: 2 / 4; }
 }
 
 /* ---------- Progression Grid ---------- */
@@ -1302,6 +1853,155 @@ input::placeholder { color: var(--ink-faint); }
   </div>
 </div>
 
+<!-- Performance Shop Modal -->
+<div class="shop-backdrop" id="shopModal" hidden role="dialog" aria-modal="true" aria-labelledby="shopTitle">
+  <div class="shop-dialog" id="shopDialog" tabindex="-1">
+    <div class="mcla-frame">
+      <div class="mcla-groove">
+        <div class="mcla-window">
+          <div class="masthead">
+            <div class="badge-disc" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+              </svg>
+            </div>
+            <div class="title-block">
+              <h1 id="shopTitle">PERFORMANCE SHOP</h1>
+              <span class="game-sub" id="shopVehicleSub">VEHICLE</span>
+            </div>
+            <div class="shop-header-meta">
+              <span class="shop-pill" id="shopSlotBadge">SLOT 00</span>
+              <span class="shop-pill" id="shopTypeBadge">CAR</span>
+              <span class="shop-pill cyan" id="shopPctBadge">0%</span>
+            </div>
+          </div>
+
+          <div class="shop-body">
+            <!-- Left Telemetry Column -->
+            <div class="shop-telemetry">
+              <div class="class-strip" id="shopClassStrip">
+                <div class="class-item" data-cls="0">
+                  <span class="class-label">D-CLASS</span>
+                  <span class="class-bar"></span>
+                </div>
+                <div class="class-item" data-cls="1">
+                  <span class="class-label">C-CLASS</span>
+                  <span class="class-bar"></span>
+                </div>
+                <div class="class-item" data-cls="2">
+                  <span class="class-label">B-CLASS</span>
+                  <span class="class-bar"></span>
+                </div>
+                <div class="class-item" data-cls="3">
+                  <span class="class-label">A-CLASS</span>
+                  <span class="class-bar"></span>
+                </div>
+              </div>
+
+              <div class="xray-box">
+                <span class="xray-tag" id="shopXrayTag">CHASSIS TELEMETRY</span>
+                <div id="shopSchematic" style="width:100%;height:100%;display:grid;place-items:center;"></div>
+              </div>
+
+              <div class="dyno-box">
+                <div class="dyno-legend">
+                  <span><i class="dyno-swatch" style="background:#ff5454"></i>TORQUE</span>
+                  <span><i class="dyno-swatch" style="background:#38bdf8"></i>HORSEPOWER</span>
+                </div>
+                <svg class="dyno-svg" id="shopDynoSvg" viewBox="0 0 260 70" preserveAspectRatio="none" aria-hidden="true">
+                  <g stroke="rgba(255,255,255,0.07)" stroke-width="1">
+                    <line x1="0" y1="17.5" x2="260" y2="17.5"/>
+                    <line x1="0" y1="35" x2="260" y2="35"/>
+                    <line x1="0" y1="52.5" x2="260" y2="52.5"/>
+                    <line x1="52" y1="0" x2="52" y2="70"/>
+                    <line x1="104" y1="0" x2="104" y2="70"/>
+                    <line x1="156" y1="0" x2="156" y2="70"/>
+                    <line x1="208" y1="0" x2="208" y2="70"/>
+                  </g>
+                  <path id="dynoTorquePath" fill="none" stroke="#ff5454" stroke-width="2" stroke-linecap="round"/>
+                  <path id="dynoHpPath" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </div>
+
+              <div class="perf-bars">
+                <div class="perf-stat">
+                  <div class="perf-stat-head">
+                    <span>ACCELERATION</span>
+                  </div>
+                  <div class="perf-meter">
+                    <div class="perf-max" id="statAccelMax" style="width:68%"></div>
+                    <div class="perf-tuned" id="statAccelTuned" style="width:32%"></div>
+                    <div class="perf-stock" id="statAccelStock" style="width:32%"></div>
+                  </div>
+                </div>
+                <div class="perf-stat">
+                  <div class="perf-stat-head">
+                    <span>SPEED</span>
+                  </div>
+                  <div class="perf-meter">
+                    <div class="perf-max" id="statSpeedMax" style="width:74%"></div>
+                    <div class="perf-tuned" id="statSpeedTuned" style="width:36%"></div>
+                    <div class="perf-stock" id="statSpeedStock" style="width:36%"></div>
+                  </div>
+                </div>
+                <div class="perf-stat">
+                  <div class="perf-stat-head">
+                    <span>HANDLING</span>
+                  </div>
+                  <div class="perf-meter">
+                    <div class="perf-max" id="statHandMax" style="width:64%"></div>
+                    <div class="perf-tuned" id="statHandTuned" style="width:30%"></div>
+                    <div class="perf-stock" id="statHandStock" style="width:30%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Upgrade Categories Column -->
+            <div class="shop-upgrades">
+              <div class="shop-list" id="shopList" role="listbox" aria-label="Performance categories"></div>
+              <div class="shop-summary">
+                <div class="shop-total-row">
+                  <div class="shop-total-val">
+                    <span data-i18n="shopTuneTotal">TUNE</span>:<b id="shopSummaryPct">0%</b>
+                  </div>
+                  <div class="shop-quick-btns">
+                    <button class="btn mini" id="shopStockBtn" type="button" data-i18n="shopStockAll">Stock all</button>
+                    <button class="btn mini" id="shopAutoBtn" type="button" data-i18n="shopAutoUpgrade">Auto upgrade</button>
+                  </div>
+                </div>
+                <div class="shop-legend">
+                  <span class="legend-item"><span class="legend-box owned"></span><span data-i18n="shopLegOwned">Upgraded</span></span>
+                  <span class="legend-item">
+                    <span class="legend-box installed">
+                      <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="#031515" stroke-width="2.4"><path d="M2 2l8 8M10 2L2 10"/></svg>
+                    </span>
+                    <span data-i18n="shopLegInstalled">Installed</span>
+                  </span>
+                  <span class="legend-item"><span class="legend-box"></span><span data-i18n="shopLegAvail">Available</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="shop-footer">
+            <div class="shop-keyhints">
+              <span><kbd class="keycap">&uarr;&darr;</kbd><span data-i18n="shopHintCat">Category</span></span>
+              <span><kbd class="keycap">&larr;&rarr;</kbd><span data-i18n="shopHintLvl">Level</span></span>
+              <span><kbd class="keycap">ESC</kbd><span data-i18n="shopCancel">Cancel</span></span>
+              <span><kbd class="keycap">ENTER</kbd><span data-i18n="shopAccept">Accept</span></span>
+            </div>
+            <div class="bar-actions">
+              <button class="btn" id="shopCancelBtn" type="button" data-i18n="shopCancel">Cancel</button>
+              <button class="btn primary" id="shopAcceptBtn" type="button" data-i18n="shopAccept">Accept</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 "use strict";
 
@@ -1357,9 +2057,14 @@ var STR = {
     orphanTitle: "{0} carro(s) fora de alcance.",
     orphanBody: "O jogo para no slot {0}. Preencha os vazios antes deles ou mova os carros para cima.",
     aCar: "Carro do slot {0}", aLabel: "Rotulo do slot {0}", aPlate: "Placa do slot {0}",
-    maxAll: "Tunar todos", aTune: "Maximizar o desempenho do carro do slot {0}",
+    maxAll: "Tunar todos", aTune: "Abrir Performance Shop do slot {0}",
     aClear: "Limpar slot {0}",
-    aProg: "Progressao {0}", aValue: "Valor de {0}"
+    aProg: "Progressao {0}", aValue: "Valor de {0}",
+    shopTuneTotal: "TUNING", shopStockAll: "Stock tudo", shopAutoUpgrade: "Auto upgrade",
+    shopLegOwned: "Comprado", shopLegInstalled: "Instalado", shopLegAvail: "Disponivel",
+    shopHintCat: "Categoria", shopHintLvl: "Nivel",
+    shopCancel: "Cancelar", shopAccept: "Aplicar",
+    shopCarBadge: "CARRO · 13 CAT", shopBikeBadge: "MOTO · 6 CAT"
   },
   en: {
     app: "Save Editor", noFile: "no file open",
@@ -1402,9 +2107,14 @@ var STR = {
     orphanTitle: "{0} car(s) out of reach.",
     orphanBody: "The game stops at slot {0}. Fill the empty slots before them, or move the cars up.",
     aCar: "Car in slot {0}", aLabel: "Label for slot {0}", aPlate: "Plate for slot {0}",
-    maxAll: "Max all", aTune: "Max out performance for the car in slot {0}",
+    maxAll: "Max all", aTune: "Open Performance Shop for slot {0}",
     aClear: "Clear slot {0}",
-    aProg: "Progression {0}", aValue: "Value of {0}"
+    aProg: "Progression {0}", aValue: "Value of {0}",
+    shopTuneTotal: "TUNE", shopStockAll: "Stock all", shopAutoUpgrade: "Auto upgrade",
+    shopLegOwned: "Owned", shopLegInstalled: "Installed", shopLegAvail: "Available",
+    shopHintCat: "Category", shopHintLvl: "Level",
+    shopCancel: "Cancel", shopAccept: "Accept",
+    shopCarBadge: "CAR · 13 CATS", shopBikeBadge: "BIKE · 6 CATS"
   },
   ru: {
     app: "Редактор сохранений", noFile: "файл не открыт",
@@ -1447,9 +2157,14 @@ var STR = {
     orphanTitle: "Недоступных машин после пустого слота: {0}.",
     orphanBody: "Игра читает слоты только до {0}. Заполните пустые слоты перед ними или перенесите машины выше.",
     aCar: "Машина в слоте {0}", aLabel: "Название в слоте {0}", aPlate: "Номер в слоте {0}",
-    maxAll: "Тюнинг всех", aTune: "Максимальный тюнинг для слота {0}",
+    maxAll: "Тюнинг всех", aTune: "Открыть Performance Shop для слота {0}",
     aClear: "Очистить слот {0}",
-    aProg: "Прогресс {0}", aValue: "Значение {0}"
+    aProg: "Прогресс {0}", aValue: "Значение {0}",
+    shopTuneTotal: "ТЮНИНГ", shopStockAll: "Сброс (Stock)", shopAutoUpgrade: "Авто-тюнинг",
+    shopLegOwned: "Куплено", shopLegInstalled: "Установлено", shopLegAvail: "Доступно",
+    shopHintCat: "Категория", shopHintLvl: "Уровень",
+    shopCancel: "Отмена", shopAccept: "Применить",
+    shopCarBadge: "АВТО · 13 КАТ", shopBikeBadge: "МОТО · 6 КАТ"
   }
 };
 
@@ -1556,6 +2271,65 @@ var CAR_TITLES = {
   vp_vw_scirocco_88: "1988 Volkswagen Scirocco"
 };
 
+/* Заготовки стоковых (stock) и максимальных (max) характеристик для полосок
+   в Performance Shop.
+   Формат для каждой машины:
+   { accel: [stock, max], speed: [stock, max], hand: [stock, max] } (значения 0..100).
+   Пока стоит null, используются DEFAULT_CAR_PERF или DEFAULT_MOTO_PERF. */
+var DEFAULT_CAR_PERF  = { accel: [34, 66], speed: [38, 70], hand: [28, 56] };
+var DEFAULT_MOTO_PERF = { accel: [65, 86], speed: [40, 56], hand: [48, 72] };
+
+var VEHICLE_PERF_STATS = {
+  vp_am_vantage_07: { accel: [37, 46], speed: [69, 88], hand: [47, 66] },
+  vp_aud_r8_08: null,
+  vp_aud_rs4_07: { accel: [31, 42], speed: [48, 76], hand: [36, 52] },
+  vp_buk_grandnational_87: { accel: [25, 40], speed: [35, 56], hand: [19, 31] },
+  vp_chv_camaro_06: { accel: [32, 43], speed: [44, 70], hand: [40, 56] },
+  vp_chv_camaro_06_DUB: { accel: [37, 43], speed: [55, 70], hand: [48, 56] },
+  vp_chv_camaross_69: { accel: [31, 50], speed: [37, 60], hand: [23, 36] },
+  vp_chv_cobalt_05: { accel: [30, 39], speed: [34, 54], hand: [27, 47] },
+  vp_chv_corvettez06_07: { accel: [49, 66], speed: [67, 89], hand: [63, 79] },
+  vp_chv_impala_96: { accel: [23, 33], speed: [35, 57], hand: [20, 29] },
+  vp_chv_police_96: { accel: [23, 33], speed: [35, 57], hand: [46, 76] },
+  vp_citybus_07: null,
+  vp_cry_300c_06: { accel: [32, 43], speed: [53, 76], hand: [32, 43] },
+  vp_dge_challenger_06: { accel: [33, 46], speed: [53, 76], hand: [41, 57] },
+  vp_dge_challenger_06_DUB: { accel: [35, 46], speed: [62, 76], hand: [48, 57] },
+  vp_dge_challenger_70: { accel: [40, 56], speed: [31, 56], hand: [23, 36] },
+  vp_dge_charger_06: { accel: [31, 43], speed: [51, 72], hand: [35, 55] },
+  vp_dsn_280z_75: { accel: [19, 30], speed: [24, 48], hand: [15, 36] },
+  vp_duc_999r_06: { accel: [77, 91], speed: [54, 66], hand: [60, 73] },
+  vp_duc_monster_s4r_07: { accel: [66, 78], speed: [39, 51], hand: [50, 64] },
+  vp_frd_boss302_69: { accel: [29, 42], speed: [31, 53], hand: [23, 35] },
+  vp_frd_cobra_04: { accel: [57, 68], speed: [67, 92], hand: [64, 79] },
+  vp_frd_focus_04: { accel: [22, 35], speed: [38, 54], hand: [27, 49] },
+  vp_frd_gt_06: { accel: [49, 66], speed: [72, 93], hand: [69, 84] },
+  vp_frd_mustang_06: { accel: [32, 50], speed: [44, 65], hand: [35, 50] },
+  vp_kaw_ninja_zx14_06: { accel: [87, 97], speed: [84, 96], hand: [87, 93] },
+  vp_lam_gallardo_06: { accel: [43, 60], speed: [69, 89], hand: [71, 82] },
+  vp_lam_miura_71: { accel: [40, 50], speed: [61, 88], hand: [57, 71] },
+  vp_lam_murcielago_06: { accel: [43, 59], speed: [75, 93], hand: [76, 86] },
+  vp_lam_murcielago_06_DUB: { accel: [47, 55], speed: [83, 93], hand: [80, 86] },
+  vp_mbz_s600_07: { accel: [36, 47], speed: [61, 80], hand: [37, 52] },
+  vp_mbz_s600_07_DUB: { accel: [40, 47], speed: [70, 84], hand: [44, 52] },
+  vp_mbz_sl65_07: { accel: [42, 55], speed: [65, 84], hand: [54, 70] },
+  vp_mit_3000gt_99: { accel: [23, 33], speed: [46, 72], hand: [38, 67] },
+  vp_mit_eclipse_99: { accel: [22, 26], speed: [27, 50], hand: [32, 48] },
+  vp_mit_evo_06: { accel: [28, 42], speed: [52, 79], hand: [51, 69] },
+  vp_mzd_rx7_95: { accel: [28, 39], speed: [47, 73], hand: [48, 65] },
+  vp_mzd_rx8_06: { accel: [22, 31], speed: [38, 58], hand: [30, 50] },
+  vp_nsn_240sx_98: { accel: [15, 23], speed: [14, 39], hand: [17, 25] },
+  vp_nsn_350z_06: { accel: [27, 37], speed: [44, 72], hand: [44, 64] },
+  vp_nsn_skyline_99: { accel: [27, 40], speed: [50, 76], hand: [40, 63] },
+  vp_pon_solstice_06: { accel: [26, 34], speed: [34, 53], hand: [29, 46] },
+  vp_pon_transam_79: { accel: [24, 42], speed: [37, 56], hand: [16, 29] },
+  vp_sln_s281_06: { accel: [35, 49], speed: [56, 77], hand: [57, 71] },
+  vp_sln_s7_06: { accel: [69, 84], speed: [73, 94], hand: [74, 84] },
+  vp_vw_golf_07: { accel: [25, 40], speed: [48, 75], hand: [40, 57] },
+  vp_vw_golf_83: { accel: [18, 28], speed: [37, 49], hand: [23, 39] },
+  vp_vw_scirocco_88: { accel: [23, 37], speed: [30, 48], hand: [13, 27] },
+};
+
 var bytes = null, view = null, secs = null, fileName = "mc4.sav";
 var el = function (id) { return document.getElementById(id); };
 
@@ -1615,8 +2389,8 @@ function tuneAt(n) { return sec("LocalOptions").data + OFF.tuneBase + n * OFF.sl
 
 /* ---------- performance upgrades ----------
    Thirteen category bytes at +95, level = byte + 1 (0 stock, 1 level 2,
-   2 level 3). Motorcycles use only six of the same bytes and top out at
-   level 6 (byte 5). The tune % at +126 is derived, not stored by the player:
+   2 level 3). Motorcycles use 6 of the same bytes, also 3 levels (byte 0..2).
+   The tune % at +126 is derived, not stored by the player:
    the LAST category (Tires) never counts, so the divisor is 2*(n-1). */
 
 var TUNE_CATS = [
@@ -1635,8 +2409,8 @@ function isMoto(car) { return !!MOTO[car]; }
 /* The category list a vehicle actually has, as TUNE_CATS indexes. */
 function tuneCatIdx(car) { return isMoto(car) ? MOTO_CATS : TUNE_CATS.map(function (_, i) { return i; }); }
 
-/* Highest byte value the vehicle accepts: 2 for cars, 5 for motorcycles. */
-function tuneMaxByte(car) { return isMoto(car) ? 5 : 2; }
+/* Highest byte value the vehicle accepts: 2 (3 levels: Stock, LVL 2, LVL 3). */
+function tuneMaxByte(car) { return 2; }
 
 /* Human level, 1-based, straight from the byte. */
 function tuneLevel(byte) { return byte + 1; }
@@ -1645,10 +2419,7 @@ function tunePctAt(n) {
   var car = readSlot(n).car;
   var idx = tuneCatIdx(car);
   var sum = 0;
-  for (var i = 0; i < idx.length - 1; i++) sum += bytes[tuneAt(n) + OFF.tuneLv + idx[i]];
-  /* The divisor is always 2*(n-1): the formula is calibrated to level 3
-     (byte 2) even on a motorcycle, which can reach byte 5. Such a bike
-     computes over 100, so clamp — the stored byte is 0..100. */
+  for (var i = 0; i < idx.length - 1; i++) sum += Math.min(2, bytes[tuneAt(n) + OFF.tuneLv + idx[i]]);
   return Math.max(0, Math.min(100, Math.floor(sum * 100 / (2 * (idx.length - 1)))));
 }
 
@@ -1675,17 +2446,20 @@ function maxTune(n) {
 /* Everything the UI needs about one slot's tune, in one object. */
 function tuneInfo(n) {
   var car = readSlot(n).car;
+  var moto = isMoto(car);
   var idx = tuneCatIdx(car);
   var max = tuneMaxByte(car);
   var cats = idx.map(function (ci) {
+    var catTitle = (moto && ci === 5) ? "Jet Kits" : TUNE_CATS[ci];
+    var rawLv = tuneLevel(bytes[tuneAt(n) + OFF.tuneLv + ci]);
     return {
       idx: ci,
-      name: TUNE_CATS[ci],
-      level: tuneLevel(bytes[tuneAt(n) + OFF.tuneLv + ci]),
+      name: catTitle,
+      level: Math.max(1, Math.min(max + 1, rawLv)),
       max: max + 1
     };
   });
-  return { car: car, moto: isMoto(car), cats: cats, pct: tunePctAt(n), max: max + 1 };
+  return { car: car, moto: moto, cats: cats, pct: tunePctAt(n), max: max + 1 };
 }
 
 function slotCount() {
@@ -1874,7 +2648,7 @@ function render() {
       '<input class="lbl" type="text" maxlength="31" placeholder="LABEL" data-label="' + n + '" aria-label="' + t("aLabel", n) + '">' +
       '<input class="plate" type="text" maxlength="7" pattern="[A-Z0-9]{7}" placeholder="PLATE" data-plate="' + n + '" aria-label="' + t("aPlate", n) + '">' +
       '<button class="btn mini tune" type="button" data-tune="' + n + '" style="--pct:' + ti.pct + '%" aria-label="' + t("aTune", n) + '"' +
-      (ti.pct === 100 ? " data-full" : "") + ">" + ti.pct + "%</button>" +
+      (!s.car ? " disabled" : "") + (ti.pct === 100 ? " data-full" : "") + ">" + ti.pct + "%</button>" +
       '<button class="btn-clear" type="button" data-clear="' + n + '" title="' + t("aClear", n) + '" aria-label="' + t("aClear", n) + '">x</button>';
     host.appendChild(row);
     row.querySelector("select").value = s.car;
@@ -1938,10 +2712,12 @@ function render() {
   function paintTune() {
     host.querySelectorAll("button.tune").forEach(function (b) {
       var n = +b.dataset.tune;
+      var hasCar = !!readSlot(n).car;
       var pct = tuneOf(n);
+      b.disabled = !hasCar;
       b.textContent = pct + "%";
       b.style.setProperty("--pct", pct + "%");
-      if (pct === 100) b.setAttribute("data-full", ""); else b.removeAttribute("data-full");
+      if (hasCar && pct === 100) b.setAttribute("data-full", ""); else b.removeAttribute("data-full");
     });
     /* A slot's vehicle type decides how many categories it has, so the
        row's moto class has to follow the select, not just the initial paint. */
@@ -1951,12 +2727,14 @@ function render() {
     });
   }
 
+  window.refreshGarageTune = paintTune;
+
   paintTune();
   host.querySelectorAll("button.tune").forEach(function (b) {
     b.addEventListener("click", function () {
-      maxTune(+b.dataset.tune);
-      paintTune();
-      mark();
+      var n = +b.dataset.tune;
+      if (!readSlot(n).car) return;
+      openPerformanceShop(n, b);
     });
   });
 
@@ -2045,6 +2823,363 @@ function bindIntField(inp, offset) {
   };
 }
 
+// ---------- Performance Shop Modal ----------
+
+var SHOP_STATE = null;
+
+function isShopOpen() {
+  return !el("shopModal").hidden && SHOP_STATE !== null;
+}
+
+function getVehiclePerfProfile(car, moto) {
+  var custom = VEHICLE_PERF_STATS[car];
+  var fallback = moto ? DEFAULT_MOTO_PERF : DEFAULT_CAR_PERF;
+  if (!custom) return fallback;
+  return {
+    accel: Array.isArray(custom.accel) && custom.accel.length === 2 ? custom.accel : fallback.accel,
+    speed: Array.isArray(custom.speed) && custom.speed.length === 2 ? custom.speed : fallback.speed,
+    hand:  Array.isArray(custom.hand)  && custom.hand.length === 2  ? custom.hand  : fallback.hand
+  };
+}
+
+function buildWireframeSvg(moto, engineGlow, suspGlow) {
+  var eColor = engineGlow ? "#5ce6e1" : "#3b565e";
+  var sColor = suspGlow ? "#29c5c0" : "#2f434a";
+  if (moto) {
+    return (
+      '<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">' +
+      '<g stroke="#4b5a63" stroke-width="1.4">' +
+      '<circle cx="52" cy="70" r="22"/><circle cx="52" cy="70" r="14" stroke-dasharray="3 3"/>' +
+      '<circle cx="206" cy="70" r="22"/><circle cx="206" cy="70" r="14" stroke-dasharray="3 3"/>' +
+      '<path d="M52 70 L98 48 L152 44 L182 26 L195 26"/>' +
+      '<path d="M180 26 L206 70"/>' +
+      '<path d="M98 48 L124 72 L158 68 L174 44"/>' +
+      '<path d="M72 44 L112 36 L146 34 L176 22 L192 34 L166 52"/>' +
+      '</g>' +
+      '<g stroke="' + eColor + '" stroke-width="1.8">' +
+      '<rect x="122" y="48" width="34" height="22" rx="3" fill="rgba(41,197,192,0.12)"/>' +
+      '<path d="M126 68 L92 74 L68 64"/>' +
+      '</g>' +
+      '<g stroke="' + sColor + '" stroke-width="1.6">' +
+      '<line x1="176" y1="30" x2="202" y2="66"/>' +
+      '<line x1="96" y1="50" x2="118" y2="68"/>' +
+      '</g>' +
+      '</svg>'
+    );
+  }
+  return (
+    '<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">' +
+    '<g stroke="#4b5a63" stroke-width="1.3">' +
+    '<path d="M24 34 Q24 22 44 20 L212 20 Q236 22 238 36 L238 64 Q236 78 212 80 L44 80 Q24 78 24 66 Z"/>' +
+    '<path d="M78 24 L164 24 L182 32 L182 68 L164 76 L78 76 L62 66 L62 34 Z" stroke-opacity="0.65"/>' +
+    '<rect x="44" y="13" width="34" height="8" rx="2"/><rect x="44" y="79" width="34" height="8" rx="2"/>' +
+    '<rect x="178" y="13" width="34" height="8" rx="2"/><rect x="178" y="79" width="34" height="8" rx="2"/>' +
+    '</g>' +
+    '<g stroke="' + sColor + '" stroke-width="1.6">' +
+    '<line x1="61" y1="21" x2="61" y2="79"/>' +
+    '<line x1="195" y1="21" x2="195" y2="79"/>' +
+    '</g>' +
+    '<g stroke="' + eColor + '" stroke-width="1.8">' +
+    '<rect x="174" y="36" width="36" height="28" rx="3" fill="rgba(41,197,192,0.14)"/>' +
+    '<line x1="61" y1="50" x2="174" y2="50"/>' +
+    '<path d="M174 42 L134 38 L42 38 L26 34"/>' +
+    '<path d="M174 58 L134 62 L42 62 L26 66"/>' +
+    '</g>' +
+    '</svg>'
+  );
+}
+
+function calcShopMetrics() {
+  var st = SHOP_STATE;
+  var n = st.cats.length;
+  var sum = 0;
+  for (var i = 0; i < n - 1; i++) sum += (st.cats[i].level - 1);
+  var pct = Math.max(0, Math.min(100, Math.floor(sum * 100 / (2 * (n - 1)))));
+
+  /* Normalized progress for schematic highlights */
+  var byIdx = {};
+  st.cats.forEach(function (c) {
+    byIdx[c.idx] = (c.level - 1) / Math.max(1, c.max - 1);
+  });
+
+  var pwrKeys = st.moto ? [0, 4, 5, 6] : [0, 1, 2, 3, 4, 5, 6];
+  var hndKeys = st.moto ? [8, 12] : [9, 10, 11, 12];
+
+  function avgNorm(keys) {
+    var acc = 0;
+    for (var k = 0; k < keys.length; k++) acc += (byIdx[keys[k]] || 0);
+    return keys.length ? acc / keys.length : 0;
+  }
+
+  var pwr = avgNorm(pwrKeys);
+  var hnd = avgNorm(hndKeys);
+
+  /* 3-layer bars: stock (light cyan), max (sea green), tuned (yellow by pct) */
+  var prof = getVehiclePerfProfile(st.car, st.moto);
+  var ratio = pct / 100;
+
+  var accelStock = Math.max(0, Math.min(100, prof.accel[0]));
+  var accelMax   = Math.max(accelStock, Math.min(100, prof.accel[1]));
+  var accelTuned = accelStock + (accelMax - accelStock) * ratio;
+
+  var speedStock = Math.max(0, Math.min(100, prof.speed[0]));
+  var speedMax   = Math.max(speedStock, Math.min(100, prof.speed[1]));
+  var speedTuned = speedStock + (speedMax - speedStock) * ratio;
+
+  var handStock  = Math.max(0, Math.min(100, prof.hand[0]));
+  var handMax    = Math.max(handStock, Math.min(100, prof.hand[1]));
+  var handTuned  = handStock + (handMax - handStock) * ratio;
+
+  return {
+    pct: pct,
+    pwr: pwr,
+    hnd: hnd,
+    accelStock: accelStock,
+    accelTuned: accelTuned,
+    accelMax: accelMax,
+    speedStock: speedStock,
+    speedTuned: speedTuned,
+    speedMax: speedMax,
+    handStock: handStock,
+    handTuned: handTuned,
+    handMax: handMax
+  };
+}
+
+function renderShopTelemetry() {
+  var m = calcShopMetrics();
+  el("shopPctBadge").textContent = m.pct + "%";
+  el("shopSummaryPct").textContent = m.pct + "%";
+
+  /* Class indicator strip (D, C, B, A) */
+  var litCount = m.pct >= 85 ? 4 : (m.pct >= 55 ? 3 : (m.pct >= 25 ? 2 : 1));
+  el("shopClassStrip").querySelectorAll(".class-item").forEach(function (item) {
+    var idx = +item.dataset.cls;
+    item.classList.toggle("lit", idx < litCount);
+  });
+
+  /* Wireframe highlight */
+  el("shopSchematic").innerHTML = buildWireframeSvg(SHOP_STATE.moto, m.pwr > 0.05, m.hnd > 0.05);
+
+  /* Dyno Torque & Horsepower curves */
+  var lift = (m.pct / 100) * 32;
+  var tPts = [
+    [8, 56 - lift * 0.45],
+    [54, 45 - lift * 0.75],
+    [108, 39 - lift * 0.92],
+    [164, 37 - lift],
+    [212, 42 - lift * 0.95],
+    [252, 51 - lift * 0.7]
+  ];
+  var hPts = [
+    [8, 61 - lift * 0.35],
+    [58, 53 - lift * 0.65],
+    [116, 46 - lift * 0.85],
+    [172, 40 - lift * 0.98],
+    [220, 37 - lift],
+    [252, 44 - lift * 0.82]
+  ];
+  function toPath(pts) {
+    return pts.map(function (p, i) {
+      return (i === 0 ? "M" : "L") + p[0].toFixed(1) + " " + Math.max(4, Math.min(66, p[1])).toFixed(1);
+    }).join(" ");
+  }
+  el("dynoTorquePath").setAttribute("d", toPath(tPts));
+  el("dynoHpPath").setAttribute("d", toPath(hPts));
+
+  /* 3-layer Performance Bars */
+  el("statAccelMax").style.width   = m.accelMax.toFixed(1) + "%";
+  el("statAccelTuned").style.width = m.accelTuned.toFixed(1) + "%";
+  el("statAccelStock").style.width = m.accelStock.toFixed(1) + "%";
+
+  el("statSpeedMax").style.width   = m.speedMax.toFixed(1) + "%";
+  el("statSpeedTuned").style.width = m.speedTuned.toFixed(1) + "%";
+  el("statSpeedStock").style.width = m.speedStock.toFixed(1) + "%";
+
+  el("statHandMax").style.width    = m.handMax.toFixed(1) + "%";
+  el("statHandTuned").style.width  = m.handTuned.toFixed(1) + "%";
+  el("statHandStock").style.width  = m.handStock.toFixed(1) + "%";
+}
+
+function renderShopRows() {
+  var list = el("shopList");
+  list.innerHTML = "";
+  var xSvg = '<svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.2 2.2l7.6 7.6M9.8 2.2l-7.6 7.6"/></svg>';
+
+  SHOP_STATE.cats.forEach(function (cat, rIdx) {
+    var row = document.createElement("div");
+    row.className = "shop-row" + (rIdx === SHOP_STATE.activeRow ? " active" : "");
+    row.setAttribute("role", "option");
+    row.setAttribute("aria-selected", rIdx === SHOP_STATE.activeRow ? "true" : "false");
+    row.dataset.row = rIdx;
+
+    var cur = document.createElement("span");
+    cur.className = "shop-cursor";
+    cur.setAttribute("aria-hidden", "true");
+
+    var name = document.createElement("span");
+    name.className = "shop-cat-name";
+    name.textContent = cat.name;
+
+    var ctrl = document.createElement("div");
+    ctrl.className = "lvl-ctrl";
+
+    var prevBtn = document.createElement("button");
+    prevBtn.type = "button";
+    prevBtn.className = "lvl-arrow";
+    prevBtn.tabIndex = -1;
+    prevBtn.textContent = "<";
+    prevBtn.disabled = cat.level <= 1;
+    prevBtn.setAttribute("aria-label", cat.name + " -1");
+    prevBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      SHOP_STATE.activeRow = rIdx;
+      setShopCategoryLevel(rIdx, cat.level - 1);
+    });
+
+    var cells = document.createElement("div");
+    cells.className = "lvl-cells";
+    for (var lv = 1; lv <= cat.max; lv++) {
+      (function (targetLv) {
+        var cell = document.createElement("button");
+        cell.type = "button";
+        cell.tabIndex = -1;
+        cell.className = "lvl-cell" +
+          (targetLv === cat.level ? " current" : (targetLv < cat.level ? " owned" : ""));
+        cell.title = targetLv === 1 ? "Stock" : ("Level " + targetLv);
+        cell.setAttribute("aria-label", cat.name + " " + (targetLv === 1 ? "Stock" : ("Level " + targetLv)));
+        if (targetLv === cat.level) cell.innerHTML = xSvg;
+        cell.addEventListener("click", function (e) {
+          e.stopPropagation();
+          SHOP_STATE.activeRow = rIdx;
+          setShopCategoryLevel(rIdx, targetLv);
+        });
+        cells.appendChild(cell);
+      })(lv);
+    }
+
+    var nextBtn = document.createElement("button");
+    nextBtn.type = "button";
+    nextBtn.className = "lvl-arrow";
+    nextBtn.tabIndex = -1;
+    nextBtn.textContent = ">";
+    nextBtn.disabled = cat.level >= cat.max;
+    nextBtn.setAttribute("aria-label", cat.name + " +1");
+    nextBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      SHOP_STATE.activeRow = rIdx;
+      setShopCategoryLevel(rIdx, cat.level + 1);
+    });
+
+    ctrl.appendChild(prevBtn);
+    ctrl.appendChild(cells);
+    ctrl.appendChild(nextBtn);
+
+    var badge = document.createElement("span");
+    badge.className = "lvl-badge" + (cat.level > 1 ? " upgraded" : "");
+    badge.textContent = cat.level === 1 ? "Stock" : ("LVL " + cat.level);
+
+    row.appendChild(cur);
+    row.appendChild(name);
+    row.appendChild(ctrl);
+    row.appendChild(badge);
+
+    row.addEventListener("click", function () {
+      SHOP_STATE.activeRow = rIdx;
+      renderShopRows();
+    });
+
+    list.appendChild(row);
+  });
+
+  var activeEl = list.children[SHOP_STATE.activeRow];
+  if (activeEl) activeEl.scrollIntoView({ block: "nearest" });
+  renderShopTelemetry();
+}
+
+function setShopCategoryLevel(rIdx, nextLv) {
+  if (!SHOP_STATE) return;
+  var cat = SHOP_STATE.cats[rIdx];
+  if (!cat) return;
+  cat.level = Math.max(1, Math.min(cat.max, nextLv));
+  renderShopRows();
+}
+
+function openPerformanceShop(slotIdx, triggerBtn) {
+  var slotData = readSlot(slotIdx);
+  if (!slotData.car) return;
+  var info = tuneInfo(slotIdx);
+  var title = CAR_TITLES[slotData.car] || slotData.label || slotData.car;
+
+  SHOP_STATE = {
+    slot: slotIdx,
+    trigger: triggerBtn || null,
+    car: slotData.car,
+    moto: info.moto,
+    max: info.max,
+    activeRow: 0,
+    cats: info.cats.map(function (c) {
+      return {
+        idx: c.idx,
+        name: c.name,
+        level: c.level,
+        origLevel: c.level,
+        max: c.max
+      };
+    })
+  };
+
+  el("shopVehicleSub").textContent = title.toUpperCase();
+  el("shopSlotBadge").textContent = "SLOT " + (slotIdx < 10 ? "0" : "") + slotIdx;
+  el("shopTypeBadge").textContent = t(info.moto ? "shopBikeBadge" : "shopCarBadge");
+  el("shopXrayTag").textContent = info.moto ? "SPORTBIKE TELEMETRY" : "CHASSIS TELEMETRY";
+
+  renderShopRows();
+  el("shopModal").hidden = false;
+  el("shopDialog").focus();
+}
+
+function closePerformanceShop(commit) {
+  if (!SHOP_STATE) return;
+  var st = SHOP_STATE;
+  if (commit) {
+    var changed = false;
+    st.cats.forEach(function (c) {
+      if (c.level !== c.origLevel) changed = true;
+      tuneSet(st.slot, c.idx, c.level);
+    });
+    if (typeof window.refreshGarageTune === "function") window.refreshGarageTune();
+    if (changed) mark();
+  }
+  SHOP_STATE = null;
+  el("shopModal").hidden = true;
+  if (st.trigger && typeof st.trigger.focus === "function") st.trigger.focus();
+}
+
+el("shopStockBtn").addEventListener("click", function () {
+  if (!SHOP_STATE) return;
+  SHOP_STATE.cats.forEach(function (c) { c.level = 1; });
+  renderShopRows();
+});
+
+el("shopAutoBtn").addEventListener("click", function () {
+  if (!SHOP_STATE) return;
+  SHOP_STATE.cats.forEach(function (c) { c.level = c.max; });
+  renderShopRows();
+});
+
+el("shopCancelBtn").addEventListener("click", function () {
+  closePerformanceShop(false);
+});
+
+el("shopAcceptBtn").addEventListener("click", function () {
+  closePerformanceShop(true);
+});
+
+el("shopModal").addEventListener("click", function (e) {
+  if (e.target === el("shopModal")) closePerformanceShop(false);
+});
+
 // ---------- Time Conversion ----------
 
 function msToText(ms) {
@@ -2118,6 +3253,9 @@ function applyLang() {
   if (bytes) {
     render();
     setTab(ACTIVE_TAB);
+  }
+  if (isShopOpen()) {
+    el("shopTypeBadge").textContent = t(SHOP_STATE.moto ? "shopBikeBadge" : "shopCarBadge");
   }
   setFileTag();
 }
@@ -2595,6 +3733,46 @@ if (document.fonts && document.fonts.ready) {
 }
 
 document.addEventListener("keydown", function (e) {
+  if (isShopOpen()) {
+    var totalCats = SHOP_STATE.cats.length;
+    if (e.key === "Escape") {
+      e.preventDefault();
+      closePerformanceShop(false);
+      return;
+    }
+    if (e.key === "Enter") {
+      if (e.target === el("shopCancelBtn") || e.target === el("shopStockBtn") || e.target === el("shopAutoBtn")) {
+        return;
+      }
+      e.preventDefault();
+      closePerformanceShop(true);
+      return;
+    }
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      SHOP_STATE.activeRow = (SHOP_STATE.activeRow - 1 + totalCats) % totalCats;
+      renderShopRows();
+      return;
+    }
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      SHOP_STATE.activeRow = (SHOP_STATE.activeRow + 1) % totalCats;
+      renderShopRows();
+      return;
+    }
+    if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      setShopCategoryLevel(SHOP_STATE.activeRow, SHOP_STATE.cats[SHOP_STATE.activeRow].level - 1);
+      return;
+    }
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      setShopCategoryLevel(SHOP_STATE.activeRow, SHOP_STATE.cats[SHOP_STATE.activeRow].level + 1);
+      return;
+    }
+    return;
+  }
+
   var active = document.activeElement;
   var tag = (active && active.tagName) || "";
   var isFormField = tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA";
