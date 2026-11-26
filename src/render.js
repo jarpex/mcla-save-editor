@@ -60,6 +60,7 @@ function render() {
       writeField(o, 32, val);
       lbl.value = autoLabel(val);
       writeField(o + OFF.slotLabel, 33, lbl.value);
+      writeAppearance(o, val);
     } else {
       writeField(o, 32, "blank");
       lbl.value = "";

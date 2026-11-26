@@ -23,6 +23,15 @@ function writeField(at, width, text) {
   }
 }
 
+/* Grades os bytes de aparencia (rodas e detalhes) que a jogo escreve quando
+   voce compra o carro. Sem isso o carro novo herda as rodas e o kit do
+   ocupante anterior do slot. */
+function writeAppearance(at, prefab) {
+  var preset = STOCK_APPEARANCE[prefab];
+  if (!preset) return;
+  for (var i = 0; i < OFF.appear.length; i++) bytes[at + OFF.appear[i]] = preset[i];
+}
+
 function parse(buf) {
   var b = new Uint8Array(buf), dv = new DataView(buf), list = [], o = 8;
   while (o + 4 <= b.length) {

@@ -375,14 +375,26 @@ function str(at, n) {
 var r1 = rows[1];
 assert.strictEqual(typeof r1.sel._on.change, "function", "o select do slot nao foi ligado");
 
-r1.sel.value = "vp_aud_r8_08";
+r1.sel.value = "vp_aud_rs4_07";
 r1.sel._on.change.call(r1.sel);
 
 var slot1 = ctx.slotAt(1);
-assert.strictEqual(str(slot1, 12), "vp_aud_r8_08", "o nome do prefab nao foi gravado");
-assert.strictEqual(ctx.bytes[slot1 + 12], 0, "faltou o terminador depois do nome");
-assert.strictEqual(ctx.bytes[slot1 + 13], 0xCD, "o preenchimento depois do nome nao e 0xCD");
+assert.strictEqual(str(slot1, 13), "vp_aud_rs4_07", "o nome do prefab nao foi gravado");
+assert.strictEqual(ctx.bytes[slot1 + 13], 0, "faltou o terminador depois do nome");
+assert.strictEqual(ctx.bytes[slot1 + 14], 0xCD, "o preenchimento depois do nome nao e 0xCD");
 assert.ok(r1.lbl.value.length > 0, "o rotulo automatico nao foi preenchido");
+
+// a aparencia (rodas + detalhes) tem que vir do preset de stock, senao o
+// carro novo herda as rodas e o kit de quem estava no slot antes
+var APPEAR = [446, 450, 454, 458, 1734, 1782, 1830, 1878, 1926, 1974, 2177, 2178];
+var preset = ctx.STOCK_APPEARANCE["vp_aud_rs4_07"];
+assert.ok(preset, "a tabela STOCK_APPEARANCE nao carregou");
+{
+  for (var ai = 0; ai < APPEAR.length; ai++) {
+    assert.strictEqual(ctx.bytes[slot1 + APPEAR[ai]], preset[ai],
+      "a aparencia nao foi gravada em +" + APPEAR[ai]);
+  }
+}
 
 // esvaziar de volta grava "blank", que e o que o jogo poe num slot vazio
 r1.sel.value = "";
