@@ -26,7 +26,7 @@ var OFF = {
 var ROSTER = [
   "vp_am_vantage_07","vp_aud_r8_08","vp_aud_rs4_07","vp_buk_grandnational_87",
   "vp_chv_camaro_06","vp_chv_camaro_06_DUB","vp_chv_camaross_69","vp_chv_cobalt_05",
-  "vp_chv_corvettez06_07","vp_chv_impala_96","vp_chv_police_96","vp_citybus_07",
+  "vp_chv_corvettez06_07","vp_chv_impala_96","vp_chv_plc_96","vp_citybus_07",
   "vp_cry_300c_06","vp_dge_challenger_06","vp_dge_challenger_06_DUB",
   "vp_dge_challenger_70","vp_dge_charger_06","vp_dsn_280z_75","vp_duc_999r_06",
   "vp_duc_monster_s4r_07","vp_frd_boss302_69","vp_frd_cobra_04","vp_frd_focus_04",
@@ -36,7 +36,10 @@ var ROSTER = [
   "vp_mit_eclipse_99","vp_mit_evo_06","vp_mzd_rx7_95","vp_mzd_rx8_06",
   "vp_nsn_240sx_98","vp_nsn_350z_06","vp_nsn_skyline_99","vp_pon_solstice_06",
   "vp_pon_transam_79","vp_sln_s281_06","vp_sln_s7_06","vp_vw_golf_07",
-  "vp_vw_golf_83","vp_vw_scirocco_88"
+  "vp_vw_golf_83","vp_vw_scirocco_88",
+  "vpd_buk_riviera_63","vpd_chv_belair_55","vpd_chv_chevelle_70",
+  "vpd_chv_impala_64","vpd_chv_malibu_65","vpd_pon_gto_66",
+  "vp_se_chv_plc_96"
 ];
 
 var CAR_TITLES = {
@@ -47,7 +50,7 @@ var CAR_TITLES = {
   vp_chv_camaro_06: "2006 Chevrolet Camaro Concept",
   vp_chv_camaro_06_DUB: "2006 Chevrolet Camaro Concept DUB",
   vp_chv_camaross_69: "1969 Chevrolet Camaro RS SS",
-  vp_chv_cobalt_05: "2005 Chevrolet Cobalt SS",
+  vp_chv_cobalt_05: "2006 Chevrolet Cobalt SS",
   vp_chv_corvettez06_07: "2007 Chevrolet Corvette Z06",
   vp_chv_impala_96: "1996 Chevrolet Impala SS",
   vp_chv_police_96: "1996 Chevrolet Impala Police",
@@ -87,7 +90,14 @@ var CAR_TITLES = {
   vp_sln_s7_06: "2006 Saleen S7 Twin-Turbo",
   vp_vw_golf_07: "2007 Volkswagen R32",
   vp_vw_golf_83: "1983 Volkswagen Golf GTI",
-  vp_vw_scirocco_88: "1988 Volkswagen Scirocco"
+  vp_vw_scirocco_88: "1988 Volkswagen Scirocco",
+  vp_se_chv_plc_96: "1996 Chevrolet Impala SS Police CHP",
+  vpd_buk_riviera_63: "1963 Buick Riviera",
+  vpd_chv_belair_55: "1955 Chevrolet Bel Air",
+  vpd_chv_chevelle_70: "1970 Chevrolet Chevelle SS",
+  vpd_chv_impala_64: "1964 Chevrolet Impala",
+  vpd_chv_malibu_65: "1965 Chevrolet Malibu",
+  vpd_pon_gto_66: "1966 Pontiac GTO"
 };
 
 /* Заготовки стоковых (stock) и максимальных (max) характеристик для полосок
@@ -147,6 +157,13 @@ var VEHICLE_PERF_STATS = {
   vp_vw_golf_07: { accel: [25, 40], speed: [48, 75], hand: [40, 57] },
   vp_vw_golf_83: { accel: [18, 28], speed: [37, 49], hand: [23, 39] },
   vp_vw_scirocco_88: { accel: [23, 37], speed: [30, 48], hand: [13, 27] },
+  vp_se_chv_plc_96: { accel: [33, 33], speed: [57, 57], hand: [76, 76] },
+  vpd_buk_riviera_63: { accel: [23, 40], speed: [33, 52], hand: [10, 24] },
+  vpd_chv_belair_55: { accel: [16, 25], speed: [17, 50], hand: [8, 19] },
+  vpd_chv_chevelle_70: { accel: [35, 53], speed: [37, 60], hand: [22, 37] },
+  vpd_chv_impala_64: { accel: [24, 41], speed: [32, 54], hand: [13, 27] },
+  vpd_chv_malibu_65: { accel: [28, 45], speed: [33, 54], hand: [17, 30] },
+  vpd_pon_gto_66: { accel: [31, 53], speed: [34, 58], hand: [21, 36] },
 };
 
 
@@ -155,18 +172,14 @@ var VEHICLE_PERF_STATS = {
    cannot hold them. Kept here so the data is not lost: when a slot is added,
    move the line up and drop the comment.
 
-   Prefab names are INFERRED from the vp_<maker>_<model>_<yy> pattern and are
-   NOT verified against the game's own vehicle.lst — fix them before use.
+   Prefab names below are INFERRED from the vp_<maker>_<model>_<yy> pattern and
+   are NOT verified against the game's own vehicle.lst — fix them before use.
+   The seven a real save confirmed (Bel Air, Riviera, Impala '64, Malibu, GTO,
+   Chevelle, Impala Police CHP) moved up into ROSTER.
    Columns: prefab | name | class | group | type | cost | stock accel/speed/hand
             -> max accel/speed/hand
    (accel/speed/hand, matching the [stock, max] order in VEHICLE_PERF_STATS)
 
-  vp_chv_belair_55               Chevrolet 1955 BEL AIR                 D-Class  Group 1  Lowrider        $5,000  17/16/8 -> 50/25/19
-  vp_buk_riviera_63              Buick 1963 RIVIERA                     D-Class  Group 2  Lowrider       $10,000  33/23/10 -> 52/40/24
-  vp_chv_impala_64               Chevrolet 1964 IMPALA                  D-Class  Group 2  Lowrider       $14,000  32/24/13 -> 54/41/27
-  vp_chv_malibu_65               Chevrolet 1965 MALIBU                  C-Class  Group 2  Lowrider       $14,400  33/28/17 -> 54/45/30
-  vp_pon_gto_66                  Pontiac 1966 GTO                       C-Class  Group 2  Muscle         $16,600  34/31/21 -> 58/53/36
-  vp_chv_chevelle_70             Chevrolet 1970 CHEVELLE SS             C-Class  Group 2  Muscle         $19,000  37/35/22 -> 60/53/37
   vp_lnd_rangerover_sc           Land Rover RANGE ROVER SUPERCHARGED    C-Class  Group 3  SUV            $94,000  38/23/30 -> 60/34/43
   vp_lnd_rangerover_sport        Land Rover RANGE ROVER SPORT           C-Class  Group 3  SUV            $72,000  35/19/30 -> 57/30/45
   vp_mit_eclipse_spyder_09       Mitsubishi 2009 ECLIPSE SPYDER GT      C-Class  Group 3  Tuner          $30,000  48/25/35 -> 66/40/66
@@ -177,7 +190,6 @@ var VEHICLE_PERF_STATS = {
   vp_mbz_cl65_08                 Mercedes-Benz 2008 CL65 AMG            B-Class  Group 4  Luxury        $205,000  61/37/33 -> 81/47/49
   vp_am_db9_07                   Aston Martin 2007 DB9                  B-Class  Group 4  Exotic        $169,000  71/36/49 -> 90/46/68
   vp_duc_1098r_08                Ducati 2008 1098R                      A-Class  Group 4  Sports Bike    $15,000  76/84/77 -> 91/93/85
-  vp_chv_police_96_CHP           Chevrolet 1996 IMPALA SS POLICE CHP    B-Class  Group 4  Police         $40,000  57/33/76 -> 57/33/76
   vp_dge_charger_police          Dodge CHARGER POLICE                   C-Class  Group 3  Police         $38,000  53/31/37 -> 75/43/57
   vp_dge_charger_police_BP       Dodge CHARGER POLICE BP                B-Class  Group 3  Police         $50,000  65/39/49 -> 77/47/59
   vp_dge_charger_police_CHP      Dodge CHARGER POLICE CHP               B-Class  Group 4  Police         $65,000  75/45/57 -> 75/45/57
