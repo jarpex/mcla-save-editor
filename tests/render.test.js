@@ -90,6 +90,12 @@ function buildSave() {
   b[hr + 8] = 0x00;                        // float
   dv.setUint32(hr + 12, 0x3FE00000);       // 1.75 horas = 1:45
 
+  /* ghTC: horas de jogo da tela Statistics, tambem float e tambem h:mm. */
+  var gh = st + 3 * 16;
+  "ghTC".split("").forEach(function (c, i) { b[gh + i] = c.charCodeAt(0); });
+  b[gh + 8] = 0x00;                        // float
+  dv.setUint32(gh + 12, 0x3FE00000);       // 1.75 horas = 1:45
+
   return { buf: buf, at: at };
 }
 
@@ -289,9 +295,23 @@ assert.strictEqual(ctx.view.getUint32(careerAt + 0x2D9), 999999,
   "digitar no dinheiro nao gravou nos bytes");
 
 // ---------- stats ----------
+// ghTC e ghTP saem em h:mm; o resto continua numero. A conversao e a mesma do
+// painel de carreira, entao as duas telas nunca divergem.
 
 assert.ok(ctx.STATS.length >= 2, "renderStats nao achou os registros");
 assert.notStrictEqual(dom.byId.roRep.textContent, "", "o rodape nao foi preenchido");
+
+var ghTC = ctx.STATS.filter(function (r) { return r.key === "ghTC"; })[0];
+assert.ok(ghTC && ghTC.isHours, "ghTC nao foi marcado como horas");
+assert.strictEqual(ctx.statRead(ghTC), ctx.hoursToText(ctx.view.getFloat32(ghTC.at + 12)),
+  "ghTC nao leu em h:mm");
+
+var ghTCInput = dom.doc.getElementById("stats").children
+  .filter(function (row) { return row.children[1].textContent === "ghTC"; })[0].children[4];
+ghTCInput.value = "2:5";
+ghTCInput._on.input.call(ghTCInput);
+ghTCInput._on.blur.call(ghTCInput);
+assert.strictEqual(ghTCInput.value, "2:05", "sair do campo nao normalizou 2:5 em 2:05");
 
 // ---------- nomes e busca ----------
 // A tabela STAT_NAMES e do repositorio; o teste confere que ela casa com o save
