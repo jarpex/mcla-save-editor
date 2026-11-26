@@ -1008,17 +1008,6 @@ input::placeholder { color: var(--ink-faint); }
   overflow: hidden;
 }
 
-.xray-tag {
-  position: absolute;
-  top: 6px;
-  left: 8px;
-  font-family: var(--data);
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  color: var(--ink-faint);
-  text-transform: uppercase;
-}
-
 .xray-box svg {
   width: 90%;
   height: 86%;
@@ -1899,7 +1888,6 @@ input::placeholder { color: var(--ink-faint); }
               </div>
 
               <div class="xray-box">
-                <span class="xray-tag" id="shopXrayTag">CHASSIS TELEMETRY</span>
                 <div id="shopSchematic" style="width:100%;height:100%;display:grid;place-items:center;"></div>
               </div>
 
@@ -3085,9 +3073,6 @@ function renderShopTelemetry() {
   el("shopSchematic").innerHTML = sch
     ? sch.svg
     : buildWireframeSvg(SHOP_STATE.moto, m.pwr > 0.05, m.hnd > 0.05);
-  el("shopXrayTag").textContent = sch
-    ? sch.tag
-    : (SHOP_STATE.moto ? "SPORTBIKE TELEMETRY" : "CHASSIS TELEMETRY");
 
   /* Dyno Torque & Horsepower curves */
   var lift = (m.pct / 100) * 32;
@@ -3260,7 +3245,6 @@ function openPerformanceShop(slotIdx, triggerBtn) {
   el("shopVehicleSub").textContent = title.toUpperCase();
   el("shopSlotBadge").textContent = "SLOT " + (slotIdx < 10 ? "0" : "") + slotIdx;
   el("shopTypeBadge").textContent = t(info.moto ? "shopBikeBadge" : "shopCarBadge");
-  el("shopXrayTag").textContent = info.moto ? "SPORTBIKE TELEMETRY" : "CHASSIS TELEMETRY";
 
   renderShopRows();
   el("shopModal").hidden = false;
