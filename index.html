@@ -3932,7 +3932,216 @@ var MOTO_SCHEMATICS = {
           </g>
         </g>
       </svg>`
-  }
+  },
+  4: {
+    active: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <defs>
+        <filter id="motoEngineGlow" x="-20%" y="-25%" width="140%" height="150%">
+          <feGaussianBlur stdDeviation="1.4" result="blur"></feGaussianBlur>
+          <feMerge>
+            <feMergeNode in="blur"></feMergeNode>
+            <feMergeNode in="SourceGraphic"></feMergeNode>
+          </feMerge>
+        </filter>
+        <linearGradient id="motoEngineGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#5ce6e1" stop-opacity="0.46"></stop>
+          <stop offset="50%" stop-color="#29c5c0" stop-opacity="0.22"></stop>
+          <stop offset="100%" stop-color="#5ce6e1" stop-opacity="0.46"></stop>
+        </linearGradient>
+        <linearGradient id="motoClutchHousingGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#29c5c0" stop-opacity="0.45"></stop>
+          <stop offset="100%" stop-color="#5ce6e1" stop-opacity="0.32"></stop>
+        </linearGradient>
+      </defs>
+
+      <g filter="url(#motoEngineGlow)">
+        <!-- Внешний мягкий ореол силовой установки, радиатора и цепного привода -->
+        <g stroke="#29c5c0" stroke-width="2.6" stroke-opacity="0.32">
+          <path d="M144.8 33.8 L156.8 32.5 L161.6 36.5 L166.8 42.2 L177.8 39.6 L179.2 41.2 L173.2 63.8 L167.4 62.4 L169.2 54.2 L157.5 56 L160.8 68.6 L153.8 75.5 L125.3 75.5 L120.8 67.5 L121.9 53.3 L139 53.3 Z"></path>
+          <path d="M166.2 41.8 L117.4 43.8 L115.2 48.6 L101.2 56.4"></path>
+          <circle cx="80.9" cy="74.3" r="7.4"></circle>
+          <line x1="120.8" y1="66.2" x2="80.9" y2="66.9"></line>
+          <line x1="121.5" y1="71.4" x2="80.9" y2="81.7"></line>
+        </g>
+
+        <!-- Основной контур двигателя, картера, радиатора и главной передачи -->
+        <g stroke="#5ce6e1" stroke-width="1.2">
+          <!-- Верхняя магистраль питания / троса управления под баком -->
+          <path d="M166.2 41.8 L117.4 43.8 L115.2 48.6 L101.2 56.4" stroke-width="1.25"></path>
+
+          <!-- Крышка ГБЦ и наклонный блок цилиндров -->
+          <path d="M144.8 33.8 L156.8 32.5 L161.6 36.5 L159.6 39.2 L143.4 37.6 Z" fill="url(#motoEngineGrad)"></path>
+          <path d="M143.4 37.6 L159.6 39.2 L166.8 42.4 L156.4 56 L139 53.3 Z" fill="url(#motoEngineGrad)"></path>
+          <line x1="141.9" y1="42" x2="163" y2="45.4" stroke-width="0.85" stroke-opacity="0.65"></line>
+          <line x1="140.7" y1="47.1" x2="160.2" y2="50.2" stroke-width="0.85" stroke-opacity="0.65"></line>
+
+          <!-- Картер двигателя и выступ масляного поддона -->
+          <path d="M121.9 53.3 L157.2 55.5 L160.8 68.6 L153.8 75.5 L125.3 75.5 L120.8 67.5 Z" fill="url(#motoEngineGrad)"></path>
+
+          <!-- Выделенный левый отсек сцепления и ведущей звезды -->
+          <path d="M121.9 53.3 L139 53.3 L142.4 64.5 L137.4 75.5 L125.3 75.5 L120.8 67.5 Z" fill="url(#motoClutchHousingGrad)" stroke-width="0.95" stroke-opacity="0.8"></path>
+
+          <!-- Крышки картера и генератора -->
+          <circle cx="134.4" cy="65.8" r="7.3" stroke-width="1.05" stroke-opacity="0.85"></circle>
+          <circle cx="134.4" cy="65.8" r="2.2" stroke-width="0.8" stroke-opacity="0.65"></circle>
+          <circle cx="149.8" cy="65.8" r="5.4" stroke-width="1.05" stroke-opacity="0.85"></circle>
+
+          <!-- Радиатор охлаждения и боковой диффузор -->
+          <path d="M167.2 42.2 L177.8 39.6 L179.2 41.2 L173.2 63.8 L167.4 62.4 L169.2 54.2 L162.8 53.2 Z" fill="url(#motoEngineGrad)"></path>
+          <line x1="173.8" y1="40.6" x2="169.4" y2="62.8" stroke-width="0.8" stroke-opacity="0.65"></line>
+          <line x1="171.2" y1="45.5" x2="177.6" y2="46.8" stroke-width="0.7" stroke-opacity="0.5"></line>
+          <line x1="169.8" y1="51.2" x2="176.2" y2="52.5" stroke-width="0.7" stroke-opacity="0.5"></line>
+          <line x1="168.4" y1="56.8" x2="174.8" y2="58.1" stroke-width="0.7" stroke-opacity="0.5"></line>
+
+          <!-- Приводная цепь и ведомая звезда на заднем колесе -->
+          <line x1="120.8" y1="66.2" x2="80.9" y2="66.9" stroke-width="1.2"></line>
+          <line x1="121.5" y1="71.4" x2="80.9" y2="81.7" stroke-width="1.2"></line>
+          <circle cx="80.9" cy="74.3" r="7.4" fill="url(#motoEngineGrad)" stroke-width="1.15"></circle>
+          <circle cx="80.9" cy="74.3" r="3.9" stroke-width="0.85" stroke-opacity="0.75"></circle>
+        </g>
+      </g>
+    </svg>`
+  },
+  5: {
+    active: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <defs>
+        <filter id="motoEngineGlow" x="-20%" y="-25%" width="140%" height="150%">
+          <feGaussianBlur stdDeviation="1.4" result="blur"></feGaussianBlur>
+          <feMerge>
+            <feMergeNode in="blur"></feMergeNode>
+            <feMergeNode in="SourceGraphic"></feMergeNode>
+          </feMerge>
+        </filter>
+        <linearGradient id="motoEngineGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#5ce6e1" stop-opacity="0.46"></stop>
+          <stop offset="50%" stop-color="#29c5c0" stop-opacity="0.22"></stop>
+          <stop offset="100%" stop-color="#5ce6e1" stop-opacity="0.46"></stop>
+        </linearGradient>
+        <linearGradient id="motoClutchHousingGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#29c5c0" stop-opacity="0.45"></stop>
+          <stop offset="100%" stop-color="#5ce6e1" stop-opacity="0.32"></stop>
+        </linearGradient>
+      </defs>
+
+      <g filter="url(#motoEngineGlow)">
+        <!-- Внешний мягкий ореол силовой установки, радиатора и цепного привода -->
+        <g stroke="#29c5c0" stroke-width="2.6" stroke-opacity="0.32">
+          <path d="M144.8 33.8 L156.8 32.5 L161.6 36.5 L166.8 42.2 L177.8 39.6 L179.2 41.2 L173.2 63.8 L167.4 62.4 L169.2 54.2 L157.5 56 L160.8 68.6 L153.8 75.5 L125.3 75.5 L120.8 67.5 L121.9 53.3 L139 53.3 Z"></path>
+          <path d="M166.2 41.8 L117.4 43.8 L115.2 48.6 L101.2 56.4"></path>
+          <circle cx="80.9" cy="74.3" r="7.4"></circle>
+          <line x1="120.8" y1="66.2" x2="80.9" y2="66.9"></line>
+          <line x1="121.5" y1="71.4" x2="80.9" y2="81.7"></line>
+        </g>
+
+        <!-- Основной контур двигателя, картера, радиатора и главной передачи -->
+        <g stroke="#5ce6e1" stroke-width="1.2">
+          <!-- Верхняя магистраль питания / троса управления под баком -->
+          <path d="M166.2 41.8 L117.4 43.8 L115.2 48.6 L101.2 56.4" stroke-width="1.25"></path>
+
+          <!-- Крышка ГБЦ и наклонный блок цилиндров -->
+          <path d="M144.8 33.8 L156.8 32.5 L161.6 36.5 L159.6 39.2 L143.4 37.6 Z" fill="url(#motoEngineGrad)"></path>
+          <path d="M143.4 37.6 L159.6 39.2 L166.8 42.4 L156.4 56 L139 53.3 Z" fill="url(#motoEngineGrad)"></path>
+          <line x1="141.9" y1="42" x2="163" y2="45.4" stroke-width="0.85" stroke-opacity="0.65"></line>
+          <line x1="140.7" y1="47.1" x2="160.2" y2="50.2" stroke-width="0.85" stroke-opacity="0.65"></line>
+
+          <!-- Картер двигателя и выступ масляного поддона -->
+          <path d="M121.9 53.3 L157.2 55.5 L160.8 68.6 L153.8 75.5 L125.3 75.5 L120.8 67.5 Z" fill="url(#motoEngineGrad)"></path>
+
+          <!-- Выделенный левый отсек сцепления и ведущей звезды -->
+          <path d="M121.9 53.3 L139 53.3 L142.4 64.5 L137.4 75.5 L125.3 75.5 L120.8 67.5 Z" fill="url(#motoClutchHousingGrad)" stroke-width="0.95" stroke-opacity="0.8"></path>
+
+          <!-- Крышки картера и генератора -->
+          <circle cx="134.4" cy="65.8" r="7.3" stroke-width="1.05" stroke-opacity="0.85"></circle>
+          <circle cx="134.4" cy="65.8" r="2.2" stroke-width="0.8" stroke-opacity="0.65"></circle>
+          <circle cx="149.8" cy="65.8" r="5.4" stroke-width="1.05" stroke-opacity="0.85"></circle>
+
+          <!-- Радиатор охлаждения и боковой диффузор -->
+          <path d="M167.2 42.2 L177.8 39.6 L179.2 41.2 L173.2 63.8 L167.4 62.4 L169.2 54.2 L162.8 53.2 Z" fill="url(#motoEngineGrad)"></path>
+          <line x1="173.8" y1="40.6" x2="169.4" y2="62.8" stroke-width="0.8" stroke-opacity="0.65"></line>
+          <line x1="171.2" y1="45.5" x2="177.6" y2="46.8" stroke-width="0.7" stroke-opacity="0.5"></line>
+          <line x1="169.8" y1="51.2" x2="176.2" y2="52.5" stroke-width="0.7" stroke-opacity="0.5"></line>
+          <line x1="168.4" y1="56.8" x2="174.8" y2="58.1" stroke-width="0.7" stroke-opacity="0.5"></line>
+
+          <!-- Приводная цепь и ведомая звезда на заднем колесе -->
+          <line x1="120.8" y1="66.2" x2="80.9" y2="66.9" stroke-width="1.2"></line>
+          <line x1="121.5" y1="71.4" x2="80.9" y2="81.7" stroke-width="1.2"></line>
+          <circle cx="80.9" cy="74.3" r="7.4" fill="url(#motoEngineGrad)" stroke-width="1.15"></circle>
+          <circle cx="80.9" cy="74.3" r="3.9" stroke-width="0.85" stroke-opacity="0.75"></circle>
+        </g>
+      </g>
+    </svg>`
+  },
+  8: {
+    active: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <defs>
+        <filter id="motoEngineGlow" x="-20%" y="-25%" width="140%" height="150%">
+          <feGaussianBlur stdDeviation="1.4" result="blur"></feGaussianBlur>
+          <feMerge>
+            <feMergeNode in="blur"></feMergeNode>
+            <feMergeNode in="SourceGraphic"></feMergeNode>
+          </feMerge>
+        </filter>
+        <linearGradient id="motoEngineGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#5ce6e1" stop-opacity="0.46"></stop>
+          <stop offset="50%" stop-color="#29c5c0" stop-opacity="0.22"></stop>
+          <stop offset="100%" stop-color="#5ce6e1" stop-opacity="0.46"></stop>
+        </linearGradient>
+        <linearGradient id="motoClutchHousingGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#29c5c0" stop-opacity="0.45"></stop>
+          <stop offset="100%" stop-color="#5ce6e1" stop-opacity="0.32"></stop>
+        </linearGradient>
+      </defs>
+
+      <g filter="url(#motoEngineGlow)">
+        <!-- Внешний мягкий ореол силовой установки, радиатора и цепного привода -->
+        <g stroke="#29c5c0" stroke-width="2.6" stroke-opacity="0.32">
+          <path d="M144.8 33.8 L156.8 32.5 L161.6 36.5 L166.8 42.2 L177.8 39.6 L179.2 41.2 L173.2 63.8 L167.4 62.4 L169.2 54.2 L157.5 56 L160.8 68.6 L153.8 75.5 L125.3 75.5 L120.8 67.5 L121.9 53.3 L139 53.3 Z"></path>
+          <path d="M166.2 41.8 L117.4 43.8 L115.2 48.6 L101.2 56.4"></path>
+          <circle cx="80.9" cy="74.3" r="7.4"></circle>
+          <line x1="120.8" y1="66.2" x2="80.9" y2="66.9"></line>
+          <line x1="121.5" y1="71.4" x2="80.9" y2="81.7"></line>
+        </g>
+
+        <!-- Основной контур двигателя, картера, радиатора и главной передачи -->
+        <g stroke="#5ce6e1" stroke-width="1.2">
+          <!-- Верхняя магистраль питания / троса управления под баком -->
+          <path d="M166.2 41.8 L117.4 43.8 L115.2 48.6 L101.2 56.4" stroke-width="1.25"></path>
+
+          <!-- Крышка ГБЦ и наклонный блок цилиндров -->
+          <path d="M144.8 33.8 L156.8 32.5 L161.6 36.5 L159.6 39.2 L143.4 37.6 Z" fill="url(#motoEngineGrad)"></path>
+          <path d="M143.4 37.6 L159.6 39.2 L166.8 42.4 L156.4 56 L139 53.3 Z" fill="url(#motoEngineGrad)"></path>
+          <line x1="141.9" y1="42" x2="163" y2="45.4" stroke-width="0.85" stroke-opacity="0.65"></line>
+          <line x1="140.7" y1="47.1" x2="160.2" y2="50.2" stroke-width="0.85" stroke-opacity="0.65"></line>
+
+          <!-- Картер двигателя и выступ масляного поддона -->
+          <path d="M121.9 53.3 L157.2 55.5 L160.8 68.6 L153.8 75.5 L125.3 75.5 L120.8 67.5 Z" fill="url(#motoEngineGrad)"></path>
+
+          <!-- Выделенный левый отсек сцепления и ведущей звезды -->
+          <path d="M121.9 53.3 L139 53.3 L142.4 64.5 L137.4 75.5 L125.3 75.5 L120.8 67.5 Z" fill="url(#motoClutchHousingGrad)" stroke-width="0.95" stroke-opacity="0.8"></path>
+
+          <!-- Крышки картера и генератора -->
+          <circle cx="134.4" cy="65.8" r="7.3" stroke-width="1.05" stroke-opacity="0.85"></circle>
+          <circle cx="134.4" cy="65.8" r="2.2" stroke-width="0.8" stroke-opacity="0.65"></circle>
+          <circle cx="149.8" cy="65.8" r="5.4" stroke-width="1.05" stroke-opacity="0.85"></circle>
+
+          <!-- Радиатор охлаждения и боковой диффузор -->
+          <path d="M167.2 42.2 L177.8 39.6 L179.2 41.2 L173.2 63.8 L167.4 62.4 L169.2 54.2 L162.8 53.2 Z" fill="url(#motoEngineGrad)"></path>
+          <line x1="173.8" y1="40.6" x2="169.4" y2="62.8" stroke-width="0.8" stroke-opacity="0.65"></line>
+          <line x1="171.2" y1="45.5" x2="177.6" y2="46.8" stroke-width="0.7" stroke-opacity="0.5"></line>
+          <line x1="169.8" y1="51.2" x2="176.2" y2="52.5" stroke-width="0.7" stroke-opacity="0.5"></line>
+          <line x1="168.4" y1="56.8" x2="174.8" y2="58.1" stroke-width="0.7" stroke-opacity="0.5"></line>
+
+          <!-- Приводная цепь и ведомая звезда на заднем колесе -->
+          <line x1="120.8" y1="66.2" x2="80.9" y2="66.9" stroke-width="1.2"></line>
+          <line x1="121.5" y1="71.4" x2="80.9" y2="81.7" stroke-width="1.2"></line>
+          <circle cx="80.9" cy="74.3" r="7.4" fill="url(#motoEngineGrad)" stroke-width="1.15"></circle>
+          <circle cx="80.9" cy="74.3" r="3.9" stroke-width="0.85" stroke-opacity="0.75"></circle>
+        </g>
+      </g>
+    </svg>`
+  },
+
+
 };
 
 /* The base layer for a vehicle: the detailed car body, or the bike frame. */
