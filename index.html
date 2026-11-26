@@ -3006,6 +3006,22 @@ var SCHEMATICS = {
       </svg>`
   },
   1: {
+    ghost: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <g stroke="#4b5a63" stroke-width="1.1" stroke-opacity="0.3">
+      <g stroke="#4b5a63" stroke-width="1.1" stroke-opacity="0.3">
+        <path d="M198 23.5 C190 23.5 184 26.5 178 32 C174 35 171 36 167 36"></path>
+        <rect x="148" y="32.5" width="19" height="7" rx="1.6" fill="rgba(75,90,99,0.1)"></rect>
+        <path d="M148 36 C143 36 141 33 138 29 C135 25.5 132 24.5 126 24.5 L78 24.5 C72 24.5 70 22 64 22 L56 22 C51 22 49 24.5 44 24.5"></path>
+        <path d="M44 23.3 L42 22.5 L31 22.5 L29 23.6 L29 25.4 L31 26.5 L42 26.5 L44 25.7 Z" fill="rgba(75,90,99,0.1)"></path>
+        <line x1="29" y1="24.5" x2="20" y2="24.5"></line>
+
+        <path d="M198 76.5 C190 76.5 184 73.5 178 68 C174 65 171 64 167 64"></path>
+        <rect x="148" y="60.5" width="19" height="7" rx="1.6" fill="rgba(75,90,99,0.1)"></rect>
+        <path d="M148 64 C143 64 141 67 138 71 C135 74.5 132 75.5 126 75.5 L78 75.5 C72 75.5 70 78 64 78 L56 78 C51 78 49 75.5 44 75.5"></path>
+        <path d="M44 74.3 L42 73.5 L31 73.5 L29 74.6 L29 76.4 L31 77.5 L42 77.5 L44 76.7 Z" fill="rgba(75,90,99,0.1)"></path>
+        <line x1="29" y1="75.5" x2="20" y2="75.5"></line>
+      </g>
+  </svg>`,
     active: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <defs>
         <filter id="headerGlow" x="-20%" y="-25%" width="140%" height="150%">
@@ -3022,20 +3038,6 @@ var SCHEMATICS = {
         </linearGradient>
       </defs>
 
-      <!-- Приглушенная остальная часть выхлопной трассы -->
-      <g stroke="#4b5a63" stroke-width="1.1" stroke-opacity="0.3">
-        <path d="M198 23.5 C190 23.5 184 26.5 178 32 C174 35 171 36 167 36"></path>
-        <rect x="148" y="32.5" width="19" height="7" rx="1.6" fill="rgba(75,90,99,0.1)"></rect>
-        <path d="M148 36 C143 36 141 33 138 29 C135 25.5 132 24.5 126 24.5 L78 24.5 C72 24.5 70 22 64 22 L56 22 C51 22 49 24.5 44 24.5"></path>
-        <path d="M44 23.3 L42 22.5 L31 22.5 L29 23.6 L29 25.4 L31 26.5 L42 26.5 L44 25.7 Z" fill="rgba(75,90,99,0.1)"></path>
-        <line x1="29" y1="24.5" x2="20" y2="24.5"></line>
-
-        <path d="M198 76.5 C190 76.5 184 73.5 178 68 C174 65 171 64 167 64"></path>
-        <rect x="148" y="60.5" width="19" height="7" rx="1.6" fill="rgba(75,90,99,0.1)"></rect>
-        <path d="M148 64 C143 64 141 67 138 71 C135 74.5 132 75.5 126 75.5 L78 75.5 C72 75.5 70 78 64 78 L56 78 C51 78 49 75.5 44 75.5"></path>
-        <path d="M44 74.3 L42 73.5 L31 73.5 L29 74.6 L29 76.4 L31 77.5 L42 77.5 L44 76.7 Z" fill="rgba(75,90,99,0.1)"></path>
-        <line x1="29" y1="75.5" x2="20" y2="75.5"></line>
-      </g>
 
       <!-- Подсвеченные выпускные коллекторы (Headers) -->
       <g filter="url(#headerGlow)">
@@ -3107,13 +3109,18 @@ function xrayActive(catIdx, moto, engineGlow, suspGlow) {
   );
 }
 
-/* Paint both layers. The base is replaced only when the vehicle type
-   changes, but rebuilding both is cheap and keeps one code path. */
+/* Paint the stack: base, then the category's ghosted context (static), then
+   the blinking highlight. Only the last layer carries .xray-active, so the
+   greyed-out parts of the exhaust stay lit while the headers pulse. */
 function paintXray(catIdx, moto, engineGlow, suspGlow) {
-  var base = xrayBase(moto).replace("<svg ", '<svg class="xray-layer xray-base" ');
-  var active = xrayActive(catIdx, moto, engineGlow, suspGlow)
+  var s = SCHEMATICS[catIdx];
+  var html = xrayBase(moto).replace("<svg ", '<svg class="xray-layer xray-base" ');
+  if (s && s.ghost) {
+    html += s.ghost.replace("<svg ", '<svg class="xray-layer xray-ghost" ');
+  }
+  html += xrayActive(catIdx, moto, engineGlow, suspGlow)
     .replace("<svg ", '<svg class="xray-layer xray-active" ');
-  el("shopSchematic").innerHTML = base + active;
+  el("shopSchematic").innerHTML = html;
 }
 
 function calcShopMetrics() {
