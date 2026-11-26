@@ -1022,9 +1022,11 @@ input::placeholder { color: var(--ink-faint); }
   animation: xrayBlink 2s ease-in-out infinite;
 }
 
-/* Parts that are not being edited stay visible but out of the way. */
+/* Parts that are not being edited stay visible but out of the way, drawn in
+   the static layer's grey rather than the cyan highlight. */
 .xray-dim {
-  opacity: 0.22;
+  opacity: 0.3;
+  filter: grayscale(1) brightness(1.35);
 }
 
 @keyframes xrayBlink {
