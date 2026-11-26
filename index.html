@@ -1022,11 +1022,28 @@ input::placeholder { color: var(--ink-faint); }
   animation: xrayBlink 2s ease-in-out infinite;
 }
 
-/* Parts that are not being edited stay visible but out of the way, drawn in
-   the static layer's grey rather than the cyan highlight. */
+/* Parts that are not being edited sink into the static frame. The colour is
+   forced in CSS rather than dimmed with opacity: presentation attributes lose
+   to CSS, so every part ends up the same flat grey no matter how it was drawn
+   (the exhaust, for one, is built from low-opacity strokes and would vanish
+   if we only faded it). */
 .xray-dim {
-  opacity: 0.3;
-  filter: grayscale(1) brightness(1.35);
+  opacity: 0.55;
+  filter: none;
+}
+
+.xray-dim path,
+.xray-dim line,
+.xray-dim rect,
+.xray-dim circle,
+.xray-dim ellipse,
+.xray-dim polygon,
+.xray-dim polyline {
+  stroke: #4b5a63 !important;
+  stroke-opacity: 0.5 !important;
+  fill: none !important;
+  fill-opacity: 0 !important;
+  stroke-dasharray: none !important;
 }
 
 @keyframes xrayBlink {
