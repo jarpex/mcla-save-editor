@@ -1016,15 +1016,15 @@ input::placeholder { color: var(--ink-faint); }
   height: 86%;
 }
 
-/* One full on/off cycle per second — the game's part highlight is twice as
-   slow as it first looks. */
+/* One full cycle every two seconds, and the highlight never goes fully
+   transparent — it breathes between 0.8 and 0.2, like the game's. */
 .xray-active {
-  animation: xrayBlink 1s ease-in-out infinite;
+  animation: xrayBlink 2s ease-in-out infinite;
 }
 
 @keyframes xrayBlink {
-  0%, 100% { opacity: 1; }
-  50%      { opacity: 0.15; }
+  0%, 100% { opacity: 0.8; }
+  50%      { opacity: 0.2; }
 }
 
 .dyno-box {
