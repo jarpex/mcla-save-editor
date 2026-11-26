@@ -36,7 +36,37 @@ validate, and neither one ever changes the file size.
 
 ## Tools
 
-**[Open the editor](https://onlyzennnn.github.io/mcla-save-editor/)** — drop the save in, edit, download the patched file. It runs entirely in the browser; the save never leaves your machine. `index.html` is the whole thing, so downloading that one file and opening it offline works the same way.
+**[Open the editor](https://onlyzennnn.github.io/mcla-save-editor/)** — drop the save in, edit, download the patched file. It runs entirely in the browser; the save never leaves your machine. No build step and no server: open `index.html` (or serve the folder) and it works.
+
+### Source layout
+
+`index.html` is markup only — it links `src/styles.css` and loads the scripts in
+order with plain `<script src>`. There is no build step: the repository is
+served as-is, so GitHub Pages and a local `python -m http.server` both work
+without generating anything.
+
+| File | What |
+|---|---|
+| `preface.js` | `"use strict"` and the `mc4.sav` header comment |
+| `i18n.js` | `STR` (pt/en/ru), `t()`, `nf()` |
+| `data.js` | `OFF` offsets, `ROSTER`, `CAR_TITLES`, `VEHICLE_PERF_STATS` |
+| `core.js` | `parse()`, byte helpers, tune primitives |
+| `garage.js` | slots, `tuneInfo`, `readSlot` |
+| `ui.js` / `load.js` / `render.js` | tabs, loading, `render()` |
+| `shop.js` / `shopui.js` | Performance Shop state and UI |
+| `xray.js` | the SVG schematics (cars and bikes) |
+| `perf.js` | the weighted numbers and dyno curves |
+| `state.js` | `mark`, `syncCars`, `applyLang` |
+| `progression.js` / `stats.js` / `career.js` | the Career tab |
+| `actions.js` / `nav.js` | save and file input, shortcuts, language menu |
+| `styles.css` / `body.html` | the HUD styling and the markup |
+
+`body.html` is not loaded by the page — it is the markup `index.html` carries
+inline, kept in its own file so the HTML stays readable. Edit both when the
+markup changes.
+
+The test suite reads the same `<script src>` list out of `index.html`, so it
+always runs what the page runs.
 
 It edits money, reputation, career progression, the garage slots (vehicle, label, plate) and
 **performance upgrades** — a button per car maxes every category it has (thirteen for a car, six

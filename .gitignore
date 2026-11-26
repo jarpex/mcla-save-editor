@@ -20,6 +20,8 @@ models/
 # Saves pessoais, em qualquer forma
 *.sav
 *.sav.header
+*.sav.*
+Saves example/
 *.bak-*
 B13EBABEBABEBABE/
 userdata/

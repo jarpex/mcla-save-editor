@@ -1,0 +1,388 @@
+<div class="stage">
+  <div class="mcla-frame">
+    <div class="mcla-groove">
+      <div class="mcla-window">
+
+        <div class="masthead">
+          <div class="badge-disc" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+            </svg>
+          </div>
+          <div class="title-block">
+            <h1 data-i18n="app">Editor de Save</h1>
+            <span class="game-sub">MIDNIGHT CLUB: LOS ANGELES</span>
+          </div>
+          <div class="filetag" id="filetag" data-i18n="noFile">nenhum arquivo aberto</div>
+
+          <div class="lang-menu" id="langMenu">
+            <button class="btn lang-trigger" id="langBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              <span id="langCode">PT</span>
+              <span class="lang-caret" aria-hidden="true">&#9662;</span>
+            </button>
+            <div class="lang-dropdown" id="langList" role="listbox" hidden>
+              <button class="lang-opt" type="button" role="option" data-set-lang="pt">
+                <span class="code">PT</span><span>Portugu&ecirc;s</span><span class="check">&lt;</span>
+              </button>
+              <button class="lang-opt" type="button" role="option" data-set-lang="en">
+                <span class="code">EN</span><span>English</span><span class="check">&lt;</span>
+              </button>
+              <button class="lang-opt" type="button" role="option" data-set-lang="ru">
+                <span class="code">RU</span><span>&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;</span><span class="check">&lt;</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="tabs-wrap" id="tabsWrap" hidden>
+          <nav class="nav-tabs" id="navTabs" aria-label="Editor sections">
+            <button class="tab-btn active" type="button" data-tab="garage">
+              <span class="chev">&gt;</span><span data-i18n="tabGarage">Garagem &amp; Carteira</span>
+            </button>
+            <button class="tab-btn" type="button" data-tab="career">
+              <span class="chev">&gt;</span><span data-i18n="tabCareer">Carreira &amp; Stats</span>
+            </button>
+            <button class="tab-btn" type="button" data-tab="sections">
+              <span class="chev">&gt;</span><span data-i18n="tabSections">Se&ccedil;&otilde;es Hex</span>
+            </button>
+            <span class="tab-hint" data-i18n="tabKeys">Q / E</span>
+          </nav>
+          <div class="mcla-track" id="mclaTrack" aria-hidden="true">
+            <div class="mcla-thumb" id="sliderThumb"></div>
+          </div>
+        </div>
+
+        <div class="notice" id="err" hidden></div>
+        <div class="notice" id="gap" hidden></div>
+
+        <div class="window-body">
+          <section id="empty">
+            <div class="dropzone" id="drop">
+              <div class="drop-icon" aria-hidden="true">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 16V4"/><path d="m7.5 8.5 4.5-4.5 4.5 4.5"/><path d="M4 16v3.2A1.8 1.8 0 0 0 5.8 21h12.4a1.8 1.8 0 0 0 1.8-1.8V16"/>
+                </svg>
+              </div>
+              <h2 data-i18n="dropTitle">Arraste o mc4.sav aqui</h2>
+              <p data-i18n="dropBody">Editor de save do Midnight Club: Los Angeles no PC, pelo runtime MC_LA_Recompiled. Tudo acontece no seu navegador: o arquivo nao sai da sua maquina, e o editor devolve um save do mesmo tamanho do original.</p>
+              <span class="path">userdata\B13EBABEBABEBABE\545407F8\00000001\mc4.sav\mc4.sav</span>
+              <div style="margin-top:20px">
+                <button class="btn primary" id="pick" type="button" data-i18n="pick">Escolher arquivo</button>
+              </div>
+              <input type="file" id="file" hidden>
+            </div>
+          </section>
+
+          <section id="editor" hidden>
+            <div class="grid reveal" id="mainGrid">
+
+              <div class="col-stack" id="leftCol">
+                <!-- Garage & Wallet left column -->
+                <div class="panel" data-group="garage">
+                  <header>
+                    <svg class="hdr-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M14.5 9.5a2.5 2.5 0 0 0-5 0c0 2.5 5 2 5 4.5a2.5 2.5 0 0 1-5 0"/><path d="M12 6v12"/></svg>
+                    <span data-i18n="wallet">Carteira</span>
+                  </header>
+                  <div class="body">
+                    <div class="field">
+                      <div class="field-top">
+                        <label for="money" data-i18n="money">Dinheiro</label>
+                        <span class="at">Career+0x2D9</span>
+                      </div>
+                      <input type="text" inputmode="numeric" id="money" autocomplete="off">
+                      <div class="preset-row">
+                        <button class="chip" type="button" data-add-money="100000">+$100K</button>
+                        <button class="chip" type="button" data-add-money="1000000">+$1M</button>
+                        <button class="chip" type="button" data-set-money="2000000000">MAX ($2B)</button>
+                      </div>
+                    </div>
+                    <div class="field">
+                      <div class="field-top">
+                        <label for="rep" data-i18n="rep">Reputacao</label>
+                        <span class="at">Career+0x2E1</span>
+                      </div>
+                      <input type="text" inputmode="numeric" id="rep" autocomplete="off">
+                      <div class="rank-bar" id="repBar" aria-hidden="true"></div>
+                      <div class="preset-row">
+                        <button class="chip" type="button" data-add-rep="5000">+5K REP</button>
+                        <button class="chip" type="button" data-add-rep="25000">+25K REP</button>
+                        <button class="chip" type="button" data-set-rep="100000">100K</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Career & Stats left column -->
+                <div class="panel" data-group="career">
+                  <header>
+                    <svg class="hdr-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+                    <span data-i18n="progression">Progressao</span>
+                    <span class="count" id="progCount"></span>
+                  </header>
+                  <div class="body">
+                    <div class="prog" id="prog"></div>
+                    <div class="bulk">
+                      <button class="btn" id="progAll" type="button" data-i18n="markAll">Marcar todas</button>
+                      <button class="btn" id="progNone" type="button" data-i18n="clearAll">Limpar todas</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="panel" data-group="career">
+                  <header>
+                    <svg class="hdr-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3 2 6"/><path d="m22 6-3-3"/></svg>
+                    <span data-i18n="timeTrial">Time Trial</span>
+                  </header>
+                  <div class="body">
+                    <div class="field">
+                      <div class="field-top">
+                        <label for="ttEvent" data-i18n="ttEvent">Evento</label>
+                      </div>
+                      <select id="ttEvent"></select>
+                    </div>
+                    <div class="field">
+                      <div class="field-top">
+                        <label for="ttTarget" data-i18n="ttTarget">Tempo alvo</label>
+                        <span class="at" id="ttAt">Career+0x727D</span>
+                      </div>
+                      <input type="text" inputmode="decimal" id="ttTarget" placeholder="02:08.54">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Hex Sections panel -->
+                <div class="panel narrow-center" data-group="sections">
+                  <header>
+                    <svg class="hdr-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                    <span data-i18n="sections">Secoes</span>
+                    <span class="count" id="secCount"></span>
+                  </header>
+                  <div class="body">
+                    <table class="sections">
+                      <thead>
+                        <tr>
+                          <th data-i18n="thName">Nome</th>
+                          <th data-i18n="thStart">Inicio</th>
+                          <th>Bytes</th>
+                        </tr>
+                      </thead>
+                      <tbody id="secBody"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-stack" id="rightCol">
+                <!-- Garage & Wallet right column -->
+                <div class="panel" data-group="garage">
+                  <header>
+                    <svg class="hdr-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
+                    <span data-i18n="garage">Garagem</span>
+                    <span class="count" id="garCount" style="margin-left:4px"></span>
+                    <div class="garage-tools">
+                      <div class="filter-pills" role="group" aria-label="Filter garage slots">
+                        <button class="pill-btn active" type="button" data-gar-filter="all" data-i18n="filterAll">Todos</button>
+                        <button class="pill-btn" type="button" data-gar-filter="filled" data-i18n="filterOwned">Ocupados</button>
+                      </div>
+                      <button class="btn mini" id="maxAll" type="button" data-i18n="maxAll">Tunar todos</button>
+                    </div>
+                  </header>
+                  <div class="slots" id="slots"></div>
+                </div>
+
+                <!-- Career & Stats right column: Statistics then Career below it -->
+                <div class="panel" data-group="career">
+                  <header>
+                    <svg class="hdr-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                    <span data-i18n="stats">Estatisticas</span>
+                    <span class="count" id="statCount"></span>
+                  </header>
+                  <div class="body">
+                    <input class="filter" type="text" id="statFilter" data-i18n-ph="statFilter" placeholder="filtrar por codigo, ex: gWIN">
+                    <div class="statlist" id="stats"></div>
+                  </div>
+                </div>
+
+                <div class="panel" data-group="career">
+                  <header>
+                    <svg class="hdr-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55-.47.98-.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                    <span data-i18n="career">Career</span>
+                    <span class="count" id="careerCount"></span>
+                  </header>
+                  <div class="body">
+                    <input class="filter" type="text" id="careerFilter" data-i18n-ph="careerFilter" placeholder="filtrar registros de carreira">
+                    <div class="statlist" id="career"></div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </section>
+        </div>
+
+        <footer class="actionbar" id="actionbar" hidden>
+          <div class="readout">
+            <span class="cyan-val"><span data-i18n="roCars">CARROS</span><b id="roCars">0</b></span>
+            <span><span data-i18n="roMoney">DINHEIRO</span><b id="roMoney">$0</b></span>
+            <span class="cyan-val"><span data-i18n="roRep">REP</span><b id="roRep">0</b></span>
+          </div>
+          <span class="status" id="status"></span>
+          <div class="bar-actions">
+            <button class="btn" id="reopen" type="button" data-i18n="openOther">Outro arquivo</button>
+            <button class="btn primary" id="save" type="button" data-i18n="download">Baixar mc4.sav</button>
+          </div>
+        </footer>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Performance Shop Modal -->
+<div class="shop-backdrop" id="shopModal" hidden role="dialog" aria-modal="true" aria-labelledby="shopTitle">
+  <div class="shop-dialog" id="shopDialog" tabindex="-1">
+    <div class="mcla-frame">
+      <div class="mcla-groove">
+        <div class="mcla-window">
+          <div class="masthead">
+            <div class="badge-disc" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+              </svg>
+            </div>
+            <div class="title-block">
+              <h1 id="shopTitle">PERFORMANCE SHOP</h1>
+              <span class="game-sub" id="shopVehicleSub">VEHICLE</span>
+            </div>
+            <div class="shop-header-meta">
+              <span class="shop-pill" id="shopSlotBadge">SLOT 00</span>
+              <span class="shop-pill" id="shopTypeBadge">CAR</span>
+              <span class="shop-pill cyan" id="shopPctBadge">0%</span>
+            </div>
+          </div>
+
+          <div class="shop-body">
+            <!-- Left Telemetry Column -->
+            <div class="shop-telemetry">
+              <div class="class-strip" id="shopClassStrip">
+                <div class="class-item" data-cls="0">
+                  <span class="class-label">D-CLASS</span>
+                  <span class="class-bar"></span>
+                </div>
+                <div class="class-item" data-cls="1">
+                  <span class="class-label">C-CLASS</span>
+                  <span class="class-bar"></span>
+                </div>
+                <div class="class-item" data-cls="2">
+                  <span class="class-label">B-CLASS</span>
+                  <span class="class-bar"></span>
+                </div>
+                <div class="class-item" data-cls="3">
+                  <span class="class-label">A-CLASS</span>
+                  <span class="class-bar"></span>
+                </div>
+              </div>
+
+              <div class="xray-box">
+                <div id="shopSchematic" style="width:100%;height:100%;display:grid;place-items:center;"></div>
+              </div>
+
+              <div class="dyno-box">
+                <div class="dyno-legend">
+                  <span><i class="dyno-swatch" style="background:#ff5454"></i>TORQUE</span>
+                  <span><i class="dyno-swatch" style="background:#38bdf8"></i>HORSEPOWER</span>
+                </div>
+                <svg class="dyno-svg" id="shopDynoSvg" viewBox="0 0 260 70" preserveAspectRatio="none" aria-hidden="true">
+                  <g stroke="rgba(255,255,255,0.07)" stroke-width="1">
+                    <line x1="0" y1="17.5" x2="260" y2="17.5"/>
+                    <line x1="0" y1="35" x2="260" y2="35"/>
+                    <line x1="0" y1="52.5" x2="260" y2="52.5"/>
+                    <line x1="52" y1="0" x2="52" y2="70"/>
+                    <line x1="104" y1="0" x2="104" y2="70"/>
+                    <line x1="156" y1="0" x2="156" y2="70"/>
+                    <line x1="208" y1="0" x2="208" y2="70"/>
+                  </g>
+                  <path id="dynoTorquePath" fill="none" stroke="#ff5454" stroke-width="2" stroke-linecap="round"/>
+                  <path id="dynoHpPath" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </div>
+
+              <div class="perf-bars">
+                <div class="perf-stat">
+                  <div class="perf-stat-head">
+                    <span>ACCELERATION</span>
+                  </div>
+                  <div class="perf-meter">
+                    <div class="perf-max" id="statAccelMax" style="width:68%"></div>
+                    <div class="perf-tuned" id="statAccelTuned" style="width:32%"></div>
+                    <div class="perf-stock" id="statAccelStock" style="width:32%"></div>
+                  </div>
+                </div>
+                <div class="perf-stat">
+                  <div class="perf-stat-head">
+                    <span>SPEED</span>
+                  </div>
+                  <div class="perf-meter">
+                    <div class="perf-max" id="statSpeedMax" style="width:74%"></div>
+                    <div class="perf-tuned" id="statSpeedTuned" style="width:36%"></div>
+                    <div class="perf-stock" id="statSpeedStock" style="width:36%"></div>
+                  </div>
+                </div>
+                <div class="perf-stat">
+                  <div class="perf-stat-head">
+                    <span>HANDLING</span>
+                  </div>
+                  <div class="perf-meter">
+                    <div class="perf-max" id="statHandMax" style="width:64%"></div>
+                    <div class="perf-tuned" id="statHandTuned" style="width:30%"></div>
+                    <div class="perf-stock" id="statHandStock" style="width:30%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Upgrade Categories Column -->
+            <div class="shop-upgrades">
+              <div class="shop-list" id="shopList" role="listbox" aria-label="Performance categories"></div>
+              <div class="shop-summary">
+                <div class="shop-total-row">
+                  <div class="shop-total-val">
+                    <span data-i18n="shopTuneTotal">TUNE</span>:<b id="shopSummaryPct">0%</b>
+                  </div>
+                  <div class="shop-quick-btns">
+                    <button class="btn mini" id="shopStockBtn" type="button" data-i18n="shopStockAll">Stock all</button>
+                    <button class="btn mini" id="shopAutoBtn" type="button" data-i18n="shopAutoUpgrade">Auto upgrade</button>
+                  </div>
+                </div>
+                <div class="shop-legend">
+                  <span class="legend-item"><span class="legend-box owned"></span><span data-i18n="shopLegOwned">Upgraded</span></span>
+                  <span class="legend-item">
+                    <span class="legend-box installed">
+                      <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="#031515" stroke-width="2.4"><path d="M2 2l8 8M10 2L2 10"/></svg>
+                    </span>
+                    <span data-i18n="shopLegInstalled">Installed</span>
+                  </span>
+                  <span class="legend-item"><span class="legend-box"></span><span data-i18n="shopLegAvail">Available</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="shop-footer">
+            <div class="shop-keyhints">
+              <span><kbd class="keycap">&uarr;&darr;</kbd><span data-i18n="shopHintCat">Category</span></span>
+              <span><kbd class="keycap">&larr;&rarr;</kbd><span data-i18n="shopHintLvl">Level</span></span>
+              <span><kbd class="keycap">ESC</kbd><span data-i18n="shopCancel">Cancel</span></span>
+              <span><kbd class="keycap">ENTER</kbd><span data-i18n="shopAccept">Accept</span></span>
+            </div>
+            <div class="bar-actions">
+              <button class="btn" id="shopCancelBtn" type="button" data-i18n="shopCancel">Cancel</button>
+              <button class="btn primary" id="shopAcceptBtn" type="button" data-i18n="shopAccept">Accept</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
