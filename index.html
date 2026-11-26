@@ -3184,6 +3184,71 @@ var SCHEMATICS = {
         </g>
       </g>
     </svg>`
+  },
+  4: {
+    ghost: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <g stroke="#4b5a63" stroke-width="1.1" stroke-opacity="0.28">
+      <g stroke="#4b5a63" stroke-width="1.1" stroke-opacity="0.28">
+        <path d="M206 39 C209 39 209 36 209 31 C209 25 205 23.5 198 23.5 C190 23.5 184 26.5 178 32 C174 35 171 36 167 36"></path>
+        <rect x="148" y="32.5" width="19" height="7" rx="1.6" fill="rgba(75,90,99,0.08)"></rect>
+        <path d="M148 36 C143 36 141 33 138 29 C135 25.5 132 24.5 126 24.5 L78 24.5 C72 24.5 70 22 64 22 L56 22 C51 22 49 24.5 44 24.5"></path>
+        <path d="M44 23.3 L42 22.5 L31 22.5 L29 23.6 L29 25.4 L31 26.5 L42 26.5 L44 25.7 Z" fill="rgba(75,90,99,0.08)"></path>
+        <line x1="29" y1="24.5" x2="20" y2="24.5"></line>
+
+        <path d="M206 61 C209 61 209 64 209 69 C209 75 205 76.5 198 76.5 C190 76.5 184 73.5 178 68 C174 65 171 64 167 64"></path>
+        <rect x="148" y="60.5" width="19" height="7" rx="1.6" fill="rgba(75,90,99,0.08)"></rect>
+        <path d="M148 64 C143 64 141 67 138 71 C135 74.5 132 75.5 126 75.5 L78 75.5 C72 75.5 70 78 64 78 L56 78 C51 78 49 75.5 44 75.5"></path>
+        <path d="M44 74.3 L42 73.5 L31 73.5 L29 74.6 L29 76.4 L31 77.5 L42 77.5 L44 76.7 Z" fill="rgba(75,90,99,0.08)"></path>
+        <line x1="29" y1="75.5" x2="20" y2="75.5"></line>
+      </g>
+      </svg>`,
+    active: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <defs>
+        <filter id="engineGlow" x="-20%" y="-25%" width="140%" height="150%">
+          <feGaussianBlur stdDeviation="1.4" result="blur"></feGaussianBlur>
+          <feMerge>
+            <feMergeNode in="blur"></feMergeNode>
+            <feMergeNode in="SourceGraphic"></feMergeNode>
+          </feMerge>
+        </filter>
+        <linearGradient id="engineGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#5ce6e1" stop-opacity="0.46"></stop>
+          <stop offset="50%" stop-color="#29c5c0" stop-opacity="0.22"></stop>
+          <stop offset="100%" stop-color="#5ce6e1" stop-opacity="0.46"></stop>
+        </linearGradient>
+      </defs>
+
+
+      <!-- Подсвеченный силовой агрегат (Engine upgrade) -->
+      <g filter="url(#engineGlow)">
+        <!-- Внешний мягкий ореол блока -->
+        <path d="M186 39.5 Q186 37 189 37 L213 37 Q216 37 217 39.5 L219 42.5 L219 57.5 L217 60.5 Q216 63 213 63 L197 63 L196 64.3 L191.5 64.3 L190.5 63 L189 63 Q186 63 186 60.5 Z" stroke="#29c5c0" stroke-width="2.6" stroke-opacity="0.34"></path>
+
+        <!-- Основной контур двигателя и навесного оборудования -->
+        <g stroke="#5ce6e1" stroke-width="1.25">
+          <!-- Блок цилиндров с головками и нижним выступом поддона -->
+          <path d="M186 39.5 Q186 37 189 37 L213 37 Q216 37 217 39.5 L219 42.5 L219 57.5 L217 60.5 Q216 63 213 63 L197 63 L196 64.3 L191.5 64.3 L190.5 63 L189 63 Q186 63 186 60.5 Z" fill="url(#engineGrad)"></path>
+
+          <!-- Крышки клапанов и разметка цилиндров -->
+          <rect x="190" y="39.5" width="22" height="5" rx="1.5" stroke-width="0.9" stroke-opacity="0.7"></rect>
+          <rect x="190" y="55.5" width="22" height="5" rx="1.5" stroke-width="0.9" stroke-opacity="0.7"></rect>
+          <line x1="195.5" y1="39.8" x2="195.5" y2="44.2" stroke-width="0.8" stroke-opacity="0.5"></line>
+          <line x1="201" y1="39.8" x2="201" y2="44.2" stroke-width="0.8" stroke-opacity="0.5"></line>
+          <line x1="206.5" y1="39.8" x2="206.5" y2="44.2" stroke-width="0.8" stroke-opacity="0.5"></line>
+          <line x1="195.5" y1="55.8" x2="195.5" y2="60.2" stroke-width="0.8" stroke-opacity="0.5"></line>
+          <line x1="201" y1="55.8" x2="201" y2="60.2" stroke-width="0.8" stroke-opacity="0.5"></line>
+          <line x1="206.5" y1="55.8" x2="206.5" y2="60.2" stroke-width="0.8" stroke-opacity="0.5"></line>
+
+          <!-- Центральная плита развала блока -->
+          <rect x="191" y="46.8" width="20" height="6.4" rx="1.5" stroke-width="0.85" stroke-opacity="0.55"></rect>
+
+          <!-- Передний шкив и лопасти крыльчатки охлаждения -->
+          <path d="M219 46.8 L224.2 43.3 L225 44.6 L221 48.5 Z" fill="url(#engineGrad)" stroke-width="1.05"></path>
+          <path d="M219 53.2 L224.2 56.7 L225 55.4 L221 51.5 Z" fill="url(#engineGrad)" stroke-width="1.05"></path>
+          <path d="M219 47.6 L223.6 48.6 L223.6 51.4 L219 52.4 Z" fill="url(#engineGrad)" stroke-width="1.1"></path>
+        </g>
+      </g>
+    </svg>`
   }
 
 };
