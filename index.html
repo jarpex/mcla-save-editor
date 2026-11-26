@@ -3249,6 +3249,61 @@ var SCHEMATICS = {
         </g>
       </g>
     </svg>`
+  },
+  5: {
+    ghost: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <g stroke="#4b5a63" stroke-width="1.1" stroke-opacity="0.28">
+      <g stroke="#4b5a63" stroke-width="1.1" stroke-opacity="0.28">
+        <path d="M206 39 C209 39 209 36 209 31 C209 25 205 23.5 198 23.5 C190 23.5 184 26.5 178 32 C174 35 171 36 167 36"></path>
+        <rect x="148" y="32.5" width="19" height="7" rx="1.6" fill="rgba(75,90,99,0.08)"></rect>
+        <path d="M148 36 C143 36 141 33 138 29 C135 25.5 132 24.5 126 24.5 L78 24.5 C72 24.5 70 22 64 22 L56 22 C51 22 49 24.5 44 24.5"></path>
+        <path d="M44 23.3 L42 22.5 L31 22.5 L29 23.6 L29 25.4 L31 26.5 L42 26.5 L44 25.7 Z" fill="rgba(75,90,99,0.08)"></path>
+        <line x1="29" y1="24.5" x2="20" y2="24.5"></line>
+
+        <path d="M206 61 C209 61 209 64 209 69 C209 75 205 76.5 198 76.5 C190 76.5 184 73.5 178 68 C174 65 171 64 167 64"></path>
+        <rect x="148" y="60.5" width="19" height="7" rx="1.6" fill="rgba(75,90,99,0.08)"></rect>
+        <path d="M148 64 C143 64 141 67 138 71 C135 74.5 132 75.5 126 75.5 L78 75.5 C72 75.5 70 78 64 78 L56 78 C51 78 49 75.5 44 75.5"></path>
+        <path d="M44 74.3 L42 73.5 L31 73.5 L29 74.6 L29 76.4 L31 77.5 L42 77.5 L44 76.7 Z" fill="rgba(75,90,99,0.08)"></path>
+        <line x1="29" y1="75.5" x2="20" y2="75.5"></line>
+      </g>
+      </svg>`,
+    active: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <defs>
+        <filter id="electronicsGlow" x="-20%" y="-25%" width="140%" height="150%">
+          <feGaussianBlur stdDeviation="1.4" result="blur"></feGaussianBlur>
+          <feMerge>
+            <feMergeNode in="blur"></feMergeNode>
+            <feMergeNode in="SourceGraphic"></feMergeNode>
+          </feMerge>
+        </filter>
+        <linearGradient id="electronicsGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#5ce6e1" stop-opacity="0.44"></stop>
+          <stop offset="50%" stop-color="#29c5c0" stop-opacity="0.2"></stop>
+          <stop offset="100%" stop-color="#5ce6e1" stop-opacity="0.44"></stop>
+        </linearGradient>
+      </defs>
+
+
+      <!-- Подсвеченный контур моторной проводки и блока управления (Electronics) -->
+      <g filter="url(#electronicsGlow)">
+        <!-- Внешний мягкий ореол жгута -->
+        <g stroke="#29c5c0" stroke-width="3" stroke-opacity="0.34">
+          <path d="M179.5 36.5 L206.5 36.5 L206.5 61.5 L179.5 61.5 Z"></path>
+          <line x1="179.5" y1="61.5" x2="179.5" y2="77.2"></line>
+        </g>
+
+        <!-- Основной контур проводки и разъемного модуля -->
+        <g stroke="#5ce6e1" stroke-width="1.35">
+          <path d="M179.5 37.7 Q179.5 36.5 180.7 36.5 L205.3 36.5 Q206.5 36.5 206.5 37.7 L206.5 60.3 Q206.5 61.5 205.3 61.5 L179.5 61.5 Z"></path>
+          <line x1="179.5" y1="61.5" x2="179.5" y2="69.2"></line>
+
+          <!-- Т-образный узел разветвления и утолщенный разъем у переднего колеса -->
+          <rect x="178.7" y="60.3" width="1.6" height="2.4" rx="0.6" fill="#5ce6e1" stroke="none"></rect>
+          <rect x="178.4" y="69.2" width="2.2" height="8.2" rx="1.1" fill="url(#electronicsGrad)" stroke-width="1.15"></rect>
+          <line x1="178.7" y1="71.6" x2="180.3" y2="71.6" stroke-width="0.75" stroke-opacity="0.65"></line>
+        </g>
+      </g>
+    </svg>`
   }
 
 };
