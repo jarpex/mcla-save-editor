@@ -41,7 +41,7 @@ function render() {
       '<span class="n">' + idxStr + '</span>' +
       '<select data-slot="' + n + '" aria-label="' + t("aCar", n) + '">' + opts + "</select>" +
       '<input class="lbl" type="text" maxlength="31" placeholder="LABEL" data-label="' + n + '" aria-label="' + t("aLabel", n) + '">' +
-      '<input class="plate" type="text" maxlength="7" pattern="[A-Z0-9]{7}" placeholder="PLATE" data-plate="' + n + '" aria-label="' + t("aPlate", n) + '">' +
+      '<input class="plate" type="text" maxlength="7" pattern="[A-Z0-9 ]{7}" placeholder="PLATE" data-plate="' + n + '" aria-label="' + t("aPlate", n) + '">' +
       '<button class="btn mini tune" type="button" data-tune="' + n + '" style="--pct:' + ti.pct + '%" aria-label="' + t("aTune", n) + '"' +
       (!s.car ? " disabled" : "") + (ti.pct === 100 ? " data-full" : "") + ">" + ti.pct + "%</button>" +
       '<button class="btn-clear" type="button" data-clear="' + n + '" title="' + t("aClear", n) + '" aria-label="' + t("aClear", n) + '">x</button>';
@@ -96,10 +96,11 @@ function render() {
 
   host.querySelectorAll("input.plate").forEach(function (inp) {
     inp.addEventListener("input", function () {
-      inp.value = inp.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 7);
+      inp.value = inp.value.toUpperCase().replace(/[^A-Z0-9 ]/g, "").slice(0, 7);
       if (inp.value.length !== 7) return;
-      var at = slotAt(+inp.dataset.plate) + OFF.slotPlate;
-      for (var i = 0; i < 7; i++) bytes[at + i] = inp.value.charCodeAt(i);
+      var at = slotAt(+inp.dataset.plate) - OFF.slotStride * OFF.plateStrideBack + OFF.slotPlate;
+      var enc = plateFrom(inp.value);
+      for (var i = 0; i < 7; i++) bytes[at + i] = enc[i];
       mark();
     });
   });

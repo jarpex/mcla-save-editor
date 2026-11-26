@@ -10,6 +10,9 @@ var OFF = {
   slotStride: 8176,
   slotLabel: 32,
   slotPlate: 2186,
+  /* O array de placas comeca um stride antes do slot 0, como o de tune:
+     a placa do slot N esta em slotAt(N) - slotStride + slotPlate. */
+  plateStrideBack: 1,
 
   tuneBase: 1293,
   tuneLv: 95,
@@ -175,10 +178,13 @@ var VEHICLE_PERF_STATS = {
    Prefab names below are INFERRED from the vp_<maker>_<model>_<yy> pattern and
    are NOT verified against the game's own vehicle.lst — fix them before use.
    The seven a real save confirmed (Bel Air, Riviera, Impala '64, Malibu, GTO,
-   Chevelle, Impala Police CHP) moved up into ROSTER.
-   Columns: prefab | name | class | group | type | cost | stock accel/speed/hand
-            -> max accel/speed/hand
-   (accel/speed/hand, matching the [stock, max] order in VEHICLE_PERF_STATS)
+   Chevelle, Impala Police CHP) moved up into ROSTER, with their numbers in
+   VEHICLE_PERF_STATS. The CHP is stock-only: 57/33/76 -> 57/33/76, so its
+   tuned values equal the stock ones.
+   Columns: prefab | name | class | group | type | cost | stock speed/accel/hand
+            -> max speed/accel/hand
+   (the table's own column order, speed first; VEHICLE_PERF_STATS stores
+   [stock, max] per accel / speed / hand, so the two are swapped on the way in)
 
   vp_lnd_rangerover_sc           Land Rover RANGE ROVER SUPERCHARGED    C-Class  Group 3  SUV            $94,000  38/23/30 -> 60/34/43
   vp_lnd_rangerover_sport        Land Rover RANGE ROVER SPORT           C-Class  Group 3  SUV            $72,000  35/19/30 -> 57/30/45

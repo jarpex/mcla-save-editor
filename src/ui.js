@@ -3,6 +3,26 @@ function slotCount() {
   return Math.floor((lo.size - OFF.slot0) / OFF.slotStride);
 }
 
+/* A placa fica no stride anterior (OFF.plateStrideBack), e o jogo grava espaco
+   como 0x3E (">"), nao 0x20. */
+function plateAt(n) {
+  var at = slotAt(n) - OFF.slotStride * OFF.plateStrideBack + OFF.slotPlate;
+  var out = "";
+  for (var i = 0; i < 8; i++) {
+    var c = bytes[at + i];
+    if (c === 0 || c === 0xCD) break;
+    out += (c === 0x3E) ? " " : String.fromCharCode(c);
+  }
+  return out;
+}
+
+/* Devolve os 7 codigos de byte da placa: espaco vira 0x3E, como a jogo grava. */
+function plateFrom(str) {
+  var out = [];
+  for (var i = 0; i < 7; i++) out.push(i < str.length ? (str[i] === " " ? 0x3E : str.charCodeAt(i)) : 0);
+  return out;
+}
+
 function readSlot(n) {
   var o = slotAt(n);
   var name = ascii(o, 32);
@@ -10,7 +30,7 @@ function readSlot(n) {
     i: n, at: o,
     car: (name === "blank" || name === "") ? "" : name,
     label: ascii(o + OFF.slotLabel, 32),
-    plate: ascii(o + OFF.slotPlate, 12)
+    plate: plateAt(n)
   };
 }
 
