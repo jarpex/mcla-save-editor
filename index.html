@@ -1479,8 +1479,6 @@ var OFF = {
 
   tuneBase: 1293,
   tuneLv: 95,
-  tuneN: 13,
-  tuneMax: 2,
   tunePct: 126,
 
   ttRecord: 0x578,
@@ -1614,12 +1612,80 @@ function setU32(at, v) { view.setUint32(at, v >>> 0); }
 
 function slotAt(n) { return sec("LocalOptions").data + OFF.slot0 + n * OFF.slotStride; }
 function tuneAt(n) { return sec("LocalOptions").data + OFF.tuneBase + n * OFF.slotStride; }
-function tuneOf(n) { return bytes[tuneAt(n) + OFF.tunePct]; }
 
+/* ---------- performance upgrades ----------
+   Thirteen category bytes at +95, level = byte + 1 (0 stock, 1 level 2,
+   2 level 3). Motorcycles use only six of the same bytes and top out at
+   level 6 (byte 5). The tune % at +126 is derived, not stored by the player:
+   the LAST category (Tires) never counts, so the divisor is 2*(n-1). */
+
+var TUNE_CATS = [
+  "Exhaust system", "Headers", "Cold Air Intake", "Forced Induction",
+  "Engine Upgrade", "Electronics", "Nitrous", "Clutch", "Gear Kit",
+  "Shocks/Springs", "Swaybars", "Brakes", "Tires"
+];
+
+/* Motorcycle categories, as indexes into TUNE_CATS. */
+var MOTO_CATS = [0, 4, 5, 6, 8, 12];
+
+var MOTO = { vp_duc_999r_06: 1, vp_duc_monster_s4r_07: 1, vp_kaw_ninja_zx14_06: 1 };
+
+function isMoto(car) { return !!MOTO[car]; }
+
+/* The category list a vehicle actually has, as TUNE_CATS indexes. */
+function tuneCatIdx(car) { return isMoto(car) ? MOTO_CATS : TUNE_CATS.map(function (_, i) { return i; }); }
+
+/* Highest byte value the vehicle accepts: 2 for cars, 5 for motorcycles. */
+function tuneMaxByte(car) { return isMoto(car) ? 5 : 2; }
+
+/* Human level, 1-based, straight from the byte. */
+function tuneLevel(byte) { return byte + 1; }
+
+function tunePctAt(n) {
+  var car = readSlot(n).car;
+  var idx = tuneCatIdx(car);
+  var sum = 0;
+  for (var i = 0; i < idx.length - 1; i++) sum += bytes[tuneAt(n) + OFF.tuneLv + idx[i]];
+  /* The divisor is always 2*(n-1): the formula is calibrated to level 3
+     (byte 2) even on a motorcycle, which can reach byte 5. Such a bike
+     computes over 100, so clamp — the stored byte is 0..100. */
+  return Math.max(0, Math.min(100, Math.floor(sum * 100 / (2 * (idx.length - 1)))));
+}
+
+function tuneOf(n) { return tunePctAt(n); }
+
+/* Write one category of one slot. `level` is 1-based (1 = stock). */
+function tuneSet(n, catIdx, level) {
+  var v = Math.max(0, Math.min(tuneMaxByte(readSlot(n).car), level - 1));
+  bytes[tuneAt(n) + OFF.tuneLv + catIdx] = v;
+  bytes[tuneAt(n) + OFF.tunePct] = tunePctAt(n);
+  return v + 1;
+}
+
+/* Max every category the vehicle has. Returns the resulting percent. */
 function maxTune(n) {
-  var o = tuneAt(n);
-  for (var i = 0; i < OFF.tuneN; i++) bytes[o + OFF.tuneLv + i] = OFF.tuneMax;
-  bytes[o + OFF.tunePct] = 100;
+  var car = readSlot(n).car;
+  var idx = tuneCatIdx(car);
+  var top = tuneMaxByte(car);
+  for (var i = 0; i < idx.length; i++) bytes[tuneAt(n) + OFF.tuneLv + idx[i]] = top;
+  bytes[tuneAt(n) + OFF.tunePct] = tunePctAt(n);
+  return tunePctAt(n);
+}
+
+/* Everything the UI needs about one slot's tune, in one object. */
+function tuneInfo(n) {
+  var car = readSlot(n).car;
+  var idx = tuneCatIdx(car);
+  var max = tuneMaxByte(car);
+  var cats = idx.map(function (ci) {
+    return {
+      idx: ci,
+      name: TUNE_CATS[ci],
+      level: tuneLevel(bytes[tuneAt(n) + OFF.tuneLv + ci]),
+      max: max + 1
+    };
+  });
+  return { car: car, moto: isMoto(car), cats: cats, pct: tunePctAt(n), max: max + 1 };
 }
 
 function slotCount() {
@@ -1797,18 +1863,18 @@ function render() {
   host.innerHTML = "";
   for (var n = 0; n < total; n++) {
     var s = readSlot(n);
+    var ti = tuneInfo(n);
     var idxStr = (n < 10 ? "0" : "") + n;
-    var pct = tuneOf(n);
     var row = document.createElement("div");
-    row.className = "slot" + (s.car ? " filled" : "");
+    row.className = "slot" + (s.car ? " filled" : "") + (ti.moto ? " moto" : "");
     row.innerHTML =
       '<span class="cursor" aria-hidden="true"></span>' +
       '<span class="n">' + idxStr + '</span>' +
       '<select data-slot="' + n + '" aria-label="' + t("aCar", n) + '">' + opts + "</select>" +
       '<input class="lbl" type="text" maxlength="31" placeholder="LABEL" data-label="' + n + '" aria-label="' + t("aLabel", n) + '">' +
       '<input class="plate" type="text" maxlength="7" pattern="[A-Z0-9]{7}" placeholder="PLATE" data-plate="' + n + '" aria-label="' + t("aPlate", n) + '">' +
-      '<button class="btn mini tune" type="button" data-tune="' + n + '" style="--pct:' + pct + '%" aria-label="' + t("aTune", n) + '"' +
-      (pct === 100 ? " data-full" : "") + ">" + pct + "%</button>" +
+      '<button class="btn mini tune" type="button" data-tune="' + n + '" style="--pct:' + ti.pct + '%" aria-label="' + t("aTune", n) + '"' +
+      (ti.pct === 100 ? " data-full" : "") + ">" + ti.pct + "%</button>" +
       '<button class="btn-clear" type="button" data-clear="' + n + '" title="' + t("aClear", n) + '" aria-label="' + t("aClear", n) + '">x</button>';
     host.appendChild(row);
     row.querySelector("select").value = s.car;
@@ -1831,6 +1897,9 @@ function render() {
       writeField(o + OFF.slotLabel, 33, "");
     }
     rowEl.classList.toggle("filled", !!val);
+    /* The new vehicle may be a bike with six categories instead of a car
+       with thirteen, so the tune button has to be repainted from scratch. */
+    paintTune();
     syncCars();
     el("garCount").textContent = storedCars() + " / " + total + " " + t("nSlots");
     applyGarageFilter();
@@ -1873,6 +1942,12 @@ function render() {
       b.textContent = pct + "%";
       b.style.setProperty("--pct", pct + "%");
       if (pct === 100) b.setAttribute("data-full", ""); else b.removeAttribute("data-full");
+    });
+    /* A slot's vehicle type decides how many categories it has, so the
+       row's moto class has to follow the select, not just the initial paint. */
+    host.querySelectorAll(".slot").forEach(function (r) {
+      var n = +r.querySelector("select").dataset.slot;
+      r.classList.toggle("moto", tuneInfo(n).moto);
     });
   }
 

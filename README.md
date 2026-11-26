@@ -39,8 +39,8 @@ validate, and neither one ever changes the file size.
 **[Open the editor](https://onlyzennnn.github.io/mcla-save-editor/)** — drop the save in, edit, download the patched file. It runs entirely in the browser; the save never leaves your machine. `index.html` is the whole thing, so downloading that one file and opening it offline works the same way.
 
 It edits money, reputation, career progression, the garage slots (vehicle, label, plate) and
-**performance upgrades** — a button per car maxes all thirteen categories, or one button does the
-whole garage. There is a language selector in the corner.
+**performance upgrades** — a button per car maxes every category it has (thirteen for a car, six
+for a bike), or one button does the whole garage. There is a language selector in the corner.
 
 For the command line, `scripts/mcla-save-editor.ps1` covers `info`, `garage`, `roster`, `cars`,
 `setcar`, `money`, `rep`, `progress`, `stats`, `find`, `get`, `set`, `diff` and `selftest`. The
@@ -177,13 +177,42 @@ for the car in slot 1 writes into the bytes that look like slot 0.
 
 | Offset in the block | Size | Meaning |
 |---|---|---|
-| `+95` | 13 | One byte per upgrade category, level `0`, `1` or `2` |
+| `+95` | 13 | One byte per upgrade category, level = byte + 1 |
 | `+126` | 1 | Tune percentage the shop displays, `0` to `100` |
 
-The percentage is the sum of the 13 levels over 26. All thirteen at level 2 is 100%, thirteen at
-level 1 is 50%, and two single levels read as 8%. Every car in a 12-car garage matched that
-arithmetic exactly. Writing level 2 across the thirteen bytes and 100 into `+126` **was confirmed
-in game**: the car showed 100% tune with every category installed.
+A byte of `0` is stock (level 1), `1` is level 2, `2` is level 3. Cars have thirteen categories,
+motorcycles only six, and a bike's ceiling is level 6 (byte `5`).
+
+| Byte | Car category | Bike category |
+|---|---|---|
+| 0 | Exhaust system | Exhaust system |
+| 1 | Headers | — |
+| 2 | Cold Air Intake | — |
+| 3 | Forced Induction | — |
+| 4 | Engine Upgrade | Engine Upgrade |
+| 5 | Electronics | Jet Kits |
+| 6 | Nitrous | Nitrous |
+| 7 | Clutch | — |
+| 8 | Gear Kit | Gear Kits |
+| 9 | Shocks/Springs | — |
+| 10 | Swaybars | — |
+| 11 | Brakes | — |
+| 12 | Tires | Tires |
+
+The percentage is **derived**, and the last category (Tires) never counts:
+
+```
+car:  floor(sum(bytes[0..11]) * 100 / 24)
+bike: floor(sum(bytes[0,4,5,6,8]) * 100 / 10)
+```
+
+So a car with eleven categories at level 2 and Brakes stock reads 45%, not 46%; a bike with three
+categories at level 2 reads 30%, not 33%. The divisor is always `2 * (n - 1)` — the formula is
+calibrated to level 3, so a bike maxed to level 6 computes over 100 and is clamped. Writing level
+2 across all thirteen bytes and 100 into `+126` **was confirmed in game** for a car; a bike must
+get `5` in its six bytes only, or the unused bytes fill with junk.
+
+The bike list is `vp_duc_999r_06`, `vp_duc_monster_s4r_07`, `vp_kaw_ninja_zx14_06`.
 
 ### Per-car ledger
 
@@ -229,7 +258,8 @@ Read on screen in a running game, not inferred:
 - Reputation at `Career+0x2E1`, matching the number on screen
 - Progression flags, matching the player's actual career position
 - Performance upgrades: writing level 2 into the thirteen bytes at `+95` and 100 into `+126` made
-  the car read 100% tune in the shop with every category installed
+  the car read 100% tune in the shop with every category installed; the derived percentage and the
+  six-category bike layout were confirmed against a save tuned in game
 
 ## What does not work
 

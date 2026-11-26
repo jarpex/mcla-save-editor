@@ -412,8 +412,9 @@ assert.strictEqual(r1.plate.value, "AB1234", "os caracteres invalidos nao foram 
 assert.strictEqual(str(plateAt, 7), "XYZ9876", "a placa filtrada ficou curta e gravou assim mesmo");
 
 // ---------- desempenho ----------
-// 13 categorias de 0 a 2. A porcentagem que a loja mostra e a soma sobre 26,
-// entao tudo em 2 tem que marcar 100.
+// 13 categorias de 0 a 2 (carro) ou 6 (moto), e a porcentagem que a loja
+// mostra e a soma sobre 2*(n-1): a ULTIMA categoria nao conta. Tudo em 2
+// num carro marca 100; 11 em 2 com os freios no estoque marca 45.
 
 var loAt = ctx.secs.list.filter(function (s) { return s.name === "LocalOptions"; })[0].data;
 function tuneBlock(n) { return loAt + TUNE_BASE + n * SLOT_STRIDE; }
@@ -447,8 +448,43 @@ for (var s2 = 0; s2 < SLOTS; s2++) {
   for (var q = 0; q < 32; q++) { var ch = ctx.bytes[so + q]; if (!ch || ch === 0xCD) break; nome += String.fromCharCode(ch); }
   if (!nome || nome === "blank") continue;
   assert.strictEqual(ctx.bytes[tuneBlock(s2) + TUNE_PCT], 100,
-    "tunar todos deixou o slot " + s2 + " de fora");
-}
+      "tunar todos deixou o slot " + s2 + " de fora");
+  }
+
+  // ---------- desempenho: moto tem 6 categorias e teto 6 ----------
+  // O save de teste so tem carro, entao troco o slot 1 pra uma moto e confiro
+  // que a lista encolheu, que o teto e 5 (nivel 6) e que a formula usa /10.
+
+  if (!real) {
+    var m1 = rows[1];
+    m1.sel.value = "vp_duc_monster_s4r_07";
+    m1.sel._on.change.call(m1.sel);
+
+    var info = ctx.tuneInfo(1);
+    assert.strictEqual(info.moto, true, "a moto nao foi reconhecida como moto");
+    assert.strictEqual(info.cats.length, 6, "a moto ficou com " + info.cats.length + " categorias");
+    assert.strictEqual(info.max, 6, "o teto da moto nao e 6");
+    assert.strictEqual(info.cats.map(function (c) { return c.idx; }).join(","), "0,4,5,6,8,12",
+      "as categorias da moto nao sao as seis certas");
+
+    // tres categorias em 1 (nivel 2) -> floor(3*100/10) = 30
+    [0, 4, 5].forEach(function (ci) { ctx.tuneSet(1, ci, 2); });
+    assert.strictEqual(ctx.tuneInfo(1).pct, 30, "a moto com 3 categorias nao marcou 30%");
+    assert.strictEqual(ctx.bytes[tuneBlock(1) + TUNE_PCT], 30,
+      "a porcentagem da moto nao chegou ao byte +126");
+
+    // maxTune numa moto escreve 5 (nivel 6) e so nas seis categorias
+    ctx.maxTune(1);
+    var tM = tuneBlock(1);
+    [0, 4, 5, 6, 8, 12].forEach(function (ci) {
+      assert.strictEqual(ctx.bytes[tM + TUNE_LV + ci], 5, "categoria " + ci + " da moto nao foi pro teto");
+    });
+    [1, 2, 3, 7, 9, 10, 11].forEach(function (ci) {
+      assert.strictEqual(ctx.bytes[tM + TUNE_LV + ci], 0,
+        "maxTune escreveu a categoria " + ci + ", que a moto nao tem");
+    });
+    assert.strictEqual(ctx.bytes[tM + TUNE_PCT], 100, "a moto tunada nao marcou 100%");
+  }
 
 // ---------- progressao ----------
 
