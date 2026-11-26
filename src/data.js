@@ -42,7 +42,10 @@ var ROSTER = [
   "vp_vw_golf_83","vp_vw_scirocco_88",
   "vpd_buk_riviera_63","vpd_chv_belair_55","vpd_chv_chevelle_70",
   "vpd_chv_impala_64","vpd_chv_malibu_65","vpd_pon_gto_66",
-  "vp_se_chv_plc_96"
+  "vp_se_chv_plc_96",
+  "vpd_am_db9_08","vpd_aud_s5_08","vpd_cad_xlrv_08","vpd_duc_1098_07",
+  "vpd_mbz_clk63amg_08","vpd_mbz_cl65amg_08","vpd_mit_eclipse_09",
+  "vpd_mit_evox_08"
 ];
 
 var CAR_TITLES = {
@@ -100,7 +103,15 @@ var CAR_TITLES = {
   vpd_chv_chevelle_70: "1970 Chevrolet Chevelle SS",
   vpd_chv_impala_64: "1964 Chevrolet Impala",
   vpd_chv_malibu_65: "1965 Chevrolet Malibu",
-  vpd_pon_gto_66: "1966 Pontiac GTO"
+  vpd_pon_gto_66: "1966 Pontiac GTO",
+  vpd_am_db9_08: "2007 Aston Martin DB9",
+  vpd_aud_s5_08: "2008 Audi S5",
+  vpd_cad_xlrv_08: "2008 Cadillac XLR-V",
+  vpd_duc_1098_07: "2008 Ducati 1098R",
+  vpd_mbz_clk63amg_08: "2008 Mercedes-Benz CLK 63 AMG Black",
+  vpd_mbz_cl65amg_08: "2008 Mercedes-Benz CL 65 AMG",
+  vpd_mit_eclipse_09: "2009 Mitsubishi Eclipse Spyder GT",
+  vpd_mit_evox_08: "2008 Mitsubishi Lancer Evolution X"
 };
 
 /* Заготовки стоковых (stock) и максимальных (max) характеристик для полосок
@@ -167,6 +178,14 @@ var VEHICLE_PERF_STATS = {
   vpd_chv_impala_64: { accel: [24, 41], speed: [32, 54], hand: [13, 27] },
   vpd_chv_malibu_65: { accel: [28, 45], speed: [33, 54], hand: [17, 30] },
   vpd_pon_gto_66: { accel: [31, 53], speed: [34, 58], hand: [21, 36] },
+  vpd_am_db9_08: { accel: [36, 46], speed: [71, 90], hand: [49, 68] },
+  vpd_aud_s5_08: { accel: [25, 37], speed: [48, 74], hand: [33, 50] },
+  vpd_cad_xlrv_08: { accel: [34, 42], speed: [65, 86], hand: [54, 70] },
+  vpd_duc_1098_07: { accel: [84, 93], speed: [76, 91], hand: [77, 85] },
+  vpd_mbz_clk63amg_08: { accel: [39, 51], speed: [63, 84], hand: [41, 57] },
+  vpd_mbz_cl65amg_08: { accel: [37, 47], speed: [61, 81], hand: [33, 49] },
+  vpd_mit_eclipse_09: { accel: [25, 40], speed: [48, 66], hand: [35, 66] },
+  vpd_mit_evox_08: { accel: [27, 42], speed: [54, 81], hand: [52, 68] },
 };
 
 
