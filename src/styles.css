@@ -1007,6 +1007,18 @@ input::placeholder { color: var(--ink-faint); }
   font-variant-numeric: tabular-nums;
 }
 .useful-none { color: var(--ink-faint); font-style: italic; }
+
+/* The raw byte list: three short lines, one per field, in data font. */
+.useful-raw {
+  display: grid;
+  gap: 1px;
+  font-family: var(--data);
+  font-size: 10px;
+  line-height: 1.35;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+.useful-raw span { white-space: nowrap; }
 .useful-table tbody tr:hover td { background: rgba(41, 197, 192, 0.06); }
 .doc-note {
   margin: 0;

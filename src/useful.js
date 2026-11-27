@@ -56,6 +56,35 @@ function usefulFits(catIdx) {
   return { html: '<span class="useful-fits">' + boxes + "</span>" };
 }
 
+/* The share of the stock-to-max range one level of a category adds, as a
+   percentage. A level is `1 / tuneMaxByte` of the category weight, and the
+   weights are shares of the whole range, so the product is the answer. */
+function usefulShare(catIdx, axis) {
+  var w = CAR_PERF_WEIGHTS[catIdx];
+  if (!w || !w[axis]) return null;
+  var per = w[axis] / tuneMaxByte(0);
+  return Math.round(per * 10000) / 100;
+}
+
+function usefulPct(v) {
+  return v == null ? "-" : (v === 0 ? "0" : "+" + v + "%");
+}
+
+/* Where the three bytes of one category live, in the form the game stores
+   them: level and vendor as u8, the vendor float as f32. */
+function usefulRaw(catIdx) {
+  var lv = OFF.tuneLv + catIdx;
+  var vd = OFF.tuneVendor + catIdx;
+  var fl = OFF.tuneVendorF + catIdx * 4;
+  return {
+    html: '<span class="useful-raw">' +
+      "<span>lv +0x" + lv.toString(16).toUpperCase() + " u8</span>" +
+      "<span>vnd +0x" + vd.toString(16).toUpperCase() + " u8</span>" +
+      "<span>flt +0x" + fl.toString(16).toUpperCase() + " f32</span>" +
+      "</span>"
+  };
+}
+
 /* The vendor dropdown of one category: stock first, then the collected list.
    The float written at +0x27 rides along as option data, so picking a vendor
    shows the number the game would store. */
@@ -103,14 +132,19 @@ function buildUseful() {
   });
 
   /* The 13 categories in index order. The third column shows which vehicle
-     types carry the part, as boxes drawn like the Progression checkboxes;
-     the fourth is the vendor dropdown where a list exists. */
+     types carry the part, as boxes drawn like the Progression checkboxes.
+     Then what one level adds to each of the three performance stats, where
+     the bytes live, and the vendor dropdown where a list exists. */
   var cats = TUNE_CATS.map(function (name, i) {
     return {
       cells: [
         { text: String(i) },
         { text: name },
         usefulFits(i),
+        { text: usefulPct(usefulShare(i, "acc")) },
+        { text: usefulPct(usefulShare(i, "spd")) },
+        { text: usefulPct(usefulShare(i, "hnd")) },
+        usefulRaw(i),
         usefulVendorSelect(i)
       ]
     };
@@ -118,7 +152,8 @@ function buildUseful() {
   groups.push({
     k: "usefulCats",
     note: "usefulCatsNote",
-    head: ["usefulIdx", "usefulPart", "usefulFits", "usefulVendors"],
+    head: ["usefulIdx", "usefulPart", "usefulFits", "usefulAccel", "usefulSpeed",
+           "usefulHand", "usefulRaw", "usefulVendors"],
     rows: cats
   });
 
