@@ -66,29 +66,188 @@ var STAT_NAMES = {
   "r:TI": "Race Time"
 };
 
-/* Areas, na ordem em que a jogo grava os registros repetidos. */
-var AREA_NAMES = ["Hollywood", "Beaches", "Downtown", "South Central"];
-var TT_NAMES = [
-  "Hollywood: '99 Eclipse",
-  "Beach: '69 Mustang",
-  "Hills: '71 Miura SV",
-  "Downtown: '99 3000GT",
-  "South Central: '64 Impala"
+/* ---------- Nomes em ordem de memoria ----------
+   A ordem dos registros repetidos e a que a jogo grava, nao a ordem do
+   menu. Os nomes vem do dump da propria tela de estatisticas.
+
+   r:TI tem 69 registros: 67 com nome, 2 sem (unordered/landmark, que a
+   tela mostra como NO STATS). vWIN tem 21: so os carros com vitoria, na
+   ordem do menu. vkDT tem 67: 66 carros do menu + 1 slot extra. */
+
+var RACE_NAMES = [
+  "CENTURY MALL",
+  "HOLLYWOOD AND DOWNTOWN",
+  "LAUREL CANYON LOOP",
+  "PROMENADE",
+  "THEATER CIRCUIT",
+  "UNIVERSITY LOOP",
+  "WESTWOOD",
+  "Around Hollywood",
+  "Central LA Showdown",
+  "Century City Jumps",
+  "Fairfax and Sunset",
+  "Hollywood Drifts",
+  "Laurel Canyon Run",
+  "Macarthur Cut",
+  "OLD HOLLYWOOD SHORTCUTS",
+  "SUNSET AND VINE",
+  "SUNSET RIVER RUN",
+  "VALLEY FREEWAYS",
+  "WELCOME TO HOLLYWOOD",
+  "WEST LA CHALLENGE",
+  "WILSHIRE BLVD.",
+  "WISHIRE SPRINT",
+  "CALIFORNIA INCLINE LOOP",
+  "SANTA MONICA LOOP",
+  "UNDER THE 405",
+  "BEACHES AND BEVERLY RUN",
+  "OCEAN TO LA RIVER",
+  "OLD ROUTE 66",
+  "SAND AND SURF",
+  "UNIVERSITY CUT",
+  "WESTSIDE RIDE",
+  "WESTWOOD AND BRENTWOOD",
+  "6TH ST.",
+  "DOWNTOWN FREEWAY LOOP",
+  "LA RIVER RUN",
+  "MIDTOWN",
+  "RAILYARD",
+  "4TH STREET MEET",
+  "CIVIC CENTER RACE",
+  "CROSSBLOCKS",
+  "DOWNTOWN TO PIER",
+  "DOWNTOWN TOUR",
+  "DOWNTOWN VISTAS",
+  "FIGUEROA AND GRAND",
+  "RAGS TO RICHES",
+  "",
+  "MULLHOLLAND",
+  "HOLLYWOOD, VALLEY AND BEACHES",
+  "MULLHOLLAND AND BEVERLY",
+  "MULLHOLLAND DRIVE EAST",
+  "MULLHOLLAND DRIVE WEST",
+  "RIVER VALLEY",
+  "UP AND OVER COLDWATER",
+  "VENTURA LOOP",
+  "10 AND 405 IS 110",
+  "FIGUEROA AND VERMONT",
+  "ROUND BALDWIN",
+  "SOUTH CENTRAL SPEEDWAY",
+  "TRACK CIRCUIT",
+  "WEST ADAMS LOOP",
+  "BALDWIN CRENSHAW RUN",
+  "CAMPUS ORIENTATION",
+  "CREENSHAW AND BACK",
+  "SC TOURING TIME",
+  "SOUTH CENTRAL TOUR",
+  "SOUTHEAST RUN",
+  "UNDER THE 10",
+  "WEST ADAMS MATCH",
+  ""
 ];
 
-/* Chaves que aparecem mais de uma vez: k$WA (4 areas), k:TB (5 time trials),
-   tMTP (14), vWIN (21), vkDT (67), r:TI (69). O numero da ocorrencia entra
-   no nome, senao as quatro apostas ficam todas "Wager Win Amount". */
-var REPEATED = { "k$WA": 1, "k:TB": 1, tMTP: 1, vWIN: 1, vkDT: 1, "r:TI": 1 };
+var WIN_CAR_NAMES = [
+  "1998 240SX",
+  "1969 Camaro RS SS",
+  "1969 BOSS 302",
+  "2004 SVT Focus",
+  "1999 Eclipse GSX",
+  "2006 RX-8 \"SHINKA\"",
+  "CHALLENGER CONCEPT \"DUB EDITION\"",
+  "2008 R32",
+  "1999 3000GT VR-4",
+  "2006 S600 \"DUB EDITION\"",
+  "1971 MIURA SV",
+  "2008 R8",
+  "2004 MURCIELAGO ROADSTER",
+  "2004 MURCIELAGO \"DUB EDITION\"",
+  "2007 S7",
+  "2007 NINJA ZX14",
+  "1964 IMPALA",
+  "1965 MALIBU",
+  "RANGE ROVER SPORT",
+  "2008 S5",
+  "2008 1098R"
+];
 
+var CAR_ORDER_NAMES = [
+  "1983 Golf/GTI",
+  "1998 240SX",
+  "1975 280Z",
+  "1988 Scirocco",
+  "1969 Camaro RS SS",
+  "1969 BOSS 302",
+  "1979 FIREBIRD",
+  "1996 IMPALA SS",
+  "1987 GRAND NATIONAL GNX",
+  "1970 Challenger R/T",
+  "2004 SVT Focus",
+  "2006 SOLSTICE",
+  "1999 Eclipse GSX",
+  "2006 Cobalt SS",
+  "2006 RX-8 \"SHINKA\"",
+  "2007 MONSTER S4RS",
+  "2005 Mustang GT Convertible",
+  "Camaro Concept",
+  "CAMARO CONCEPT \"DUB EDITION\"",
+  "Charger SRT-8",
+  "Challenger Concept",
+  "CHALLENGER CONCEPT \"DUB EDITION\"",
+  "2007 300C SRT-8",
+  "2008 R32",
+  "2006 350Z ROADSTER",
+  "1999 3000GT VR-4",
+  "1995 RX-7",
+  "1999 SKYLINE GT-R V-SPEC",
+  "2008 RS4",
+  "2006 LANCER EVOLUTION IX",
+  "2006 999R",
+  "2006 S600",
+  "2006 S600 \"DUB EDITION\"",
+  "1971 MIURA SV",
+  "2008 R8",
+  "2007 V8 Vantage Roadster",
+  "2007 SL65 AMG",
+  "2007 Z06",
+  "2008 S302 EXTREME",
+  "2006 GALLARDO SPYDER",
+  "2004 MURCIELAGO ROADSTER",
+  "2004 MURCIELAGO \"DUB EDITION\"",
+  "COBRA CONCEPT",
+  "2006 GT",
+  "2007 S7",
+  "2007 NINJA ZX14",
+  "1955 BEL AIR",
+  "1963 RIVIERA",
+  "1964 IMPALA",
+  "1965 MALIBU",
+  "1966 GTO",
+  "1970 CHEVELLE SS",
+  "RANGE ROVER SUPERCHARGED",
+  "RANGE ROVER SPORT",
+  "2009 ECLIPSE SPYDER GT",
+  "2008 S5",
+  "2008 EVOLUTION X",
+  "2008 XLRV",
+  "2008 CLK63 AMG BLACK",
+  "2008 CL65 AMG",
+  "2007 DB9",
+  "2008 1098R",
+  "1996 IMPALA SS POLICE",
+  "1996 IMPALA SS POLICE CHP",
+  "CHARGER POLICE",
+  "CHARGER POLICE CHP"
+];
+
+/* Nome de um registro repetido: a lista de nomes segue a ordem da memoria. */
 function statName(r) {
   var base = STAT_NAMES[r.key];
   if (!base) return "";
-  if (!REPEATED[r.key]) return base;
-  var names = r.key === "k$WA" ? AREA_NAMES
-            : r.key === "k:TB" ? TT_NAMES
-            : null;
-  if (names && names[r.occ]) return base + " \u00b7 " + names[r.occ];
+  var list = r.key === "r:TI" ? RACE_NAMES
+           : r.key === "vWIN" ? WIN_CAR_NAMES
+           : r.key === "vkDT" ? CAR_ORDER_NAMES
+           : null;
+  if (list && list[r.occ]) return base + " \u00b7 " + list[r.occ];
   return r.occ ? base + " #" + (r.occ + 1) : base;
 }
 
