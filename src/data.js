@@ -47,6 +47,14 @@ var SECTION_NOTES = {
     { at: 0x727D, size: 4, k: "offTtTarget" }
   ],
   Stats: [
+    /* A tabela de registros comeca em +0xC (alinhada a 16) e tem uma linha
+       de 16 bytes por FourCC. As linhas de r:TI, vWIN e vkDT nao tem offset
+       fixo: elas andam conforme a quantidade de registros anteriores, entao
+       o editor acha cada uma pelo codigo, nao pela posicao. */
+    { at: 0xC, size: 16, k: "offStatRec" },
+    { at: 0xC, size: 4, k: "offStatKey" },
+    { at: 0x14, size: 1, k: "offStatKind" },
+    { at: 0x18, size: 4, k: "offStatVal" },
     { at: 0x578, size: 4, k: "offTtRecord" },
     { at: 0x6A8, size: 4, k: "offTtEventRec" }
   ],
@@ -60,6 +68,7 @@ var SECTION_NOTES = {
     { at: 0x24FD, size: 1, k: "offTunePct", sub: true, add: 126 },
     { at: 0x24FD, size: 12, k: "offAppear", sub: true, add: 446 },
     { at: 0x24FD, size: 7, k: "offPlate", sub: true, add: 2186, back: 1 },
+    { at: 1293, size: 13, k: "offTuneBase" },
     { at: 0x3DF84, size: 60, k: "offCollect" }
   ]
 };
