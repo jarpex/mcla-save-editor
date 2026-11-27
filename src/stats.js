@@ -342,6 +342,12 @@ function statName(r) {
            : r.key === "vWIN" ? WIN_CAR_NAMES
            : r.key === "vkDT" ? CAR_ORDER_NAMES
            : null;
+  /* Nas corridas o nome proprio basta: a coluna do tipo ja diz "time", e
+     "Race Time · Around Hollywood" so repetia o cabecalho da tabela. */
+  if (r.key === "r:TI") {
+    if (list[r.occ]) return list[r.occ];
+    return "#" + (r.occ + 1);
+  }
   if (list && list[r.occ]) return base + " \u00b7 " + list[r.occ];
   /* As duas entradas sem nome ficam em Unknown; sem texto proprio, usamos o
      numero da ocorrencia na memoria. */
