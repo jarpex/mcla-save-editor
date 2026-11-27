@@ -152,7 +152,7 @@ function almanacStatsRows(start, count) {
     var at = start + i * 16;
     var key = ascii(at, 4);
     var kind = bytes[at + 8];
-    var type = kind === 0x28 ? "docTFloat" : (kind === 0x29 ? "docTU32" : "docTUnknown");
+    var type = (kind === 0x28 || kind === 0x00) ? "docTFloat" : (kind === 0x29 ? "docTU32" : "docTUnknown");
     /* The row is named the way the editor names it: a race by its race name,
        a car stat by its car, everything else by its FourCC. */
     var named = /^[A-Za-z][A-Za-z0-9$%:]{3}$/.test(key);
@@ -299,41 +299,54 @@ function almanacCareer(base, size) {
   var end = base + size;
   var nodes = [];
 
-  /* Money and reputation, then the unknown that fills up to the blocks. */
+  /* Money, reputation and time trial record fields. */
   nodes.push(almanacNode("docCareerHead", base, OFF.progBase, "docTUnknown", {
     rows: [
       { at: base + OFF.money, size: 4, type: "docTU32", k: "offMoney" },
-      { at: base + OFF.rep, size: 4, type: "docTU32", k: "offRep" }
+      { at: base + OFF.rep, size: 4, type: "docTU32", k: "offRep" },
+      { at: base + OFF.ttRecord, size: 4, type: "docTU32", k: "offTtRecord" },
+      { at: base + OFF.ttEventRec, size: 4, type: "docTU32", k: "offTtEventRec" }
     ]
   }));
 
-  /* One node per progression block: 43 blocks of 65 bytes. */
+  /* One node per progression block: progTotal() blocks of 65 bytes. */
+  var pCount = progTotal();
   var blocks = [];
-  for (var i = 0; i < 43; i++) {
+  for (var i = 0; i < pCount; i++) {
     var at = base + OFF.progBase + i * OFF.progStride;
     blocks.push(almanacNode("docProgBlock", at, OFF.progStride, "docTProgBlock", {
       rows: [
         { at: at, size: 4, type: "docTFourCC", k: "docProgId" },
         { at: at + 4, size: 1, type: "docTU8", k: "docProgState" },
         { at: at + 5, size: 4, type: "docTU32", k: "docProgValue" },
-        { at: at + 9, size: 56, type: "docTUnknown", k: "docProgPad" }
+        { at: at + 9, size: 55, type: "docTUnknown", k: "docProgPad" },
+        { at: at + 64, size: 1, type: "docTU8", k: "docProgDone" }
       ]
     }));
   }
-  nodes.push(almanacNode("docCareerProg", base + OFF.progBase, 43 * OFF.progStride, "docTProgArray", {
+  nodes.push(almanacNode("docCareerProg", base + OFF.progBase, pCount * OFF.progStride, "docTProgArray", {
     note: "docCareerProgNote",
     rows: [{ at: base + OFF.progCount, size: 4, type: "docTU32", k: "offProgCount" }],
     children: blocks
   }));
 
-  nodes.push(almanacNode("docCareerTt", base + OFF.ttTarget, 16, "docTTtTable", {
+  var tOff = typeof ttBase === "function" ? ttBase() : -1;
+  if (tOff < 0) tOff = OFF.ttTarget;
+  var totalTargets = OFF.ttTargetCount + (typeof RACE_TARGETS === "number" ? RACE_TARGETS : 16);
+  var ttRows = [];
+  for (var ti = 0; ti < OFF.ttTargetCount; ti++) {
+    ttRows.push({ at: base + tOff + ti * OFF.ttTargetStride, size: 4, type: "docTU32", k: "docTtTarget" });
+  }
+  for (var ri = 0; ri < totalTargets - OFF.ttTargetCount; ri++) {
+    ttRows.push({
+      at: base + tOff + (OFF.ttTargetCount + ri) * OFF.ttTargetStride,
+      size: 4, type: "docTU32", k: "docRaceTarget",
+      label: t("docRaceTarget") + " #" + (ri + 1)
+    });
+  }
+  nodes.push(almanacNode("docCareerTt", base + tOff, totalTargets * OFF.ttTargetStride, "docTTtTable", {
     note: "docCareerTtNote",
-    rows: [
-      { at: base + OFF.ttTarget, size: 4, type: "docTU32", k: "docTtTarget" },
-      { at: base + OFF.ttTarget + 4, size: 4, type: "docTU32", k: "docTtTarget" },
-      { at: base + OFF.ttTarget + 8, size: 4, type: "docTU32", k: "docTtTarget" },
-      { at: base + OFF.ttTarget + 12, size: 4, type: "docTU32", k: "docTtTarget" }
-    ]
+    rows: ttRows
   }));
 
   nodes.sort(function (a, b) { return a.at - b.at; });

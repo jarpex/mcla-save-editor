@@ -255,18 +255,22 @@ function renderCoverage() {
   STATS.forEach(function (r) { if (statName(r)) named++; else unnamed++; });
   var statsBytes = named * 16;
 
-  var known = slotBytes + OFF.collectN + statsBytes + progBytes + 12;
+  var ttBytes = (typeof ttBase === "function" && ttBase() >= 0)
+    ? (OFF.ttTargetCount + (typeof RACE_TARGETS === "number" ? RACE_TARGETS : 16)) * OFF.ttTargetStride
+    : 0;
+  /* 12 (money, rep, progCount) + 5 (cars, carsIdx) + 8 (ttRecord, ttEventRec) + target table. */
+  var known = slotBytes + OFF.collectN + statsBytes + progBytes + 25 + ttBytes;
   /* Potential: the whole Stats table counts, because its structure (16-byte
      row, FourCC, type, value) is known; what is missing is the meaning of
      the unnamed rows. The bar shows both: teal behind, cyan in front. */
   var potential = known - statsBytes + st.size;
-  var fields = 0;
-  secs.list.forEach(function (s) {
-    (SECTION_NOTES[s.name] || []).forEach(function (g) {
-      g.rows.forEach(function (n) { if (!n.sub) fields++; });
+  var fields = CAREER_RECORDS.length;
+  (function countAln(nodes) {
+    nodes.forEach(function (n) {
+      if (n.rows) fields += n.rows.length;
+      if (n.children) countAln(n.children);
     });
-  });
-  fields += CAREER_RECORDS.length;
+  })(buildAlmanac());
 
   /* Structure: 8 bytes of file header plus 9 plus name per section. */
   var container = 8;
@@ -304,8 +308,6 @@ function almanacRows(n) {
   if (!n.rows || !n.rows.length) return "";
   return '<table class="offsets aln-rows">' + n.rows.map(function (r) {
     var label = r.label != null ? r.label : (r.k ? t(r.k) : "");
-    /* A generic label would leave the row anonymous, so the offset carries it. */
-    if (label === t("offAppearAt")) label += " · 0x" + r.at.toString(16).toUpperCase();
     return "<tr><td>0x" + r.at.toString(16).toUpperCase() + "</td>" +
       "<td>" + r.size + "</td><td>" + (r.type ? t(r.type) : "") + "</td>" +
       "<td>" + label + "</td></tr>";

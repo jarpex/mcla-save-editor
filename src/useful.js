@@ -173,14 +173,18 @@ function buildUseful() {
      Then what one level adds to each of the three performance stats, where
      the bytes live, and the vendor dropdown where a list exists. */
   var cats = TUNE_CATS.map(function (name, i) {
+    var w = CAR_PERF_WEIGHTS[i];
+    var dynoPct = w && w.dynoY ? "+" + (Math.round((w.dynoY / tuneMaxByte(0)) * 10000) / 100) + "%" : "0";
+    var partName = i === 5 ? name + " / Jet Kits" : name;
     return {
       cells: [
         { text: String(i) },
-        { text: name },
+        { text: partName },
         usefulFits(i),
         { text: usefulPct(usefulShare(i, "acc")) },
         { text: usefulPct(usefulShare(i, "spd")) },
         { text: usefulPct(usefulShare(i, "hnd")) },
+        { text: dynoPct },
         usefulRaw(i),
         usefulVendorSelect(i)
       ]
@@ -190,9 +194,115 @@ function buildUseful() {
     k: "usefulCats",
     note: "usefulCatsNote",
     head: ["usefulIdx", "usefulPart", "usefulFits", "usefulAccel", "usefulSpeed",
-           "usefulHand", "usefulRaw", "usefulVendors"],
+           "usefulHand", "usefulDynoY", "usefulRaw", "usefulVendors"],
     rows: cats
   });
+
+  /* Mechanics, encoding rules, formulas and save path. */
+  var mechRows = [
+    ["usefulMechEndian", "Big-Endian (u16, u32, f32). parse() walks 8-byte header + sections [u32 nameLen(1..64), ASCII, u8 flag, u32 size] to exact EOF."],
+    ["usefulMechPath", "userdata\\B13EBABEBABEBABE\\545407F8\\00000001\\mc4.sav\\mc4.sav"],
+    ["usefulMechStrings", "0x00 terminator + 0xCD padding (writeField). Empty garage slot = \"blank\". autoLabel: ^vp_[a-z0-9]+_(.+?)_(\\d{2})(_DUB)?$."],
+    ["usefulMechPlates", "7 bytes at slotAt(n) - 8176 + 2186 (1 stride back). Space (0x20) is stored as 0x3E ('>'); unused bytes = 0x00 or 0xCD."],
+    ["usefulMechGarage", "cars (LocalOptions+0x53F, u8) = contiguous non-blank slots; carsIdx (+0x543, u32) = max(0, n-1). Truncated last slot valid if 32B name fits."],
+    ["usefulMechTunePct", "lv = 0..2 (Stock=0, Lv2=1, Lv3=2). pct = floor(sum(min(2, lv[i])) * 100 / (2 * (N-1))), N=13 cars / 6 bikes; Tires (12) excluded."],
+    ["usefulMechVendors", "Value = vendor idx (u8 +0x6E) + float (f32 +0x27). Stock = lv 0, idx 0, float = v.stock (0.6789 for Exhaust)."],
+    ["usefulMechDyno", "Perf = round(stock + (max-stock) * sum(w * lv/2)). Dyno: Scirocco refPeakY=2.204, stockPeakX=3.60, Electronics +0.90X, torqueExp=0.85, hpExp=1.15, Catmull-Rom. Fallbacks: Car [34..66,38..70,28..56], Moto [65..86,40..56,48..72]."],
+    ["usefulMechWallet", "MAX_WALLET = 2,000,000,000 (u32). Reputation bar: 10 segments x 2,500 REP (0..25,000)."],
+    ["usefulMechCareer", "progAt(i) = Career+0x2E9 + i*65 + 64 (u8 0/1). ttBase() scans for 4 u32 [10000..400000] + 16 u32 ([10000..400000] or 0); shifts +0x727D -> +0x7291."],
+    ["usefulMechStats", "16B rows starting at (absOffset % 16) === 2 (~1056 slots, sparse statAlloc). Kind: 0x29 u32, 0x28/0x00 f32. gCOL = count of 1s in LocalOptions+0x3DF84 (60B)."]
+  ].map(function (r) {
+    return { cells: [{ text: t(r[0]) }, { text: r[1], mono: true }] };
+  });
+  groups.push({
+    k: "usefulMech",
+    note: "usefulMechNote",
+    head: ["usefulTopic", "usefulRule"],
+    rows: mechRows
+  });
+
+  /* Stock appearance presets (12 scattered bytes per vehicle). */
+  var appRows = ROSTER.map(function (car) {
+    var p = STOCK_APPEARANCE[car];
+    function hexList(arr) {
+      return arr.map(function (b) { return "0x" + (b < 16 ? "0" : "") + b.toString(16).toUpperCase(); }).join(" ");
+    }
+    return {
+      cells: [
+        { text: car, mono: true },
+        { text: CAR_TITLES[car] || "" },
+        { text: p ? hexList(p.slice(0, 4)) : t("usefulNoData"), mono: !!p },
+        { text: p ? hexList(p.slice(4, 10)) : "-", mono: !!p },
+        { text: p ? hexList(p.slice(10, 12)) : "-", mono: !!p }
+      ]
+    };
+  });
+  groups.push({
+    k: "usefulAppear",
+    note: "usefulAppearNote",
+    head: ["usefulInternal", "usefulTitle", "usefulAppDetail", "usefulAppWheel", "usefulAppDia"],
+    rows: appRows
+  });
+
+  /* Stats & Career FourCC reference. */
+  if (typeof STAT_NAMES !== "undefined") {
+    var fourccRows = Object.keys(STAT_NAMES).map(function (k) {
+      var grp = k.charAt(0) === "g" ? "Game" : (k.charAt(0) === "k" ? "Career" : (k.charAt(0) === "v" ? "Vehicle" : "Race"));
+      var note = k === "k:TB" ? "x5 (Time Trials)"
+               : k === "k$WA" ? "x4 (Wagers)"
+               : k === "vWIN" ? "sparse (winners only)"
+               : k === "vkDT" ? "x67 (CAR_ORDER_NAMES)"
+               : k === "r:TI" ? "x69 (RACE_NAMES, ms)"
+               : (k === "ghTC" || k === "ghTP" || k === "khTC") ? "f32 hours (h:mm)"
+               : k === "gCOL" ? "synced with LocalOptions+0x3DF84"
+               : "-";
+      return {
+        cells: [
+          { text: k, mono: true },
+          { text: grp },
+          { text: STAT_NAMES[k] },
+          { text: note, mono: true }
+        ]
+      };
+    });
+    fourccRows.push({
+      cells: [
+        { text: "a* / t* / x*", mono: true },
+        { text: "Unnamed" },
+        { text: t("usefulFourccUnnamed") },
+        { text: "a* (15), t* (33), x* (14)", mono: true }
+      ]
+    });
+    groups.push({
+      k: "usefulFourcc",
+      note: "usefulFourccNote",
+      head: ["offStatKey", "usefulGroup", "usefulTitle", "usefulNoteCol"],
+      rows: fourccRows
+    });
+  }
+
+  /* Race & Collectable memory order. */
+  if (typeof RACE_NAMES !== "undefined" && typeof RACE_GROUPS !== "undefined") {
+    var groupByOcc = {};
+    RACE_GROUPS.forEach(function (g) {
+      g.occ.forEach(function (o) { groupByOcc[o] = t(g.label); });
+    });
+    var raceRows = RACE_NAMES.map(function (name, i) {
+      return {
+        cells: [
+          { text: String(i), mono: true },
+          { text: groupByOcc[i] || "-" },
+          { text: name || "(" + t("docRowUnnamed") + ")" }
+        ]
+      };
+    });
+    groups.push({
+      k: "usefulRaces",
+      note: "usefulRacesNote",
+      head: ["usefulIdx", "usefulGroup", "usefulTitle"],
+      rows: raceRows
+    });
+  }
 
   return groups;
 }

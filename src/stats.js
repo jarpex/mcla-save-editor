@@ -72,9 +72,9 @@ var STAT_NAMES = {
    Repeated records keep the order the game writes, not the menu order.
    Names come from a dump of the stats screen itself.
 
-   r:TI has 69 records: 67 named, 2 not (unordered/landmark, which the
+   r:TI has 69 records: 68 named, 1 not (unordered/landmark, which the
    screen shows as NO STATS). vWIN has 21: only cars with a win, in menu
-   order. vkDT has 67: 66 menu cars plus 1 extra slot. */
+   order. vkDT has one record per car, 67 in a full save. */
 
 var RACE_NAMES = [
   "Century Mall",
@@ -122,7 +122,7 @@ var RACE_NAMES = [
   "Downtown Vistas",
   "Figueroa and Grand",
   "Rags to Riches",
-  "",
+  "Coldwater Canyon",
   "Mullholland",
   "Hollywood, Valley and Beaches",
   "Mullholland and Beverly",
@@ -151,8 +151,8 @@ var RACE_NAMES = [
 /* The four race screens, in menu order. The indexes are r:TI occurrences
    in memory (the written order differs, see RACE_NAMES). Unordered and
    Landmark stay empty: the game screen shows "NO STATS FOR THIS RACE TYPE"
-   and no record carries a name. The two unnamed memory entries (45 and 68)
-   go to Unknown. */
+   and no record carries a name. The single unnamed memory entry (68)
+   goes to Unknown. */
 var RACE_GROUPS = [
   { key: "stRaceOrdered", label: "stRaceOrdered", occ: [
   7,
@@ -218,6 +218,7 @@ var RACE_GROUPS = [
   34,
   35,
   36,
+  45,
   46,
   54,
   55,
@@ -232,7 +233,6 @@ var RACE_GROUPS = [
   /* Unknown shows only when it has a row: it holds what was not
      recognized, so empty it says nothing. */
   { key: "stRaceUnknown", label: "stRaceUnknown", hideEmpty: true, occ: [
-  45,
   68
 ]
   }
@@ -331,7 +331,8 @@ var CAR_ORDER_NAMES = [
   "1996 IMPALA SS POLICE",
   "1996 IMPALA SS POLICE CHP",
   "CHARGER POLICE",
-  "CHARGER POLICE CHP"
+  "CHARGER POLICE BP",
+  "CHARGER POLICE CHP",
 ];
 
 /* Name of a repeated record: the name list follows memory order. */
@@ -401,8 +402,8 @@ function renderStats() {
   VEH_KEYS.forEach(function (r) {
     if (r.key !== "vkDT") return;
     var car = CAR_ORDER_NAMES[r.occ];
-    /* vkDT has 67 records and the menu name list has 66: the last record
-       has no car and is dropped. */
+    /* vkDT has one record per car, in menu order, so the list and the
+       records are the same length; a missing name still drops the row. */
     if (!car) return;
     VEH_ROWS.push({ car: car, dist: r, win: winByCar[car] || null });
   });
