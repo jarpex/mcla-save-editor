@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#dedfe2" />
+      <stop offset="50%" stop-color="#c3c5ca" />
+      <stop offset="100%" stop-color="#9fa2a8" />
+    </linearGradient>
+    <filter id="text-shadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#000000" flood-opacity="0.38" />
+    </filter>
+  </defs>
+
+  <rect x="8" y="8" width="240" height="240" rx="48" ry="48" fill="url(#bg-grad)" stroke="#686a6f" stroke-width="6" />
+
+  <text x="128" y="162" text-anchor="middle" font-family="'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', 'Heiti SC', sans-serif" font-size="112" font-weight="900" fill="#c81018" stroke="#4a0407" stroke-width="6" stroke-linejoin="round" filter="url(#text-shadow)">湾岸</text>
+</svg>
