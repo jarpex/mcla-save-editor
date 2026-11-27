@@ -1659,6 +1659,15 @@ input::placeholder { color: var(--ink-faint); }
 }
 .stat-group > .stat-head:hover { color: var(--ink); }
 
+.stat-group > .stat-head .group-count {
+  margin-left: auto;
+  font-family: var(--data);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--cyan);
+}
+
 .stat-group > .stat-head .chev {
   display: inline-block;
   color: var(--edge);

@@ -716,6 +716,9 @@ var COLLECT_GROUPS = [
   { key: "colHills", n: 10, at: 50 }
 ];
 
+/* Estado aberto/fechado de cada zona, sobrevivendo a redesenho. */
+var COLLECT_OPEN = {};
+
 function drawCollect() {
   var host = el("collect");
   host.innerHTML = "";
@@ -724,10 +727,40 @@ function drawCollect() {
   var found = 0;
 
   COLLECT_GROUPS.forEach(function (g) {
+    /* Mesmo spoiler das categorias de corrida: o cabecalho da zona abre e
+       fecha as suas linhas. */
+    var group = document.createElement("div");
+    group.className = "stat-group";
+
     var head = document.createElement("div");
     head.className = "stat-head";
-    head.textContent = t(g.key);
-    host.appendChild(head);
+
+    var chev = document.createElement("span");
+    chev.className = "chev";
+    chev.setAttribute("aria-hidden", "true");
+    chev.textContent = "\u25B6";
+
+    var label = document.createElement("span");
+    label.textContent = t(g.key);
+
+    /* O contador de achados da zona fica no proprio cabecalho. */
+    var zoneFound = 0;
+    for (var k = 0; k < g.n; k++) if (bytes[base + g.at + k] === 1) zoneFound++;
+
+    var badge = document.createElement("span");
+    badge.className = "group-count";
+    badge.textContent = zoneFound + " / " + g.n;
+
+    head.appendChild(chev);
+    head.appendChild(label);
+    head.appendChild(badge);
+
+    var body = document.createElement("div");
+    body.className = "stat-group-body";
+
+    var inner = document.createElement("div");
+    inner.className = "stat-group-inner";
+    body.appendChild(inner);
 
     for (var i = 0; i < g.n; i++) {
       var at = base + g.at + i;
@@ -764,18 +797,44 @@ function drawCollect() {
         var n = Number(String(this.value).replace(",", "."));
         if (!isFinite(n)) return;
         setU8(at, n >= 1 ? 1 : 0);
-        /* O contador do cabecalho conta os achados na memoria, nao no DOM. */
+        /* Contador do cabecalho e da zona contam na memoria, nao no DOM. */
         var lo = sec("LocalOptions"), b0 = lo.data + OFF.collect, c = 0;
-        for (var k = 0; k < OFF.collectN; k++) if (bytes[b0 + k] === 1) c++;
+        for (var q = 0; q < OFF.collectN; q++) if (bytes[b0 + q] === 1) c++;
         el("colCount").textContent = c + " / " + OFF.collectN;
+        var z = 0;
+        for (var q2 = 0; q2 < g.n; q2++) if (bytes[b0 + g.at + q2] === 1) z++;
+        badge.textContent = z + " / " + g.n;
         mark();
       });
       inp.addEventListener("blur", function () {
         this.value = bytes[at] === 1 ? "1" : "0";
       });
 
-      host.appendChild(row);
+      inner.appendChild(row);
     }
+
+    group.appendChild(head);
+    group.appendChild(body);
+    host.appendChild(group);
+
+    if (COLLECT_OPEN[g.key]) group.classList.add("open");
+    head.setAttribute("role", "button");
+    head.setAttribute("tabindex", "0");
+    head.setAttribute("aria-expanded", COLLECT_OPEN[g.key] ? "true" : "false");
+
+    function toggle() {
+      var open = group.classList.toggle("open");
+      COLLECT_OPEN[g.key] = open;
+      head.setAttribute("aria-expanded", open ? "true" : "false");
+    }
+
+    head.addEventListener("click", toggle);
+    head.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
+        e.preventDefault();
+        toggle();
+      }
+    });
   });
 
   el("colCount").textContent = found + " / " + OFF.collectN;
