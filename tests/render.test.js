@@ -495,19 +495,31 @@ assert.strictEqual(ctx.bytes[slot1 + OFF_LABEL + 7], 0xCD, "o preenchimento do r
 
 assert.ok(ctx.SECTION_NOTES, "a tabela SECTION_NOTES nao carregou");
 var known = Object.keys(ctx.SECTION_NOTES);
-assert.strictEqual(known.length, 3, "so devia haver notas para 3 secoes");
+/* File is the file header, the rest are real sections. */
+assert.strictEqual(known.length, 4, "devia haver notas para 4 blocos");
 assert.ok(ctx.SECTION_NOTES.Career.length > 0, "Career sem notas");
 assert.ok(ctx.SECTION_NOTES.LocalOptions.length > 0, "LocalOptions sem notas");
 
-// every `at` must be a positive integer and fit in the section
+// every group has a title, rows, and a translation; every `at` fits its section
 Object.keys(ctx.SECTION_NOTES).forEach(function (name) {
   var sec = ctx.sec(name);
-  assert.ok(sec, "a secao " + name + " nao existe no save");
-  ctx.SECTION_NOTES[name].forEach(function (n) {
-    assert.ok(Number.isInteger(n.at) && n.at >= 0, name + ": offset ruim " + n.at);
-    assert.ok(n.at < sec.size, name + ": offset fora da secao " + n.at);
-    assert.ok(typeof ctx.t(n.k) === "string" && ctx.t(n.k).length > 0,
-      "a traducao " + n.k + " nao existe");
+  if (name !== "File") assert.ok(sec, "a secao " + name + " nao existe no save");
+  ctx.SECTION_NOTES[name].forEach(function (g) {
+    assert.ok(typeof ctx.t(g.k) === "string" && ctx.t(g.k).length > 0,
+      "a traducao do grupo " + g.k + " nao existe");
+    assert.ok(Array.isArray(g.rows) && g.rows.length > 0, "grupo " + g.k + " sem linhas");
+    g.rows.forEach(function (n) {
+      if (n.text) {   // prose, not an offset
+        assert.ok(typeof ctx.t(n.k) === "string" && ctx.t(n.k).length > 0,
+          "a traducao " + n.k + " nao existe");
+        return;
+      }
+      if (n.sub) return;   // a field inside the block above, no base of its own
+      assert.ok(Number.isInteger(n.at) && n.at >= 0, name + ": offset ruim " + n.at);
+      if (sec) assert.ok(n.at < sec.size, name + ": offset fora da secao " + n.at);
+      assert.ok(typeof ctx.t(n.k) === "string" && ctx.t(n.k).length > 0,
+        "a traducao " + n.k + " nao existe");
+    });
   });
 });
 

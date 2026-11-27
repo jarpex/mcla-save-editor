@@ -10,7 +10,39 @@ function render() {
   syncWalletControls();
 
   el("secCount").textContent = secs.list.length + " " + t("nSections");
-  var rows = "";
+
+  /* One table per group, one group per spoiler. A row with `sub` is a field
+     inside the block above it and shows only its own offset. */
+  function groupTable(g) {
+    /* A `sub` row is a field inside the block above: it shows the block base
+       plus its own addend. A `text` row is prose, not an offset. */
+    var base = 0;
+    var body = g.rows.map(function (n) {
+      if (n.text) {
+        return '<tr class="doc-note"><td colspan="3">' + t(n.k) + "</td></tr>";
+      }
+      if (!n.sub) base = n.at;
+      var at = n.sub ? base + (n.add || 0) : n.at;
+      var label = t(n.k);
+      if (n.sub && n.add) label += " \u00b7 +" + n.add;
+      if (n.back) label += " \u00b7 \u2212" + n.back + " stride";
+      return "<tr><td>0x" + at.toString(16).toUpperCase() + "</td>" +
+        "<td>" + (n.size || "-") + "</td><td>" + label + "</td></tr>";
+    }).join("");
+    return '<div class="doc-group">' +
+      '<div class="doc-head"><span class="chev">&gt;</span>' +
+      "<span>" + t(g.k) + "</span></div>" +
+      '<div class="doc-body"><div class="doc-inner">' +
+      '<table class="offsets">' + body + "</table>" +
+      "</div></div></div>";
+  }
+
+  var rows = '<tr class="sec-row file-row" data-sec="File">' +
+    "<td>File<span class=\"chev\">&gt;</span></td><td>0x0</td><td>" +
+    nf(secs.endedAt) + "</td></tr>";
+  rows += '<tr class="sec-detail" data-for="File" hidden><td colspan="3">' +
+    SECTION_NOTES.File.map(groupTable).join("") + "</td></tr>";
+
   secs.list.forEach(function (s) {
     var notes = SECTION_NOTES[s.name] || [];
     rows += "<tr class=\"sec-row\" data-sec=\"" + s.name + "\">" +
@@ -20,16 +52,7 @@ function render() {
       "</tr>";
     if (notes.length) {
       rows += "<tr class=\"sec-detail\" data-for=\"" + s.name + "\" hidden><td colspan=\"3\">" +
-        "<table class=\"offsets\">" +
-        notes.map(function (n) {
-          var at = n.sub ? (n.add || 0) : n.at;
-          var label = t(n.k);
-          if (n.sub && at) label += " \u00b7 +" + at;
-          if (n.back) label += " \u00b7 \u2212" + n.back + " stride";
-          return "<tr><td>0x" + at.toString(16).toUpperCase() + "</td>" +
-            "<td>" + n.size + "</td><td>" + label + "</td></tr>";
-        }).join("") +
-        "</table></td></tr>";
+        notes.map(groupTable).join("") + "</td></tr>";
     }
   });
   el("secBody").innerHTML = rows;
@@ -282,7 +305,9 @@ function renderCoverage() {
   var potential = known - statsBytes + st.size;
   var fields = 0;
   secs.list.forEach(function (s) {
-    (SECTION_NOTES[s.name] || []).forEach(function (n) { if (!n.sub) fields++; });
+    (SECTION_NOTES[s.name] || []).forEach(function (g) {
+      g.rows.forEach(function (n) { if (!n.sub) fields++; });
+    });
   });
   fields += CAREER_RECORDS.length;
 

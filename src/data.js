@@ -40,41 +40,77 @@ var OFF = {
   collectN: 60
 };
 
-/* ---------- Known offsets, per section ----------
-   Each entry is shown in the Hex Sections panel when the section is expanded.
-   `at` is relative to the section start; `k` is the i18n key with the text. */
+/* ---------- Save layout documentation ----------
+   Shown in the Hex Sections panel. Each section holds groups; a group is a
+   spoiler with a title and a table of offsets. `at` is relative to the
+   section start, `size` is the byte length, `k` is the i18n key.
+
+   Rows with `sub` are inside the previous block and only show its offset:
+   the block row carries the base, the sub rows carry the field. */
+
 var SECTION_NOTES = {
-  Career: [
-    { at: 0x2D9, size: 4, k: "offMoney" },
-    { at: 0x2E1, size: 4, k: "offRep" },
-    { at: 0x2E5, size: 4, k: "offProgCount" },
-    { at: 0x2E9, size: 65, k: "offProgBase" },
-    { at: 0x727D, size: 4, k: "offTtTarget" }
+  File: [
+    { k: "docFileHead", rows: [
+      { at: 0, size: 4, k: "docFileCap" },
+      { at: 4, size: 4, k: "docFileNum" }
+    ] },
+    { k: "docFileSec", rows: [
+      { at: 8, size: 4, k: "docSecNameLen" },
+      { at: 12, size: 0, k: "docSecName" },
+      { text: true, k: "docSecRest" }
+    ] }
   ],
   Stats: [
-    /* The record table starts at +0xC (16-aligned) with one 16-byte row per
-       FourCC. The r:TI, vWIN and vkDT rows have no fixed offset: they move
-       with the number of earlier records, so the editor finds each by code,
-       not by position. */
-    { at: 0xC, size: 16, k: "offStatRec" },
-    { at: 0xC, size: 4, k: "offStatKey" },
-    { at: 0x14, size: 1, k: "offStatKind" },
-    { at: 0x18, size: 4, k: "offStatVal" },
-    { at: 0x578, size: 4, k: "offTtRecord" },
-    { at: 0x6A8, size: 4, k: "offTtEventRec" }
+    { k: "docStatsRec", rows: [
+      { at: 0xC, size: 16, k: "docStatRow" },
+      { at: 0xC, size: 4, k: "offStatKey", sub: true, add: 0 },
+      { at: 0xC, size: 1, k: "offStatKind", sub: true, add: 8 },
+      { at: 0xC, size: 4, k: "offStatVal", sub: true, add: 12 }
+    ] },
+    { k: "docStatsFind", rows: [
+      { text: true, k: "docStatFind" }
+    ] },
+    { k: "docStatsKinds", rows: [
+      { text: true, k: "docKindInt" },
+      { text: true, k: "docKindFloat" }
+    ] }
   ],
   LocalOptions: [
-    { at: 0x53F, size: 1, k: "offCars" },
-    { at: 0x543, size: 4, k: "offCarsIdx" },
-    { at: 0x24FD, size: 8176, k: "offSlot0" },
-    { at: 0x24FD, size: 32, k: "offSlotName", sub: true },
-    { at: 0x24FD, size: 32, k: "offSlotLabel", sub: true, add: 32 },
-    { at: 0x24FD, size: 13, k: "offTuneLv", sub: true, add: 95 },
-    { at: 0x24FD, size: 1, k: "offTunePct", sub: true, add: 126 },
-    { at: 0x24FD, size: 12, k: "offAppear", sub: true, add: 446 },
-    { at: 0x24FD, size: 7, k: "offPlate", sub: true, add: 2186, back: 1 },
-    { at: 1293, size: 13, k: "offTuneBase" },
-    { at: 0x3DF84, size: 60, k: "offCollect" }
+    { k: "docLocalHead", rows: [
+      { at: 0x53F, size: 1, k: "offCars" },
+      { at: 0x543, size: 4, k: "offCarsIdx" }
+    ] },
+    { k: "docLocalSlot", rows: [
+      { at: 0x24FD, size: 8176, k: "offSlot0" },
+      { at: 0x24FD, size: 32, k: "offSlotName", sub: true },
+      { at: 0x24FD, size: 32, k: "offSlotLabel", sub: true, add: 32 },
+      { text: true, k: "offPlateDoc" },
+      { at: 0x24FD, size: 12, k: "offAppear", sub: true, add: 446 }
+    ] },
+    { k: "docLocalTune", rows: [
+      { at: 1293, size: 13, k: "offTuneBase" },
+      { at: 1293, size: 13, k: "offTuneLv", sub: true, add: 95 },
+      { at: 1293, size: 1, k: "offTunePct", sub: true, add: 126 },
+      { at: 1293, size: 13, k: "offTuneVendor", sub: true, add: 110 },
+      { at: 1293, size: 52, k: "offTuneVendorF", sub: true, add: 0x27 }
+    ] },
+    { k: "docLocalCollect", rows: [
+      { at: 0x3DF84, size: 60, k: "offCollect" }
+    ] }
+  ],
+  Career: [
+    { k: "docCareerHead", rows: [
+      { at: 0x2D9, size: 4, k: "offMoney" },
+      { at: 0x2E1, size: 4, k: "offRep" }
+    ] },
+    { k: "docCareerProg", rows: [
+      { at: 0x2E5, size: 4, k: "offProgCount" },
+      { at: 0x2E9, size: 65, k: "offProgBase" }
+    ] },
+    { k: "docCareerTt", rows: [
+      { at: 0x727D, size: 16, k: "docTtTable" },
+      { at: 0x727D, size: 4, k: "docTtTarget", sub: true }
+    ] }
   ]
 };
 

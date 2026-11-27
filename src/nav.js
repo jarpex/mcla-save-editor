@@ -171,6 +171,13 @@ document.addEventListener("click", function (e) {
     if (open) detail.removeAttribute("hidden");
     else detail.setAttribute("hidden", "");
     row.classList.toggle("open", open);
+    return;
+  }
+  /* A group inside an open section is a spoiler of its own. */
+  var head = e.target.closest(".doc-head");
+  if (head) {
+    var group = head.parentElement;
+    group.classList.toggle("open");
   }
 });
 
