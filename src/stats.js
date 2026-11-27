@@ -852,4 +852,16 @@ function drawCollect() {
   });
 
   el("colCount").textContent = found + " / " + OFF.collectN;
+
+  /* As duas mesmas acoes da Progressao: marcar ou limpar tudo de uma vez. */
+  el("colAll").onclick = function () { collectSet(1); };
+  el("colNone").onclick = function () { collectSet(0); };
+}
+
+/* Grava 0 ou 1 nos 60 bytes de uma vez e redesenha a lista. */
+function collectSet(v) {
+  var lo = sec("LocalOptions"), base = lo.data + OFF.collect;
+  for (var i = 0; i < OFF.collectN; i++) setU8(base + i, v);
+  drawCollect();
+  mark();
 }
