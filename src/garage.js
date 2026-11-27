@@ -54,8 +54,31 @@ function maxTune(n) {
    pra ler e pra escrever -- os dois tem que concordar. */
 function clearTune(n) {
   var at = tuneAt(n);
-  for (var i = 0; i < OFF.tuneN; i++) bytes[at + OFF.tuneLv + i] = 0;
+  for (var i = 0; i < OFF.tuneN; i++) {
+    bytes[at + OFF.tuneLv + i] = 0;
+    bytes[at + OFF.tuneVendor + i] = 0;
+    var v = TUNE_VENDORS[i];
+    if (v) setF32(at + OFF.tuneVendorF + i * 4, v.stock);
+  }
   bytes[at + OFF.tunePct] = 0;
+}
+
+/* Indice do fornecedor de uma categoria (0 = nenhuma peca). */
+function tuneVendorAt(n, catIdx) { return bytes[tuneAt(n) + OFF.tuneVendor + catIdx]; }
+
+/* Grava o fornecedor: o indice no byte e o multiplicador na tabela de floats.
+   `idx` null significa "sem peca" (stock): o byte vai a zero e o float volta
+   ao valor de fabrica, que nao e o mesmo do fornecedor 0. */
+function tuneVendorSet(n, catIdx, idx) {
+  var at = tuneAt(n), v = TUNE_VENDORS[catIdx];
+  if (idx == null) {
+    bytes[at + OFF.tuneVendor + catIdx] = 0;
+    if (v) setF32(at + OFF.tuneVendorF + catIdx * 4, v.stock);
+    return 0;
+  }
+  bytes[at + OFF.tuneVendor + catIdx] = idx;
+  if (v && v.floats[idx] != null) setF32(at + OFF.tuneVendorF + catIdx * 4, v.floats[idx]);
+  return idx;
 }
 
 function tuneInfo(n) {
@@ -66,11 +89,16 @@ function tuneInfo(n) {
   var cats = idx.map(function (ci) {
     var catTitle = (moto && ci === 5) ? "Jet Kits" : TUNE_CATS[ci];
     var rawLv = tuneLevel(bytes[tuneAt(n) + OFF.tuneLv + ci]);
+    var vend = TUNE_VENDORS[ci];
     return {
       idx: ci,
       name: catTitle,
       level: Math.max(1, Math.min(max + 1, rawLv)),
-      max: max + 1
+      max: max + 1,
+      /* So as categorias com fornecedor levantado tem lista; as outras ficam
+         com vendor=null e a UI mostra "Stock"/nada. */
+      vendor: vend ? tuneVendorAt(n, ci) : null,
+      vendors: vend ? vend.names : null
     };
   });
   return { car: car, moto: moto, cats: cats, pct: tunePctAt(n), max: max + 1 };

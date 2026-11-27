@@ -1516,6 +1516,21 @@ input::placeholder { color: var(--ink-faint); }
   color: var(--ink-dim);
 }
 
+/* O dropdown de fornecedor herda a badge e so troca o texto por uma seta. */
+select.lvl-badge.vendor {
+  max-width: 118px;
+  padding: 2px 4px;
+  font-family: var(--display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--cyan-bright);
+  border-color: var(--cyan);
+  background: rgba(13, 59, 58, 0.65);
+  cursor: pointer;
+}
+
 .lvl-badge.upgraded {
   border-color: var(--cyan);
   color: var(--cyan-bright);

@@ -21,6 +21,11 @@ var OFF = {
   tuneN: 13,
   tuneLv: 95,
   tunePct: 126,
+  /* Uma linha de 13 bytes com o indice do fornecedor de cada categoria e uma
+     tabela de 13 floats (4 bytes cada) com o multiplicador dele. O byte fica
+     em +0x6E e os floats em +0x27. */
+  tuneVendor: 110,
+  tuneVendorF: 0x27,
 
   ttRecord: 0x578,
   ttEventRec: 0x6A8,
@@ -262,6 +267,21 @@ var VEHICLE_PERF_STATS = {
    Sem entrada aqui, o editor nao escreve nada e o carro fica com o
    bloco do slot anterior.
 */
+/* Fornecedores por categoria. So o Escape (categoria 0) foi levantado do
+   jogo, e so no nivel 1: cada peca tem um conjunto proprio, os outros 12
+   ainda nao foram dumpados. `floats` e o multiplicador que a jogo grava em
+   tuneVendorF; `stock` e o valor de "sem peca". */
+var TUNE_VENDORS = {
+  0: {
+    stock: 0.6789,
+    names: ["5zigen", "Apexi", "Borla", "Buschur Racing", "DC Sport", "Espelir",
+            "Flowtech", "HKS", "Hooker", "Injen Technology", "MAC", "Moroso",
+            "Turbo XS"],
+    floats: [0.9601, 1.2050, 1.4018, 1.6667, 1.8965, 2.0837, 2.5040,
+             2.7283, 2.9350, 3.1073, 3.3497, 3.5802, 3.7519]
+  }
+};
+
 var STOCK_APPEARANCE = {
   vp_am_vantage_07: [0x03,0x01,0x03,0x01,0x03,0x03,0x03,0x03,0x03,0x03,0x13,0x13],
   vp_aud_rs4_07: [0x03,0x03,0x03,0x01,0x03,0x03,0x03,0x03,0x03,0x03,0x11,0x11],

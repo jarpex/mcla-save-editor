@@ -60,6 +60,8 @@ function sec(name) {
 }
 function u32(at) { return view.getUint32(at); }
 function setU32(at, v) { view.setUint32(at, v >>> 0); }
+function f32(at) { return view.getFloat32(at); }
+function setF32(at, v) { view.setFloat32(at, v); }
 function setU8(at, v) { view.setUint8(at, v & 0xFF); }
 
 function slotAt(n) { return sec("LocalOptions").data + OFF.slot0 + n * OFF.slotStride; }

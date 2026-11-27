@@ -188,9 +188,32 @@ function renderShopRows() {
     ctrl.appendChild(cells);
     ctrl.appendChild(nextBtn);
 
-    var badge = document.createElement("span");
-    badge.className = "lvl-badge" + (cat.level > 1 ? " upgraded" : "");
-    badge.textContent = cat.level === 1 ? "Stock" : ("LVL " + cat.level);
+    /* A badge era "Stock"/"LVL n". O nivel ja esta nos quadradinhos, entao
+       aqui entra o fornecedor: "Stock" quando nao ha peca, ou o dropdown com
+       os nomes levantados do jogo. */
+    var badge;
+    if (cat.level === 1 || !cat.vendors) {
+      badge = document.createElement("span");
+      badge.className = "lvl-badge" + (cat.level > 1 ? " upgraded" : "");
+      badge.textContent = cat.level === 1 ? "Stock" : ("LVL " + cat.level);
+    } else {
+      badge = document.createElement("select");
+      badge.className = "lvl-badge vendor";
+      badge.setAttribute("aria-label", cat.name + " " + t("vendor"));
+      cat.vendors.forEach(function (vName, vi) {
+        var op = document.createElement("option");
+        op.value = vi;
+        op.textContent = vName;
+        badge.appendChild(op);
+      });
+      badge.value = cat.vendor || 0;
+      badge.addEventListener("click", function (e) { e.stopPropagation(); });
+      badge.addEventListener("change", function (e) {
+        e.stopPropagation();
+        SHOP_STATE.activeRow = rIdx;
+        setShopCategoryVendor(rIdx, +badge.value);
+      });
+    }
 
     row.appendChild(cur);
     row.appendChild(name);
@@ -215,6 +238,16 @@ function setShopCategoryLevel(rIdx, nextLv) {
   var cat = SHOP_STATE.cats[rIdx];
   if (!cat) return;
   cat.level = Math.max(1, Math.min(cat.max, nextLv));
+  /* Stock nao tem fornecedor: o byte volta a zero junto com o nivel. */
+  if (cat.level === 1) cat.vendor = 0;
+  renderShopRows();
+}
+
+function setShopCategoryVendor(rIdx, idx) {
+  if (!SHOP_STATE) return;
+  var cat = SHOP_STATE.cats[rIdx];
+  if (!cat || !cat.vendors) return;
+  cat.vendor = idx;
   renderShopRows();
 }
 
@@ -237,7 +270,10 @@ function openPerformanceShop(slotIdx, triggerBtn) {
         name: c.name,
         level: c.level,
         origLevel: c.level,
-        max: c.max
+        max: c.max,
+        vendor: c.vendor,
+        origVendor: c.vendor,
+        vendors: c.vendors
       };
     })
   };
@@ -258,7 +294,10 @@ function closePerformanceShop(commit) {
     var changed = false;
     st.cats.forEach(function (c) {
       if (c.level !== c.origLevel) changed = true;
+      if (c.vendor !== c.origVendor && c.vendor != null) changed = true;
       tuneSet(st.slot, c.idx, c.level);
+      /* Fornecedor so existe em categoria com tabela; stock = zero. */
+      if (c.vendors) tuneVendorSet(st.slot, c.idx, c.level === 1 ? null : (c.vendor || 0));
     });
     if (typeof window.refreshGarageTune === "function") window.refreshGarageTune();
     if (changed) mark();
@@ -270,7 +309,7 @@ function closePerformanceShop(commit) {
 
 el("shopStockBtn").addEventListener("click", function () {
   if (!SHOP_STATE) return;
-  SHOP_STATE.cats.forEach(function (c) { c.level = 1; });
+  SHOP_STATE.cats.forEach(function (c) { c.level = 1; c.vendor = 0; });
   renderShopRows();
 });
 

@@ -327,6 +327,40 @@ money.oninput.call(money);
 assert.strictEqual(ctx.view.getUint32(careerAt + 0x2D9), 999999,
   "digitar no dinheiro nao gravou nos bytes");
 
+// ---------- fornecedor de tuning ----------
+// O byte do fornecedor mora em tuneBase+0x6E e o multiplicador em tuneBase+0x27.
+// So o Escape (categoria 0) tem tabela; as outras categorias nao tem dropdown.
+{
+  var t0 = ctx.tuneAt(0);
+  assert.strictEqual(typeof ctx.tuneVendorAt, "function",
+    "o editor nao tem leitura de fornecedor");
+  /* No save sintetico o byte e zero; num save real ele traz o que a jogo
+     gravou (o HKS do conjunto de testes tem 7). */
+  if (!real) {
+    assert.strictEqual(ctx.tuneVendorAt(0, 0), 0,
+      "o fornecedor do save sintetico nao comeca em zero");
+  }
+
+  ctx.tuneVendorSet(0, 0, 2);
+  assert.strictEqual(ctx.bytes[t0 + ctx.OFF.tuneVendor], 2,
+    "o indice do fornecedor nao foi gravado em +0x6E");
+  /* Float32 nao guarda 1.4018 exato; compara com tolerancia. */
+  assert.ok(Math.abs(ctx.f32(t0 + ctx.OFF.tuneVendorF) - ctx.TUNE_VENDORS[0].floats[2]) < 1e-4,
+    "o multiplicador nao foi gravado em +0x27");
+
+  // null = sem peca: byte zero e float de fabrica, nao o do fornecedor 0
+  ctx.tuneVendorSet(0, 0, null);
+  assert.strictEqual(ctx.bytes[t0 + ctx.OFF.tuneVendor], 0,
+    "stock nao zerou o byte do fornecedor");
+  assert.ok(Math.abs(ctx.f32(t0 + ctx.OFF.tuneVendorF) - ctx.TUNE_VENDORS[0].stock) < 1e-4,
+    "stock nao devolveu o multiplicador de fabrica");
+
+  // categoria sem tabela aceita o byte mas nao mexe em float
+  ctx.tuneVendorSet(0, 1, 5);
+  assert.strictEqual(ctx.bytes[t0 + ctx.OFF.tuneVendor + 1], 5,
+    "categoria sem tabela nao gravou o byte");
+}
+
 // ---------- stats ----------
 // ghTC e ghTP saem em h:mm; o resto continua numero. A conversao e a mesma do
 // painel de carreira, entao as duas telas nunca divergem.
