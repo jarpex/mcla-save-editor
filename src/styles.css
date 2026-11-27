@@ -524,7 +524,7 @@ input { caret-color: var(--cyan); }
   font-size: 30px;
   font-weight: 700;
   line-height: 1;
-  color: var(--cyan);
+  color: var(--yellow);
 }
 .cov-label {
   font-size: 10px;
