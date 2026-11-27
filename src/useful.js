@@ -29,6 +29,33 @@ function usefulRange(car, axis) {
   return r ? r[0] + " \u2192 " + r[1] : "-";
 }
 
+/* The two pictograms, drawn as strokes like the rest of the panel. */
+var USEFUL_ICONS = {
+  car: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" ' +
+    'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+    '<path d="M3 13h18"/><path d="M5 13l1.7-3.5A2 2 0 0 1 8.5 8.3h7a2 2 0 0 1 1.8 1.2L19 13"/>' +
+    '<path d="M4 13v3.2h16V13"/><circle cx="7.6" cy="16.4" r="1.5"/>' +
+    '<circle cx="16.4" cy="16.4" r="1.5"/></svg>',
+  moto: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" ' +
+    'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+    '<circle cx="5.6" cy="16.2" r="2.7"/><circle cx="18.4" cy="16.2" r="2.7"/>' +
+    '<path d="M5.6 16.2l4.2-5.4h3.6l5 5.4"/><path d="M9.8 10.8h3.4"/>' +
+    '<path d="M15.2 8.4h2.2"/></svg>'
+};
+
+/* One box per vehicle type that carries the category, styled like the
+   Progression checkboxes. A bike has the six in MOTO_CATS, so the rest show
+   the car box alone. */
+function usefulFits(catIdx) {
+  var boxes = '<span class="useful-fit" title="' + t("usefulCar") + '">' +
+    '<span class="useful-box">' + USEFUL_ICONS.car + "</span></span>";
+  if (MOTO_CATS.indexOf(catIdx) >= 0) {
+    boxes += '<span class="useful-fit" title="' + t("usefulMoto") + '">' +
+      '<span class="useful-box">' + USEFUL_ICONS.moto + "</span></span>";
+  }
+  return { html: '<span class="useful-fits">' + boxes + "</span>" };
+}
+
 /* The vendor dropdown of one category: stock first, then the collected list.
    The float written at +0x27 rides along as option data, so picking a vendor
    shows the number the game would store. */
@@ -75,31 +102,24 @@ function buildUseful() {
     rows: rows
   });
 
-  /* The 13 categories, split by who carries them: a bike has the six in
-     MOTO_CATS, so the rest are cars only. The vendor column is a dropdown
-     where a list exists, plain text where none was collected. */
-  var all = [], carOnly = [];
-  TUNE_CATS.forEach(function (name, i) {
-    var row = {
+  /* The 13 categories in index order. The third column shows which vehicle
+     types carry the part, as boxes drawn like the Progression checkboxes;
+     the fourth is the vendor dropdown where a list exists. */
+  var cats = TUNE_CATS.map(function (name, i) {
+    return {
       cells: [
         { text: String(i) },
         { text: name },
+        usefulFits(i),
         usefulVendorSelect(i)
       ]
     };
-    (MOTO_CATS.indexOf(i) >= 0 ? all : carOnly).push(row);
   });
   groups.push({
-    k: "usefulCatsAll",
-    note: "usefulCatsAllNote",
-    head: ["usefulIdx", "usefulPart", "usefulVendors"],
-    rows: all
-  });
-  groups.push({
-    k: "usefulCatsCar",
-    note: "usefulCatsCarNote",
-    head: ["usefulIdx", "usefulPart", "usefulVendors"],
-    rows: carOnly
+    k: "usefulCats",
+    note: "usefulCatsNote",
+    head: ["usefulIdx", "usefulPart", "usefulFits", "usefulVendors"],
+    rows: cats
   });
 
   return groups;

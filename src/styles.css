@@ -960,6 +960,27 @@ input::placeholder { color: var(--ink-faint); }
   font-family: var(--data);
   color: var(--cyan);
 }
+/* The fit boxes: the Progression checkbox, 22px, with a pictogram inside
+   instead of the tick. */
+.useful-fits {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.useful-fit { display: inline-flex; }
+.useful-box {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--edge-bright);
+  border-radius: 4px;
+  background: var(--panel-deep);
+  color: var(--cyan);
+}
+.useful-box svg { width: 15px; height: 15px; }
 .useful-sel {
   display: inline-flex;
   align-items: center;
