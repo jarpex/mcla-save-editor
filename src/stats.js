@@ -843,9 +843,13 @@ function drawCollect() {
 
       /* `at` comes from a var inside the for: without an IIFE capture
          every box would write to the zone's last address. */
-      (function (addr) {
+      (function (addr, word) {
         box.addEventListener("change", function () {
           setU8(addr, this.checked ? 1 : 0);
+          /* The word next to the box is a label, not decoration: it has to
+             follow the box in both directions. `word` is captured because
+             `var kind` is shared by every row of the zone. */
+          word.textContent = t(this.checked ? "colFound" : "colHidden");
           /* Header and zone counters count in memory, not in the DOM. */
           var lo = sec("LocalOptions"), b0 = lo.data + OFF.collect, c = 0;
           for (var q = 0; q < OFF.collectN; q++) if (bytes[b0 + q] === 1) c++;
@@ -856,7 +860,7 @@ function drawCollect() {
           badge.textContent = z + " / " + g.n;
           mark();
         });
-      })(at);
+      })(at, kind);
       inner.appendChild(row);
     }
 
