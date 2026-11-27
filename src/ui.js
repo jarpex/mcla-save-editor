@@ -1,6 +1,15 @@
+/* Quantos slots cabem na secao. Nao da para usar so a divisao inteira: o
+   ultimo slot pode estar truncado no cauda e ainda assim ser um carro real.
+   Em mc4.sav.COMPLETED a secao tem 29 slots cheios mais 7459 bytes, e o
+   carro 30 (vp_lam_murcielago_06) mora justamente nesse pedaco: nome,
+   rotulo, placa e tune cabem nos primeiros 7459 bytes, so o que falta e o
+   cauda de 717 bytes que o editor nunca le.
+   Por isso o criterio e caber o nome (32 bytes), nao o stride inteiro. */
 function slotCount() {
-  var lo = sec("LocalOptions");
-  return Math.floor((lo.size - OFF.slot0) / OFF.slotStride);
+  var lo = sec("LocalOptions"), n = 0;
+  while (OFF.slot0 + (n + 1) * OFF.slotStride <= lo.size) n++;
+  if (OFF.slot0 + n * OFF.slotStride + 32 <= lo.size) n++;
+  return n;
 }
 
 /* A placa fica no stride anterior (OFF.plateStrideBack), e o jogo grava espaco
