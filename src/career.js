@@ -31,6 +31,8 @@ function paintTimeTrial() {
 
 el("ttTarget").addEventListener("input", function () {
   var e = TT_EVENTS[+el("ttEvent").value || 0], car = sec("Career"), st = sec("Stats");
+  this.value = maskTime(this.value, this.dataset.maskPrev);
+  this.dataset.maskPrev = this.value;
   var ms = textToMs(this.value);
   if (ms === null) return;
   setU32(car.data + OFF.ttTarget + e.target * OFF.ttTargetStride, ms);
@@ -209,6 +211,12 @@ function drawCareer(q) {
     host.appendChild(row);
 
     inp.addEventListener("input", function () {
+      /* So nos campos de tempo: int e decimal nao tem mascara. */
+      var isTime = rec.fmt === "time";
+      if (isTime) {
+        this.value = maskTime(this.value, this.dataset.maskPrev);
+        this.dataset.maskPrev = this.value;
+      }
       var ok = rec.stat ? careerWrite(rec, this.value) : rec.write(this.value);
       if (ok) mark();
     });
@@ -218,6 +226,7 @@ function drawCareer(q) {
        pular no meio da edicao. */
     inp.addEventListener("blur", function () {
       inp.value = rec.stat ? careerRead(rec) : rec.read();
+      inp.dataset.maskPrev = inp.value;
     });
   });
 

@@ -661,10 +661,18 @@ function drawRaces(q) {
       row.appendChild(kind);
       row.appendChild(inp);
 
+      /* A mascara poe ":" e "." sozinha: enquanto digita so numeros, o
+         texto ja sai no formato do jogo. */
       inp.addEventListener("input", function () {
+        /* Poe ":" e "." sozinha enquanto se digita so numeros. */
+        inp.value = maskTime(inp.value, inp.dataset.maskPrev);
+        inp.dataset.maskPrev = inp.value;
         if (statWrite(r, inp.value)) mark();
       });
-      inp.addEventListener("blur", function () { inp.value = statRead(r); });
+      inp.addEventListener("blur", function () {
+        inp.value = statRead(r);
+        inp.dataset.maskPrev = inp.value;
+      });
 
       inner.appendChild(row);
     });
