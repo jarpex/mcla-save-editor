@@ -559,6 +559,10 @@ function statField(r, labelKey, kindKey) {
 
 /* ---------- Race Stats ---------- */
 
+/* Estado aberto/fechado de cada grupo, sobrevivendo ao filtro (que redesenha
+   a lista inteira). */
+var RACE_OPEN = {};
+
 function drawRaces(q) {
   q = (q || "").trim().toLowerCase();
   var host = el("racestats");
@@ -566,8 +570,8 @@ function drawRaces(q) {
   var shown = 0;
 
   /* As quatro telas do menu: Ordered, Circuit, Unordered, Landmark. Cada uma
-     leva um cabecalho, como no jogo, e so aparece se tiver alguma linha
-     depois do filtro. */
+     e um spoiler dentro do spoiler do painel: o cabecalho abre e fecha as
+     proprias linhas, igual aos paineis de cima. */
   RACE_GROUPS.forEach(function (g) {
     var rows = g.occ.map(function (occ) {
       return RACE_KEYS.filter(function (r) { return r.occ === occ; })[0];
@@ -576,10 +580,31 @@ function drawRaces(q) {
     if (q) rows = rows.filter(function (r) { return statName(r).toLowerCase().indexOf(q) !== -1; });
     if (!rows.length) return;
 
+    var group = document.createElement("div");
+    group.className = "stat-group";
+
     var head = document.createElement("div");
     head.className = "stat-head";
-    head.textContent = t(g.label);
-    host.appendChild(head);
+
+    var chev = document.createElement("span");
+    chev.className = "chev";
+    chev.setAttribute("aria-hidden", "true");
+    chev.textContent = "\u25B6";
+
+    var label = document.createElement("span");
+    label.textContent = t(g.label);
+
+    head.appendChild(chev);
+    head.appendChild(label);
+
+    /* Duas camadas: o grid anima 0fr -> 1fr na externa, a interna esconde o
+       excesso. Com max-height fixo o conteudo cortava (45 linhas nao cabem). */
+    var body = document.createElement("div");
+    body.className = "stat-group-body";
+
+    var inner = document.createElement("div");
+    inner.className = "stat-group-inner";
+    body.appendChild(inner);
 
     rows.forEach(function (r) {
       shown++;
@@ -615,7 +640,31 @@ function drawRaces(q) {
       });
       inp.addEventListener("blur", function () { inp.value = statRead(r); });
 
-      host.appendChild(row);
+      inner.appendChild(row);
+    });
+
+    group.appendChild(head);
+    group.appendChild(body);
+    host.appendChild(group);
+
+    /* O estado vem do mapa, nao do DOM: o filtro recria tudo do zero. */
+    if (RACE_OPEN[g.key]) group.classList.add("open");
+    head.setAttribute("role", "button");
+    head.setAttribute("tabindex", "0");
+    head.setAttribute("aria-expanded", RACE_OPEN[g.key] ? "true" : "false");
+
+    function toggle() {
+      var open = group.classList.toggle("open");
+      RACE_OPEN[g.key] = open;
+      head.setAttribute("aria-expanded", open ? "true" : "false");
+    }
+
+    head.addEventListener("click", toggle);
+    head.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
+        e.preventDefault();
+        toggle();
+      }
     });
   });
 

@@ -1555,6 +1555,44 @@ input::placeholder { color: var(--ink-faint); }
 }
 .stat-head:first-child { padding-top: 2px; }
 
+/* ---------- Sub-grupos recolhiveis (Race Stats) ---------- */
+
+.stat-group { border-bottom: 1px solid var(--row-line); }
+.stat-group:last-child { border-bottom: 0; }
+
+.stat-group > .stat-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+  padding: 9px 4px 7px;
+  transition: background 140ms var(--out), color 140ms var(--out);
+}
+.stat-group > .stat-head:hover { color: var(--ink); }
+
+.stat-group > .stat-head .chev {
+  display: inline-block;
+  color: var(--edge);
+  font-size: 9px;
+  line-height: 1;
+  transition: transform 0.14s var(--out), color 0.14s var(--out);
+}
+.stat-group.open > .stat-head .chev {
+  transform: rotate(90deg);
+  color: var(--yellow);
+}
+
+/* grid-template-rows anima para a altura natural do conteudo, entao nada
+   corta: 0fr fecha, 1fr abre o que estiver dentro. */
+.stat-group-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.22s var(--out);
+}
+.stat-group.open > .stat-group-body { grid-template-rows: 1fr; }
+.stat-group-inner { overflow: hidden; min-height: 0; }
+
 .statlist {
   max-height: 360px;
   overflow-y: auto;
