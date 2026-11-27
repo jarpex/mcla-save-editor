@@ -33,7 +33,6 @@ function render() {
     }
   });
   el("secBody").innerHTML = rows;
-  renderCoverage();
 
   var opts = '<option value="">- ' + t("empty") + " -</option>";
   ROSTER.forEach(function (n) {
@@ -161,6 +160,8 @@ function render() {
 
   renderProg();
   renderStats();
+  /* Depois de renderStats: a cobertura conta as linhas nomeadas de Stats. */
+  renderCoverage();
   renderCareer();
   renderTimeTrial();
 
@@ -241,14 +242,15 @@ function bindIntField(inp, offset) {
 /* ---------- Cobertura do save ----------
 
    Conta byte a byte o que o editor entende. Nao da para olhar so a lista de
-   offsets: ela tem 16 campos pontuais, mas o editor le e escreve blocos
-   inteiros, e sao eles que dao quase toda a cobertura.
+   offsets: ela tem campos pontuais, mas o editor le e escreve blocos inteiros,
+   e sao eles que dao quase toda a cobertura.
 
    Cada bloco vale o seu tamanho real:
-     - LocalOptions: o array de slots (8176 bytes cada, 30 slots) mais os
-       60 bytes de colecionaveis. Dentro do slot o editor mexe em nome,
-       rotulo, tune, aparencia e placa.
-     - Stats: a tabela de registros inteira (16 bytes por linha).
+     - LocalOptions: o array de slots (8176 bytes cada) mais os 60 bytes de
+       colecionaveis. Dentro do slot o editor mexe em nome, rotulo, tune,
+       aparencia e placa.
+     - Stats: so as linhas que tem nome. Uma linha sem nome (a*, t*, x*) nao
+       aparece em tela e nao da para editar, entao nao conta como entendida.
      - Career: os 65 bytes de cada bloco de progressao (progCount * 65) mais
        dinheiro, reputacao e o contador.
    O que sobra e estrutura do arquivo (8 bytes + cabecalho de cada secao) e
@@ -257,18 +259,23 @@ function renderCoverage() {
   if (!bytes) return;
 
   var total = bytes.length;
-  var lo = sec("LocalOptions"), car = sec("Career"), st = sec("Stats");
+  var st = sec("Stats");
 
   var slots = slotCount();
   var slotBytes = slots * OFF.slotStride;
   var progBytes = progTotal() * OFF.progStride;
-  var statsBytes = st.size;
+
+  /* Das 304 linhas de Stats, so contam as que a tela sabe nomear. */
+  var named = 0, unnamed = 0;
+  STATS.forEach(function (r) { if (statName(r)) named++; else unnamed++; });
+  var statsBytes = named * 16;
 
   var known = slotBytes + OFF.collectN + statsBytes + progBytes + 12;
   var fields = 0;
   secs.list.forEach(function (s) {
     (SECTION_NOTES[s.name] || []).forEach(function (n) { if (!n.sub) fields++; });
   });
+  fields += CAREER_RECORDS.length;
 
   /* Estrutura: 8 bytes de cabecalho do arquivo + 9 + nome por secao. */
   var container = 8;
@@ -283,9 +290,8 @@ function renderCoverage() {
   el("covContainer").textContent = nf(container) + " B";
   el("covUnknown").textContent = nf(unknown) + " B";
   el("covFields").textContent = nf(fields);
-
-  /* As tres linhas de detalhe: o que esta dentro do bloco conhecido. */
   el("covSlots").textContent = slots + " \u00d7 " + nf(OFF.slotStride) + " B";
-  el("covStats").textContent = nf(statsBytes) + " B";
+  el("covStats").textContent = named + " / " + STATS.length + " linhas";
   el("covProg").textContent = progTotal() + " \u00d7 65 B";
+  el("covUnnamed").textContent = nf(unnamed);
 }
