@@ -148,6 +148,94 @@ var RACE_NAMES = [
   ""
 ];
 
+/* As quatro telas de corrida do jogo, na ordem em que aparecem no menu.
+   Os indices sao as ocorrencias de r:TI na memoria (a ordem gravada e outra,
+   veja RACE_NAMES). Unordered e Landmark tem uma entrada cada: a tela mostra
+   "NO STATS FOR THIS RACE TYPE" e o save guarda so um registro vazio. */
+var RACE_GROUPS = [
+  { key: "stRaceOrdered", label: "stRaceOrdered", occ: [
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  16,
+  17,
+  18,
+  19,
+  20,
+  21,
+  25,
+  26,
+  27,
+  28,
+  29,
+  30,
+  31,
+  37,
+  38,
+  39,
+  40,
+  41,
+  42,
+  43,
+  44,
+  47,
+  48,
+  49,
+  50,
+  51,
+  52,
+  53,
+  60,
+  61,
+  62,
+  63,
+  64,
+  65,
+  66,
+  67
+]
+  },
+  { key: "stRaceCircuit", label: "stRaceCircuit", occ: [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  22,
+  23,
+  24,
+  32,
+  33,
+  34,
+  35,
+  36,
+  46,
+  54,
+  55,
+  56,
+  57,
+  58,
+  59
+]
+  },
+  { key: "stRaceUnordered", label: "stRaceUnordered", occ: [
+  45
+]
+  },
+  { key: "stRaceLandmark", label: "stRaceLandmark", occ: [
+  68
+]
+  }
+];
+
 /* Carros que tem registro em vWIN, na ordem em que a jogo grava (a mesma
    ordem do menu, so sem os carros que nunca venceram). A lista e esparsa de
    proposito: nao da para derivar os nomes de CAR_ORDER_NAMES por indice. */
@@ -253,6 +341,9 @@ function statName(r) {
            : r.key === "vkDT" ? CAR_ORDER_NAMES
            : null;
   if (list && list[r.occ]) return base + " \u00b7 " + list[r.occ];
+  /* Sem nome proprio (as duas entradas de Unordered/Landmark): a tela do
+     jogo diz "NO STATS FOR THIS RACE TYPE", entao usamos o mesmo texto. */
+  if (r.key === "r:TI" && !list[r.occ]) return base + " \u00b7 " + t("raceNoStats");
   return r.occ ? base + " #" + (r.occ + 1) : base;
 }
 
@@ -474,44 +565,60 @@ function drawRaces(q) {
   host.innerHTML = "";
   var shown = 0;
 
-  RACE_KEYS.forEach(function (r) {
-    var label = statName(r);
-    if (q && label.toLowerCase().indexOf(q) === -1) return;
-    shown++;
+  /* As quatro telas do menu: Ordered, Circuit, Unordered, Landmark. Cada uma
+     leva um cabecalho, como no jogo, e so aparece se tiver alguma linha
+     depois do filtro. */
+  RACE_GROUPS.forEach(function (g) {
+    var rows = g.occ.map(function (occ) {
+      return RACE_KEYS.filter(function (r) { return r.occ === occ; })[0];
+    }).filter(Boolean);
 
-    var row = document.createElement("div");
-    row.className = "stat plain";
+    if (q) rows = rows.filter(function (r) { return statName(r).toLowerCase().indexOf(q) !== -1; });
+    if (!rows.length) return;
 
-    var cur = document.createElement("span");
-    cur.className = "cursor";
-    cur.setAttribute("aria-hidden", "true");
+    var head = document.createElement("div");
+    head.className = "stat-head";
+    head.textContent = t(g.label);
+    host.appendChild(head);
 
-    var name = document.createElement("span");
-    name.className = "name";
-    name.textContent = label;
+    rows.forEach(function (r) {
+      shown++;
 
-    var kind = document.createElement("span");
-    kind.className = "kind";
-    kind.textContent = t("timeKind");
+      var row = document.createElement("div");
+      row.className = "stat plain";
 
-    var inp = document.createElement("input");
-    inp.type = "text";
-    inp.inputMode = "decimal";
-    inp.setAttribute("aria-label", t("aValue", r.key));
-    inp.value = statRead(r);
+      var cur = document.createElement("span");
+      cur.className = "cursor";
+      cur.setAttribute("aria-hidden", "true");
 
-    row.appendChild(cur);
-    row.appendChild(name);
-    row.appendChild(kind);
-    row.appendChild(inp);
+      var name = document.createElement("span");
+      name.className = "name";
+      name.textContent = statName(r);
 
-    inp.addEventListener("input", function () {
-      if (statWrite(r, inp.value)) mark();
+      var kind = document.createElement("span");
+      kind.className = "kind";
+      kind.textContent = t("timeKind");
+
+      var inp = document.createElement("input");
+      inp.type = "text";
+      inp.inputMode = "decimal";
+      inp.setAttribute("aria-label", t("aValue", r.key));
+      inp.value = statRead(r);
+
+      row.appendChild(cur);
+      row.appendChild(name);
+      row.appendChild(kind);
+      row.appendChild(inp);
+
+      inp.addEventListener("input", function () {
+        if (statWrite(r, inp.value)) mark();
+      });
+      inp.addEventListener("blur", function () { inp.value = statRead(r); });
+
+      host.appendChild(row);
     });
-    inp.addEventListener("blur", function () { inp.value = statRead(r); });
-
-    host.appendChild(row);
   });
+
   if (!shown) host.innerHTML = '<p class="empty-note">' + t("noStat") + "</p>";
 }
 
