@@ -27,7 +27,12 @@ var OFF = {
 
   ttTarget: 0x727D,
   ttTargetStride: 4,
-  ttTargetCount: 4
+  ttTargetCount: 4,
+
+  /* Colecionaveis: 60 bytes 0/1 em LocalOptions, na ordem do menu
+     (Hollywood 20, Beach 15, Downtown 15, Hills 10). */
+  collect: 0x3DF84,
+  collectN: 60
 };
 
 /* ---------- Known offsets, per section ----------
@@ -54,7 +59,8 @@ var SECTION_NOTES = {
     { at: 0x24FD, size: 13, k: "offTuneLv", sub: true, add: 95 },
     { at: 0x24FD, size: 1, k: "offTunePct", sub: true, add: 126 },
     { at: 0x24FD, size: 12, k: "offAppear", sub: true, add: 446 },
-    { at: 0x24FD, size: 7, k: "offPlate", sub: true, add: 2186, back: 1 }
+    { at: 0x24FD, size: 7, k: "offPlate", sub: true, add: 2186, back: 1 },
+    { at: 0x3DF84, size: 60, k: "offCollect" }
   ]
 };
 

@@ -1512,6 +1512,15 @@ input::placeholder { color: var(--ink-faint); }
 /* ---------- Statistics & Career Lists ---------- */
 
 .filter { margin-bottom: 10px; }
+.stat-head {
+  padding: 10px 4px 4px;
+  font: 600 10.5px/1 var(--mono, ui-monospace, monospace);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.stat-head:first-child { padding-top: 2px; }
+
 .statlist {
   max-height: 360px;
   overflow-y: auto;

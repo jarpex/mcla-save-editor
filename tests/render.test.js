@@ -26,12 +26,15 @@ var TUNE_BASE = 1293, TUNE_LV = 95, TUNE_N = 13, TUNE_PCT = 126;
 
 var CAREER = 30000;       // cobre a progressao (0x2E9 + 43*65) e a tabela de alvos (0x727D)
 var LOCAL = SLOT0 + SLOT_STRIDE * 2;
+/* Os colecionaveis ficam em LocalOptions+0x3DF84, entao a secao precisa
+   ser maior que isso para o save sintetico ter o mesmo layout do real. */
+var LOCAL_MIN = 0x3E000;
 var STATS = 2048;         // cobre os recordes de time trial (0x6A8)
 
 function buildSave() {
   var secs = [
     { name: "Stats", flag: 1, size: STATS },
-    { name: "LocalOptions", flag: 9, size: LOCAL },
+    { name: "LocalOptions", flag: 9, size: Math.max(LOCAL, LOCAL_MIN) },
     { name: "Career", flag: 11, size: CAREER }
   ];
 
@@ -343,9 +346,11 @@ assert.ok(first.children.length === 5,
   "a linha do stat nao tem cursor, codigo, nome, tipo e campo: " + first.children.length);
 assert.strictEqual(first.children[0].className, "cursor",
   "a linha nao comeca pelo cursor do HUD");
-assert.strictEqual(first.children[1].textContent, ctx.STATS[0].key,
-  "o codigo da linha nao e o do primeiro registro");
-assert.strictEqual(first.children[2].textContent, ctx.statName(ctx.STATS[0]),
+/* drawStats agora mostra so a tela Game Stats: a linha e a do primeiro
+   registro g*, nao a do primeiro registro da secao (aB1T, que e conquista). */
+assert.strictEqual(first.children[1].textContent, ctx.GAME_KEYS[0].key,
+  "o codigo da linha nao e o do primeiro registro de jogo");
+assert.strictEqual(first.children[2].textContent, ctx.statName(ctx.GAME_KEYS[0]),
   "o nome em jogo nao apareceu na linha");
 
 // busca por codigo e por nome acham a mesma linha

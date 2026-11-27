@@ -1,6 +1,8 @@
 // ---------- Statistics ----------
 
 var STATS = [];
+/* Sub-listas por tela do jogo, preenchidas em renderStats. */
+var GAME_KEYS = [], VEH_KEYS = [], RACE_KEYS = [];
 
 var STAT_NAMES = {
   /* Game Stats */
@@ -270,9 +272,23 @@ function renderStats() {
       isHours: statIsHours({ key: k })
     });
   }
-  el("statCount").textContent = STATS.length + " " + t("nRecords");
+  /* As quatro telas do jogo: cada prefixo de FourCC pertence a uma. */
+  GAME_KEYS = STATS.filter(function (r) { return r.key.charAt(0) === "g"; });
+  VEH_KEYS = STATS.filter(function (r) { return r.key === "vWIN" || r.key === "vkDT"; });
+  RACE_KEYS = STATS.filter(function (r) { return r.key === "r:TI"; });
+
+  el("statCount").textContent = GAME_KEYS.length + " " + t("nRecords");
+  el("vehCount").textContent = VEH_KEYS.length + " " + t("nRecords");
+  el("raceCount").textContent = RACE_KEYS.length + " " + t("nRecords");
+
   el("statFilter").oninput = function () { drawStats(this.value); };
+  el("vehFilter").oninput = function () { drawVehicles(this.value); };
+  el("raceFilter").oninput = function () { drawRaces(this.value); };
+
   drawStats(el("statFilter").value);
+  drawVehicles(el("vehFilter").value);
+  drawRaces(el("raceFilter").value);
+  drawCollect();
 }
 
 function drawStats(q) {
@@ -280,7 +296,7 @@ function drawStats(q) {
   var host = el("stats");
   host.innerHTML = "";
   var shown = 0;
-  STATS.forEach(function (r) {
+  GAME_KEYS.forEach(function (r) {
     if (q && r.key.toLowerCase().indexOf(q) === -1 && statName(r).toLowerCase().indexOf(q) === -1) return;
     shown++;
     var row = document.createElement("div");
@@ -349,4 +365,178 @@ function statWrite(r, val) {
   if (r.isFloat) view.setFloat32(r.at + 12, v);
   else setU32(r.at + 12, Math.max(0, Math.min(4294967295, Math.floor(v))));
   return true;
+}
+
+/* ---------- Vehicle Stats ---------- */
+
+function drawVehicles(q) {
+  q = (q || "").trim().toLowerCase();
+  var host = el("vehstats");
+  host.innerHTML = "";
+  var shown = 0;
+
+  VEH_KEYS.forEach(function (r) {
+    var label = statName(r);
+    if (q && label.toLowerCase().indexOf(q) === -1) return;
+    shown++;
+
+    var row = document.createElement("div");
+    row.className = "stat";
+
+    var cur = document.createElement("span");
+    cur.className = "cursor";
+    cur.setAttribute("aria-hidden", "true");
+
+    var name = document.createElement("span");
+    name.className = "name";
+    name.textContent = label;
+
+    var kind = document.createElement("span");
+    kind.className = "kind";
+    kind.textContent = t(r.isFloat ? "decimal" : "integer");
+
+    var inp = document.createElement("input");
+    inp.type = "text";
+    inp.inputMode = "decimal";
+    inp.setAttribute("aria-label", t("aValue", r.key));
+    inp.value = statRead(r);
+
+    row.appendChild(cur);
+    row.appendChild(name);
+    row.appendChild(kind);
+    row.appendChild(inp);
+
+    inp.addEventListener("input", function () {
+      if (statWrite(r, inp.value)) mark();
+    });
+    inp.addEventListener("blur", function () { inp.value = statRead(r); });
+
+    host.appendChild(row);
+  });
+  if (!shown) host.innerHTML = '<p class="empty-note">' + t("noStat") + "</p>";
+}
+
+/* ---------- Race Stats ---------- */
+
+function drawRaces(q) {
+  q = (q || "").trim().toLowerCase();
+  var host = el("racestats");
+  host.innerHTML = "";
+  var shown = 0;
+
+  RACE_KEYS.forEach(function (r) {
+    var label = statName(r);
+    if (q && label.toLowerCase().indexOf(q) === -1) return;
+    shown++;
+
+    var row = document.createElement("div");
+    row.className = "stat";
+
+    var cur = document.createElement("span");
+    cur.className = "cursor";
+    cur.setAttribute("aria-hidden", "true");
+
+    var name = document.createElement("span");
+    name.className = "name";
+    name.textContent = label;
+
+    var kind = document.createElement("span");
+    kind.className = "kind";
+    kind.textContent = t("timeKind");
+
+    var inp = document.createElement("input");
+    inp.type = "text";
+    inp.inputMode = "decimal";
+    inp.setAttribute("aria-label", t("aValue", r.key));
+    inp.value = statRead(r);
+
+    row.appendChild(cur);
+    row.appendChild(name);
+    row.appendChild(kind);
+    row.appendChild(inp);
+
+    inp.addEventListener("input", function () {
+      if (statWrite(r, inp.value)) mark();
+    });
+    inp.addEventListener("blur", function () { inp.value = statRead(r); });
+
+    host.appendChild(row);
+  });
+  if (!shown) host.innerHTML = '<p class="empty-note">' + t("noStat") + "</p>";
+}
+
+/* ---------- Collectables ---------- */
+
+/* Os 60 bytes ficam em LocalOptions, na ordem do menu: Hollywood 20,
+   Beach 15, Downtown 15, Hills 10. */
+var COLLECT_GROUPS = [
+  { key: "colHollywood", n: 20, at: 0 },
+  { key: "colBeach", n: 15, at: 20 },
+  { key: "colDowntown", n: 15, at: 35 },
+  { key: "colHills", n: 10, at: 50 }
+];
+
+function drawCollect() {
+  var host = el("collect");
+  host.innerHTML = "";
+  var lo = sec("LocalOptions");
+  var base = lo.data + OFF.collect;
+  var found = 0;
+
+  COLLECT_GROUPS.forEach(function (g) {
+    var head = document.createElement("div");
+    head.className = "stat-head";
+    head.textContent = t(g.key);
+    host.appendChild(head);
+
+    for (var i = 0; i < g.n; i++) {
+      var at = base + g.at + i;
+      var isFound = bytes[at] === 1;
+      if (isFound) found++;
+
+      var row = document.createElement("div");
+      row.className = "stat";
+
+      var cur = document.createElement("span");
+      cur.className = "cursor";
+      cur.setAttribute("aria-hidden", "true");
+
+      var name = document.createElement("span");
+      name.className = "name";
+      name.textContent = t(g.key) + " " + (i + 1);
+
+      var kind = document.createElement("span");
+      kind.className = "kind";
+      kind.textContent = t(isFound ? "colFound" : "colHidden");
+
+      var inp = document.createElement("input");
+      inp.type = "text";
+      inp.inputMode = "numeric";
+      inp.value = isFound ? "1" : "0";
+      inp.setAttribute("aria-label", name.textContent);
+
+      row.appendChild(cur);
+      row.appendChild(name);
+      row.appendChild(kind);
+      row.appendChild(inp);
+
+      inp.addEventListener("input", function () {
+        var n = Number(String(this.value).replace(",", "."));
+        if (!isFinite(n)) return;
+        setU8(at, n >= 1 ? 1 : 0);
+        /* O contador do cabecalho conta os achados na memoria, nao no DOM. */
+        var lo = sec("LocalOptions"), b0 = lo.data + OFF.collect, c = 0;
+        for (var k = 0; k < OFF.collectN; k++) if (bytes[b0 + k] === 1) c++;
+        el("colCount").textContent = c + " / " + OFF.collectN;
+        mark();
+      });
+      inp.addEventListener("blur", function () {
+        this.value = bytes[at] === 1 ? "1" : "0";
+      });
+
+      host.appendChild(row);
+    }
+  });
+
+  el("colCount").textContent = found + " / " + OFF.collectN;
 }
