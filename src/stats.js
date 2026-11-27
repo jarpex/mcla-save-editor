@@ -229,7 +229,9 @@ var RACE_GROUPS = [
   },
   { key: "stRaceUnordered", label: "stRaceUnordered", occ: [] },
   { key: "stRaceLandmark", label: "stRaceLandmark", occ: [] },
-  { key: "stRaceUnknown", label: "stRaceUnknown", occ: [
+  /* Unknown so aparece se tiver alguma linha: e a categoria do que nao
+     deu para reconhecer, entao vazia ela nao diz nada. */
+  { key: "stRaceUnknown", label: "stRaceUnknown", hideEmpty: true, occ: [
   45,
   68
 ]
@@ -580,7 +582,7 @@ function drawRaces(q) {
     /* Grupo vazio continua na tela: a jogo mostra "NO STATS FOR THIS RACE
        TYPE" em vez de esconder a categoria. O filtro e a excecao: se ele
        nao achou nada, a categoria some como qualquer outra. */
-    if (!rows.length && q) return;
+    if (!rows.length && (q || g.hideEmpty)) return;
 
     var group = document.createElement("div");
     group.className = "stat-group";

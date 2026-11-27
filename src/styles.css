@@ -1596,6 +1596,15 @@ input::placeholder { color: var(--ink-faint); }
 .stat-group.open > .stat-group-body { grid-template-rows: 1fr; }
 .stat-group-inner { overflow: hidden; min-height: 0; }
 
+/* O aviso de categoria vazia: caixa alta e centrado, como a tela do jogo. */
+.stat-group-inner .empty-note {
+  text-transform: uppercase;
+  text-align: center;
+  letter-spacing: 0.08em;
+  font-size: 10.5px;
+  padding: 14px 4px;
+}
+
 .statlist {
   max-height: 360px;
   overflow-y: auto;
