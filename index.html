@@ -176,13 +176,13 @@
                 </div>
 
                 <!-- Hex Sections panel -->
-                <div class="panel narrow-center" data-group="sections">
+                <div class="panel" data-group="sections">
                   <header>
                     <svg class="hdr-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
                     <span data-i18n="sections">Secoes</span>
                     <span class="count" id="secCount"></span>
                   </header>
-                  <div class="body">
+                  <div class="body sections-body">
                     <table class="sections">
                       <thead>
                         <tr>
@@ -193,6 +193,21 @@
                       </thead>
                       <tbody id="secBody"></tbody>
                     </table>
+
+                    <div class="coverage" id="coverage">
+                      <div class="cov-top">
+                        <span class="cov-pct" id="covPct">0%</span>
+                        <span class="cov-label" data-i18n="covTitle">cobertura do save</span>
+                      </div>
+                      <div class="cov-bar" aria-hidden="true"><div class="cov-fill" id="covFill"></div></div>
+                      <div class="cov-rows">
+                        <div class="cov-row"><span data-i18n="covKnown">campos conhecidos</span><b id="covKnown">0 B</b></div>
+                        <div class="cov-row"><span data-i18n="covContainer">estrutura (cabecalho + secoes)</span><b id="covContainer">0 B</b></div>
+                        <div class="cov-row"><span data-i18n="covUnknown">desconhecido</span><b id="covUnknown">0 B</b></div>
+                        <div class="cov-row"><span data-i18n="covFields">offsets documentados</span><b id="covFields">0</b></div>
+                      </div>
+                      <p class="cov-note" data-i18n="covNote">Contado byte a byte: cada offset da lista vale o seu tamanho.</p>
+                    </div>
                   </div>
                 </div>
               </div>

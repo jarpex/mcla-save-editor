@@ -33,6 +33,7 @@ function render() {
     }
   });
   el("secBody").innerHTML = rows;
+  renderCoverage();
 
   var opts = '<option value="">- ' + t("empty") + " -</option>";
   ROSTER.forEach(function (n) {
@@ -235,4 +236,41 @@ function bindIntField(inp, offset) {
     syncWalletControls();
     mark();
   };
+}
+
+/* ---------- Cobertura do save ----------
+
+   Conta byte a byte o que o editor entende. Cada nota de SECTION_NOTES vale
+   o seu tamanho; as linhas com `sub` ficam dentro do bloco do slot e nao
+   contam de novo. O que sobra e a estrutura do arquivo (cabecalho de 8 bytes
+   mais o cabecalho de cada secao) e o desconhecido.
+   As notas de r:TI/vWIN/vkDT nao existem: o offset delas muda a cada save,
+   entao a tabela de registros entra como um bloco so. */
+function renderCoverage() {
+  if (!bytes) return;
+
+  var total = bytes.length, known = 0, fields = 0;
+
+  secs.list.forEach(function (s) {
+    var notes = SECTION_NOTES[s.name] || [];
+    notes.forEach(function (n) {
+      if (n.sub) return;
+      known += n.size;
+      fields++;
+    });
+  });
+
+  /* Estrutura: 8 bytes de cabecalho do arquivo + 9 + nome por secao. */
+  var container = 8;
+  secs.list.forEach(function (s) { container += 9 + s.name.length; });
+
+  var unknown = Math.max(0, total - known - container);
+  var pct = total ? (known / total) * 100 : 0;
+
+  el("covPct").textContent = pct.toFixed(1) + "%";
+  el("covFill").style.width = pct + "%";
+  el("covKnown").textContent = nf(known) + " B";
+  el("covContainer").textContent = nf(container) + " B";
+  el("covUnknown").textContent = nf(unknown) + " B";
+  el("covFields").textContent = nf(fields);
 }
