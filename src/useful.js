@@ -108,6 +108,15 @@ function usefulVendorSelect(catIdx) {
     return '<option value="' + idx + '" data-idx="' + idx + '" data-float="' + f + '"' +
       ' data-total="' + total.toFixed(4) + '">' + name + "</option>";
   }
+  /* The readout shows all three numbers: the index byte, the float at +0x27
+     and their sum, which is what the game works with. */
+  function readout(idx, f) {
+    return '<span class="useful-calc">' +
+      '<span class="useful-cap">' + t("usefulValue") + "</span>" +
+      '<span class="useful-term">idx ' + idx + "</span>" +
+      '<span class="useful-term">flt ' + f.toFixed(4) + "</span>" +
+      '<span class="useful-total">' + (idx + f).toFixed(4) + "</span></span>";
+  }
   var opts = '<option value="stock" data-idx="0" data-float="' + v.stock + '"' +
     ' data-total="' + v.stock.toFixed(4) + '">' + t("usefulStock") + "</option>";
   v.names.forEach(function (n, i) {
@@ -117,7 +126,7 @@ function usefulVendorSelect(catIdx) {
   return {
     html: '<span class="useful-sel">' +
       '<select class="useful-select" data-cat="' + catIdx + '">' + opts + "</select>" +
-      '<span class="useful-float">' + (0 + v.stock).toFixed(4) + "</span></span>"
+      readout(0, v.stock) + "</span>"
   };
 }
 

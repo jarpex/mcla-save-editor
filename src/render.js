@@ -362,13 +362,17 @@ function renderUseful() {
   }).join("");
   el("useCount").textContent = groups.length + " " + t("alnBlocks");
 
-  /* Picking a vendor shows the number the game works with: the vendor byte
-     plus the float at +0x27. */
+  /* Picking a vendor rewrites the index, the float and their sum. */
   Array.prototype.forEach.call(host.querySelectorAll(".useful-select"), function (sel) {
     sel.addEventListener("change", function () {
       var opt = sel.options[sel.selectedIndex];
-      var out = sel.parentNode.querySelector(".useful-float");
-      if (out) out.textContent = opt.getAttribute("data-total") || "-";
+      var box = sel.parentNode.querySelector(".useful-calc");
+      if (!box) return;
+      var idx = opt.getAttribute("data-idx");
+      var fl = opt.getAttribute("data-float");
+      box.querySelector(".useful-term").textContent = "idx " + idx;
+      box.querySelectorAll(".useful-term")[1].textContent = "flt " + Number(fl).toFixed(4);
+      box.querySelector(".useful-total").textContent = opt.getAttribute("data-total");
     });
   });
 }

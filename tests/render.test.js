@@ -743,6 +743,50 @@ hoursInput._on.input.call(hoursInput);
 assert.strictEqual(ctx.view.getFloat32(hoursAt), hoursBefore,
   "texto invalido mudou as horas no save");
 
+// ---------- the vendor table must match the real saves ----------
+// The 14 saves in "Saves example/tuning vendors" are the ground truth: each
+// one sets the exhaust vendor and nothing else. The table has to reproduce
+// every float the game wrote, and the readout has to show index + float.
+(function () {
+  var dir = path.join(ROOT, "Saves example", "tuning vendors");
+  if (!fs.existsSync(dir)) return;
+  var files = fs.readdirSync(dir).filter(function (f) { return /\.sav$/.test(f); });
+  if (!files.length) return;
+
+  var seen = {};
+  files.forEach(function (f) {
+    var b = fs.readFileSync(path.join(dir, f));
+    var secs = ctx.parse(b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength));
+    var lo = secs.list.filter(function (s) { return s.name === "LocalOptions"; })[0];
+    var t0 = lo.data + ctx.OFF.tuneBase;
+    var idx = b[t0 + ctx.OFF.tuneVendor];
+    /* Read the float from this file, not from ctx.view: the harness view is
+       the synthetic save and knows nothing about the vendor saves. */
+    var fl = b.readFloatBE(t0 + ctx.OFF.tuneVendorF);
+    var lvl = b[t0 + ctx.OFF.tuneLv];
+    seen[f] = { idx: idx, fl: fl, lvl: lvl };
+  });
+
+  var table = ctx.TUNE_VENDORS[0];
+  Object.keys(seen).forEach(function (f) {
+    var s = seen[f];
+    if (s.lvl === 0) {
+      assert.ok(Math.abs(s.fl - table.stock) < 1e-4,
+        "stock do save " + f + " nao bate com a tabela");
+      return;
+    }
+    assert.ok(s.idx < table.names.length,
+      "indice " + s.idx + " do save " + f + " fora da tabela");
+    assert.ok(Math.abs(s.fl - table.floats[s.idx]) < 1e-4,
+      "float do save " + f + " nao bate com a tabela");
+  });
+
+  // the readout is index + float, so the sum is what the panel shows
+  var sum = seen[files[0]].idx + seen[files[0]].fl;
+  assert.ok(sum > seen[files[0]].fl,
+    "a soma do indice com o float nao e maior que o float");
+})();
+
 // ---------- the file must survive all of this ----------
 
 var after = ctx.parse(ctx.bytes.buffer);

@@ -1000,11 +1000,27 @@ input::placeholder { color: var(--ink-faint); }
   outline: 1px solid var(--cyan);
   outline-offset: 1px;
 }
-.useful-float {
+.useful-calc {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
   font-family: var(--data);
-  font-size: 11px;
-  color: var(--yellow);
+  font-size: 10.5px;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.useful-cap {
+  font-family: var(--display);
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.useful-term { color: var(--ink-faint); }
+.useful-total {
+  color: var(--yellow);
+  font-size: 12px;
+  font-weight: 600;
 }
 .useful-none { color: var(--ink-faint); font-style: italic; }
 
