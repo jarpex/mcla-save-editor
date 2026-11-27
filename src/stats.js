@@ -364,7 +364,9 @@ function renderStats() {
     STATS.push({
       at: o, key: k, occ: occ,
       isFloat: kind === 0x28 || kind === 0x00,
-      isHours: statIsHours({ key: k })
+      isHours: statIsHours({ key: k }),
+      /* r:TI guarda milisegundos; a tela mostra mm:ss.cc como o jogo. */
+      isTime: k === "r:TI"
     });
   }
   /* As quatro telas do jogo: cada prefixo de FourCC pertence a uma. */
@@ -468,10 +470,17 @@ function statIsHours(r) { return r.key === "ghTC" || r.key === "ghTP"; }
 
 function statRead(r) {
   if (r.isHours) return hoursToText(view.getFloat32(r.at + 12));
+  if (r.isTime) return msToText(u32(r.at + 12));
   return r.isFloat ? view.getFloat32(r.at + 12).toFixed(4) : u32(r.at + 12);
 }
 
 function statWrite(r, val) {
+  if (r.isTime) {
+    var ms = textToMs(val);
+    if (ms === null) return false;
+    setU32(r.at + 12, ms);
+    return true;
+  }
   if (r.isHours) {
     var h = textToHours(val);
     if (h === null) return false;
