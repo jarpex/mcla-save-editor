@@ -1,26 +1,25 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MCLA Save Editor - edit mc4.sav from Midnight Club: Los Angeles</title>
-<meta name="description" content="Browser-based save editor for Midnight Club: Los Angeles on PC (MC_LA_Recompiled). Edit money, reputation and the garage in mc4.sav. Nothing is uploaded.">
-<link rel="canonical" href="https://onlyzennnn.github.io/mcla-save-editor/">
+<meta name="description" content="Browser-based save editor for Midnight Club: Los Angeles on PC (MC_LA_Recompiled). Edit money, reputation, career, stats and the garage in mc4.sav. Nothing is uploaded.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="favicon.svg">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://onlyzennnn.github.io/mcla-save-editor/">
 <meta property="og:site_name" content="MCLA Save Editor">
 <meta property="og:title" content="MCLA Save Editor - edit mc4.sav from Midnight Club: Los Angeles">
-<meta property="og:description" content="Edit money, reputation and the garage in mc4.sav. Runs in your browser, nothing is uploaded. The save format is documented too.">
-<meta property="og:image" content="https://onlyzennnn.github.io/mcla-save-editor/og.png">
+<meta property="og:description" content="Edit money, reputation, career, stats and the garage in mc4.sav. Runs in your browser, nothing is uploaded. The save format is documented too.">
+<meta property="og:image" content="og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="The editor with a save open, showing money, reputation, career progression and the garage slots.">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap"></noscript>
 <link rel="stylesheet" href="src/styles.css">
 </head>
 <body>
@@ -36,15 +35,15 @@
             </svg>
           </div>
           <div class="title-block">
-            <h1 data-i18n="app">Editor de Save</h1>
+            <h1 data-i18n="app">Save Editor</h1>
             <span class="game-sub">MIDNIGHT CLUB: LOS ANGELES</span>
           </div>
-          <div class="filetag" id="filetag" data-i18n="noFile">nenhum arquivo aberto</div>
+          <div class="filetag" id="filetag" data-i18n="noFile">no file open</div>
 
           <div class="lang-menu" id="langMenu">
             <button class="btn lang-trigger" id="langBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-              <span id="langCode">PT</span>
+              <span id="langCode">EN</span>
               <span class="lang-caret" aria-hidden="true">&#9662;</span>
             </button>
             <div class="lang-dropdown" id="langList" role="listbox" hidden>
@@ -64,15 +63,15 @@
         <div class="tabs-wrap" id="tabsWrap" hidden>
           <nav class="nav-tabs" id="navTabs" aria-label="Editor sections">
             <button class="tab-btn active" type="button" data-tab="garage">
-              <span class="chev">&gt;</span><span data-i18n="tabGarage">Garagem &amp; Carteira</span>
+              <span class="chev">&gt;</span><span data-i18n="tabGarage">Garage &amp; Wallet</span>
             </button>
             <button class="tab-btn" type="button" data-tab="career">
-              <span class="chev">&gt;</span><span data-i18n="tabCareer">Carreira &amp; Stats</span>
+              <span class="chev">&gt;</span><span data-i18n="tabCareer">Career &amp; Stats</span>
             </button>
             <button class="tab-btn" type="button" data-tab="sections">
-              <span class="chev">&gt;</span><span data-i18n="tabSections">Secoes Hex</span>
+              <span class="chev">&gt;</span><span data-i18n="tabSections">Hex Sections</span>
             </button>
-            <span class="tab-hint" data-i18n="tabKeys">Q / E</span>
+            <span class="tab-hint" data-i18n="tabKeys">Keys: Q / E</span>
           </nav>
           <div class="mcla-track" id="mclaTrack" aria-hidden="true">
             <div class="mcla-thumb" id="sliderThumb"></div>
@@ -90,11 +89,11 @@
                   <path d="M12 16V4"/><path d="m7.5 8.5 4.5-4.5 4.5 4.5"/><path d="M4 16v3.2A1.8 1.8 0 0 0 5.8 21h12.4a1.8 1.8 0 0 0 1.8-1.8V16"/>
                 </svg>
               </div>
-              <h2 data-i18n="dropTitle">Arraste o mc4.sav aqui</h2>
-              <p data-i18n="dropBody">Editor de save do Midnight Club: Los Angeles no PC, pelo runtime MC_LA_Recompiled. Tudo acontece no seu navegador: o arquivo nao sai da sua maquina, e o editor devolve um save do mesmo tamanho do original.</p>
+              <h2 data-i18n="dropTitle">Drop mc4.sav here</h2>
+              <p data-i18n="dropBody">Save editor for Midnight Club: Los Angeles on PC, through the MC_LA_Recompiled runtime. Everything runs in your browser: the file never leaves your machine, and the editor hands back a save the same size as the original.</p>
               <span class="path">userdata\B13EBABEBABEBABE\545407F8\00000001\mc4.sav\mc4.sav</span>
               <div style="margin-top:20px">
-                <button class="btn primary" id="pick" type="button" data-i18n="pick">Escolher arquivo</button>
+                <button class="btn primary" id="pick" type="button" data-i18n="pick">Choose file</button>
               </div>
               <input type="file" id="file" hidden>
             </div>
@@ -128,8 +127,8 @@
                         <label for="rep" data-i18n="rep">Reputacao</label>
                         <span class="at">Career+0x2E1</span>
                       </div>
-                      <input type="text" inputmode="numeric" id="rep" class="wallet-in" autocomplete="off">
                       <div class="rank-bar" id="repBar" aria-hidden="true"></div>
+                      <input type="text" inputmode="numeric" id="rep" class="wallet-in" autocomplete="off">
                       <div class="preset-row">
                         <button class="chip" type="button" data-add-rep="5000">+5K REP</button>
                         <button class="chip" type="button" data-add-rep="25000">+25K REP</button>
@@ -264,7 +263,7 @@
 
                 <div class="panel" data-group="career">
                   <header>
-                    <svg class="hdr-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 17h14"/><path d="M6 17V9l2-4h8l2 4v8"/><circle cx="8" cy="17" r="1.5"/><circle cx="16" cy="17" r="1.5"/></svg>
+                    <svg class="hdr-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
                     <span data-i18n="stVehicle">Estatisticas dos carros</span>
                     <span class="count" id="vehCount"></span>
                   </header>
@@ -487,25 +486,27 @@
   </div>
 </div>
 
-  <script src="src/preface.js"></script>
-  <script src="src/i18n.js"></script>
-  <script src="src/data.js"></script>
-  <script src="src/almanac.js"></script>
-  <script src="src/useful.js"></script>
-  <script src="src/core.js"></script>
-  <script src="src/garage.js"></script>
-  <script src="src/ui.js"></script>
-  <script src="src/load.js"></script>
-  <script src="src/render.js"></script>
-  <script src="src/shop.js"></script>
-  <script src="src/xray.js"></script>
-  <script src="src/perf.js"></script>
-  <script src="src/shopui.js"></script>
-  <script src="src/state.js"></script>
-  <script src="src/progression.js"></script>
-  <script src="src/stats.js"></script>
-  <script src="src/career.js"></script>
-  <script src="src/actions.js"></script>
-  <script src="src/nav.js"></script>
+  <script defer src="src/namespace.js"></script>
+  <script defer src="src/data/offsets.js"></script>
+  <script defer src="src/data/vehicles.js"></script>
+  <script defer src="src/data/stats-meta.js"></script>
+  <script defer src="src/data/perf.js"></script>
+  <script defer src="src/format/binary.js"></script>
+  <script defer src="src/format/slots.js"></script>
+  <script defer src="src/format/tuning.js"></script>
+  <script defer src="src/format/stats.js"></script>
+  <script defer src="src/format/career.js"></script>
+  <script defer src="src/ui/i18n.js"></script>
+  <script defer src="src/ui/dom.js"></script>
+  <script defer src="src/ui/xray.js"></script>
+  <script defer src="src/ui/wallet.js"></script>
+  <script defer src="src/ui/garage.js"></script>
+  <script defer src="src/ui/shop.js"></script>
+  <script defer src="src/ui/career-view.js"></script>
+  <script defer src="src/ui/almanac.js"></script>
+  <script defer src="src/ui/useful.js"></script>
+  <script defer src="src/ui/coverage.js"></script>
+  <script defer src="src/ui/nav.js"></script>
+  <script defer src="src/main.js"></script>
 </body>
 </html>

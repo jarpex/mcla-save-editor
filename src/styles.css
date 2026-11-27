@@ -599,6 +599,7 @@ input { caret-color: var(--cyan); }
 }
 .panel > header {
   padding: 10px 14px;
+  border-radius: 7px 7px 0 0;
   border-bottom: 1px solid #2e363c;
   background: linear-gradient(90deg, rgba(230, 213, 40, 0.08) 0%, rgba(255, 255, 255, 0.01) 65%);
   font-size: 13px;
@@ -634,7 +635,11 @@ input { caret-color: var(--cyan); }
 .panel.collapsible > header {
   cursor: pointer;
   user-select: none;
-  transition: background 140ms var(--out);
+  transition: background 140ms var(--out), border-radius 140ms var(--out);
+}
+.panel.collapsible:not(.open) > header {
+  border-radius: 7px;
+  border-bottom-color: transparent;
 }
 .panel.collapsible > header:hover {
   background: linear-gradient(90deg, rgba(230, 213, 40, 0.16) 0%, rgba(255, 255, 255, 0.02) 70%);
@@ -703,6 +708,7 @@ input[type="text"], input[type="number"], select {
 /* Wallet: same typography as the actionbar readout (display, upper case,
    tabular), with the value in yellow. The "$" prefix is part of the text. */
 input[type="text"].wallet-in {
+  padding: 8px 16px;
   font-family: var(--display);
   font-weight: 700;
   font-size: 13px;
@@ -761,7 +767,9 @@ input::placeholder { color: var(--ink-faint); }
   display: grid;
   grid-template-columns: repeat(10, 1fr);
   gap: 4px;
-  margin-top: 2px;
+  padding: 0 2px;
+  margin-top: 4px;
+  margin-bottom: 4px;
 }
 .rank-seg {
   height: 6px;

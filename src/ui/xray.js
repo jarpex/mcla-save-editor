@@ -1,3 +1,9 @@
+(() => {
+  "use strict";
+
+  const { TUNE_CATS, MOTO_CATS } = MCLA.data;
+  const { el } = MCLA.ui;
+
 /* ---------- Performance Shop: X-ray schematic ----------
    Two stacked layers, both absolutely placed in the same grid cell:
    `base` is the car itself (mesh, body, chassis) and never changes;
@@ -5,7 +11,7 @@
    A category with no entry of its own gets a generic engine/suspension
    highlight, so the shop still renders while the set is being filled in. */
 
-var XRAY_BASE_CAR = `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+const XRAY_BASE_CAR = `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
         <!-- X-ray wireframe mesh -->
         <g stroke="#4b5a63" stroke-width="0.6" stroke-opacity="0.18">
           <line x1="76" y1="21" x2="76" y2="79"></line>
@@ -63,7 +69,7 @@ var XRAY_BASE_CAR = `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="roun
         </g>
       </svg>`;
 
-var XRAY_BASE_MOTO = `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+const XRAY_BASE_MOTO = `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
         <!-- X-ray wireframe mesh (tank, tail & fairing) -->
         <g stroke="#4b5a63" stroke-width="0.6" stroke-opacity="0.22">
           <!-- Tank mesh -->
@@ -180,7 +186,7 @@ var XRAY_BASE_MOTO = `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="rou
         </g>
       </svg>`;
 
-var SCHEMATICS = {
+const SCHEMATICS = {
   0: `<svg viewBox="0 0 260 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
         <defs>
           <filter id="exhaustGlow" x="-15%" y="-25%" width="130%" height="150%">
@@ -1128,14 +1134,17 @@ function xrayPart(catIdx, moto, lit) {
 
 /* Paint the stack: base, then every part the vehicle has, lit one last so it
    sits on top. */
-var CAR_CAT_IDX = TUNE_CATS.map(function (_, i) { return i; });
+const CAR_CAT_IDX = TUNE_CATS.map((_, i) => i);
 
 function paintXray(catIdx, moto) {
-  var list = moto ? MOTO_CATS : CAR_CAT_IDX;
-  var html = xrayBase(moto).replace("<svg ", '<svg class="xray-layer xray-base" ');
-  for (var i = 0; i < list.length; i++) {
+  const list = moto ? MOTO_CATS : CAR_CAT_IDX;
+  let html = xrayBase(moto).replace("<svg ", '<svg class="xray-layer xray-base" ');
+  for (let i = 0; i < list.length; i++) {
     if (list[i] !== catIdx) html += xrayPart(list[i], moto, false);
   }
   html += xrayPart(catIdx, moto, true);
   el("shopSchematic").innerHTML = html;
 }
+
+  Object.assign(MCLA.ui, { paintXray });
+})();
