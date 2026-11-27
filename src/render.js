@@ -240,24 +240,34 @@ function bindIntField(inp, offset) {
 
 /* ---------- Cobertura do save ----------
 
-   Conta byte a byte o que o editor entende. Cada nota de SECTION_NOTES vale
-   o seu tamanho; as linhas com `sub` ficam dentro do bloco do slot e nao
-   contam de novo. O que sobra e a estrutura do arquivo (cabecalho de 8 bytes
-   mais o cabecalho de cada secao) e o desconhecido.
-   As notas de r:TI/vWIN/vkDT nao existem: o offset delas muda a cada save,
-   entao a tabela de registros entra como um bloco so. */
+   Conta byte a byte o que o editor entende. Nao da para olhar so a lista de
+   offsets: ela tem 16 campos pontuais, mas o editor le e escreve blocos
+   inteiros, e sao eles que dao quase toda a cobertura.
+
+   Cada bloco vale o seu tamanho real:
+     - LocalOptions: o array de slots (8176 bytes cada, 30 slots) mais os
+       60 bytes de colecionaveis. Dentro do slot o editor mexe em nome,
+       rotulo, tune, aparencia e placa.
+     - Stats: a tabela de registros inteira (16 bytes por linha).
+     - Career: os 65 bytes de cada bloco de progressao (progCount * 65) mais
+       dinheiro, reputacao e o contador.
+   O que sobra e estrutura do arquivo (8 bytes + cabecalho de cada secao) e
+   o que ninguem mapeou ainda: o miolo de Career e o de LocalOptions. */
 function renderCoverage() {
   if (!bytes) return;
 
-  var total = bytes.length, known = 0, fields = 0;
+  var total = bytes.length;
+  var lo = sec("LocalOptions"), car = sec("Career"), st = sec("Stats");
 
+  var slots = slotCount();
+  var slotBytes = slots * OFF.slotStride;
+  var progBytes = progTotal() * OFF.progStride;
+  var statsBytes = st.size;
+
+  var known = slotBytes + OFF.collectN + statsBytes + progBytes + 12;
+  var fields = 0;
   secs.list.forEach(function (s) {
-    var notes = SECTION_NOTES[s.name] || [];
-    notes.forEach(function (n) {
-      if (n.sub) return;
-      known += n.size;
-      fields++;
-    });
+    (SECTION_NOTES[s.name] || []).forEach(function (n) { if (!n.sub) fields++; });
   });
 
   /* Estrutura: 8 bytes de cabecalho do arquivo + 9 + nome por secao. */
@@ -273,4 +283,9 @@ function renderCoverage() {
   el("covContainer").textContent = nf(container) + " B";
   el("covUnknown").textContent = nf(unknown) + " B";
   el("covFields").textContent = nf(fields);
+
+  /* As tres linhas de detalhe: o que esta dentro do bloco conhecido. */
+  el("covSlots").textContent = slots + " \u00d7 " + nf(OFF.slotStride) + " B";
+  el("covStats").textContent = nf(statsBytes) + " B";
+  el("covProg").textContent = progTotal() + " \u00d7 65 B";
 }
