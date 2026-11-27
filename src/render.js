@@ -302,7 +302,7 @@ function almanacType(n) {
 function almanacRows(n) {
   if (!n.rows || !n.rows.length) return "";
   return '<table class="offsets aln-rows">' + n.rows.map(function (r) {
-    var label = r.k ? t(r.k) : "";
+    var label = r.label != null ? r.label : (r.k ? t(r.k) : "");
     /* A generic label would leave the row anonymous, so the offset carries it. */
     if (label === t("offAppearAt")) label += " · 0x" + r.at.toString(16).toUpperCase();
     return "<tr><td>0x" + r.at.toString(16).toUpperCase() + "</td>" +
@@ -316,7 +316,7 @@ function almanacNodeHtml(n, depth) {
   var hasKids = kids.length > 0;
   var head = '<div class="aln-head" style="--d:' + depth + '">' +
     (hasKids ? '<span class="chev">&gt;</span>' : '<span class="chev"></span>') +
-    '<span class="aln-name">' + t(n.k) + "</span>" +
+    '<span class="aln-name">' + (n.label != null ? n.label : t(n.k)) + "</span>" +
     '<span class="aln-range">0x' + n.at.toString(16).toUpperCase() +
     "..0x" + (n.at + n.size).toString(16).toUpperCase() + "</span>" +
     '<span class="aln-size">' + nf(n.size) + " B</span>" +
