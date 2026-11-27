@@ -520,6 +520,40 @@ input { caret-color: var(--cyan); }
 }
 .panel .body { padding: 14px; }
 
+/* ---------- Paineis recolhiveis (telas de tabela) ---------- */
+
+/* A animacao e na altura: o wrapper fecha com max-height 0 e abre com um
+   valor generoso. grid-template-rows nao serve aqui porque o conteudo
+   (statlist com overflow) nao tem altura intrinseca confiavel. */
+.panel.collapsible > header {
+  cursor: pointer;
+  user-select: none;
+  transition: background 140ms var(--out);
+}
+.panel.collapsible > header:hover {
+  background: linear-gradient(90deg, rgba(230, 213, 40, 0.16) 0%, rgba(255, 255, 255, 0.02) 70%);
+}
+.panel.collapsible > header .chev {
+  display: inline-block;
+  color: var(--edge);
+  font-size: 10px;
+  line-height: 1;
+  transition: transform 0.14s var(--out), color 0.14s var(--out);
+}
+.panel.collapsible.open > header .chev {
+  transform: rotate(90deg);
+  color: var(--yellow);
+}
+
+.body-wrap {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.24s var(--out);
+}
+.panel.collapsible.open > .body-wrap {
+  max-height: 640px;
+}
+
 .is-hidden { display: none !important; }
 
 /* ---------- Fields & Quick Presets ---------- */

@@ -1,3 +1,54 @@
+// ---------- Collapsible stat panels ----------
+// As cinco telas de tabela (Game/Vehicle/Race/Collectables/Career) comecam
+// so com o cabecalho. Um clique abre a altura com animacao; o estado fica
+// marcado no proprio painel, entao nada de duplicar markup em body.html.
+
+(function () {
+  var panels = document.querySelectorAll('.panel[data-group="career"]');
+  Array.prototype.forEach.call(panels, function (panel) {
+    if (!panel.querySelector(".statlist")) return;
+
+    var body = panel.querySelector(".body");
+    if (!body) return;
+
+    var wrap = document.createElement("div");
+    wrap.className = "body-wrap";
+    body.parentNode.insertBefore(wrap, body);
+    wrap.appendChild(body);
+
+    var head = panel.querySelector("header");
+    if (!head) return;
+
+    /* O chevron fica antes do contador, senao o margin-left:auto do
+       contador empurra a seta para a extrema direita. */
+    var chev = document.createElement("span");
+    chev.className = "chev";
+    chev.setAttribute("aria-hidden", "true");
+    chev.textContent = "\u25B6";
+    var count = head.querySelector(".count");
+    if (count) head.insertBefore(chev, count);
+    else head.appendChild(chev);
+
+    panel.classList.add("collapsible");
+    head.setAttribute("role", "button");
+    head.setAttribute("tabindex", "0");
+    head.setAttribute("aria-expanded", "false");
+
+    function toggle() {
+      var open = panel.classList.toggle("open");
+      head.setAttribute("aria-expanded", open ? "true" : "false");
+    }
+
+    head.addEventListener("click", toggle);
+    head.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
+        e.preventDefault();
+        toggle();
+      }
+    });
+  });
+})();
+
 // ---------- Tabs, Filter & Keyboard Navigation ----------
 
 document.querySelectorAll("#navTabs .tab-btn").forEach(function (b) {
