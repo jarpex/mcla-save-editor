@@ -63,6 +63,13 @@ function buildSave() {
   dv.setUint32(at.Career + 0x2D9, 1234);   // dinheiro
   dv.setUint32(at.Career + 0x2E1, 2050);   // reputacao
   dv.setUint32(at.Career + 0x2E5, 43);     // blocos de progressao
+
+  /* Tabela de alvos: 4 de time trial + 16 de corrida. A base e achada por
+     padrao (4 valores plausiveis seguidos de 16 plausiveis ou zero), entao o
+     save sintetico precisa dela ou o painel fica desabilitado. */
+  [128540, 150000, 137000, 115000].forEach(function (v, i) {
+    dv.setUint32(at.Career + 0x727D + i * 4, v);
+  });
   b[at.LocalOptions + 0x53F] = 1;          // contador de carros
   b[at.LocalOptions + 0x543] = 0;
 
@@ -284,6 +291,10 @@ assert.ok(CELLS >= 10, "preciso de blocos de progressao pra testar");
 buildGroups();
 
 ctx.render();
+
+/* A base da tabela de alvos e achada por padrao (0x727D num save curto,
+   0x7291 quando ha mais eventos), entao o teste pergunta ao editor. */
+var ttAt = careerAt + ctx.ttBase();
 
 // ---------- carteira ----------
 
@@ -587,7 +598,8 @@ assert.strictEqual(typeof careerRecord._on.input, "function",
   "render() terminou sem ligar o campo de recorde");
 
 if (!real) {
-  assert.strictEqual(ttTarget.value, "00:00.00",
+  /* 128540 ms = 02:08.54, o primeiro alvo da tabela do save sintetico. */
+  assert.strictEqual(ttTarget.value, "02:08.54",
     "o alvo lido do save sintetico esta errado");
   /* O save sintetico nao tem tabela de estatisticas, entao o recorde fica
      vazio: nao ha linha k:TB para ler. */
@@ -598,7 +610,7 @@ if (!real) {
 // 02:08.54 = 128540 ms, o mesmo tempo do save de referencia
 ttTarget.value = "02:08.54";
 ttTarget._on.input.call(ttTarget);
-assert.strictEqual(ctx.view.getUint32(careerAt + 0x727D), 128540,
+assert.strictEqual(ctx.view.getUint32(ttAt), 128540,
   "digitar no alvo nao gravou na tabela de Career");
 /* O alvo mora so em Career: Stats+0x578 e gWIP (total de wipeouts) e nao
    pode ser tocado, senao a estatistica de queda vai junto. No save real ele
@@ -608,14 +620,16 @@ assert.notStrictEqual(ctx.view.getUint32(statsAt + 0x578), 128540,
 
 // o alvo seguinte da tabela nao pode ser tocado (no save sintetico ele e 0)
 if (!real) {
-  assert.strictEqual(ctx.view.getUint32(careerAt + 0x7281), 0,
+  /* A tabela do save sintetico tem 4 alvos; gravar o primeiro nao pode
+     mexer no segundo (150000). */
+  assert.strictEqual(ctx.view.getUint32(ttAt + 4), 150000,
     "o alvo invadiu a entrada seguinte da tabela");
 }
 
 // formato invalido nao grava
 ttTarget.value = "2:99";
 ttTarget._on.input.call(ttTarget);
-assert.strictEqual(ctx.view.getUint32(careerAt + 0x727D), 128540,
+assert.strictEqual(ctx.view.getUint32(ttAt), 128540,
   "um tempo impossivel foi gravado mesmo assim");
 
 // o recorde e uma linha k:TB como as outras quatro
@@ -625,7 +639,7 @@ if (real) {
   careerRecord._on.input.call(careerRecord);
   assert.strictEqual(ctx.view.getUint32(tb0), 255320,
     "o campo de recorde nao gravou na primeira linha k:TB");
-  assert.strictEqual(ctx.view.getUint32(careerAt + 0x727D), 128540,
+  assert.strictEqual(ctx.view.getUint32(ttAt), 128540,
     "mudar so o recorde mexeu no alvo da missao");
 }
 

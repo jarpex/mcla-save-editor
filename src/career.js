@@ -1,12 +1,51 @@
 // ---------- Time Trial ----------
 
-var TT_EVENTS = [
-  { key: "ttHollywood2", label: "Hollywood time trial: '99 Eclipse - Race 2", target: 0, rec: 0 }
-];
+/* Os alvos ficam numa tabela de 4 u32 (ms) dentro de Career, logo seguida de
+   16 alvos de corrida. A base NAO e fixa: num save curto ela esta em +0x727D,
+   mas quando o jogador tem eventos a mais (mc4.sav.COMPLETED, lancers) ela
+   anda para +0x7291. Por isso a tabela e achada por padrao, nao por constante:
+   4 valores plausiveis (10-400 s) seguidos de 16 que sao plausiveis ou zero. */
+var TT_BASE = null;
+var RACE_TARGETS = 16;
+
+function ttBase() {
+  if (TT_BASE !== null) return TT_BASE;
+  var car = sec("Career");
+  TT_BASE = -1;
+  for (var off = 0; off + 80 < car.size; off++) {
+    var ok = true;
+    for (var i = 0; i < 4; i++) {
+      if (!ttPlausible(u32(car.data + off + i * 4))) { ok = false; break; }
+    }
+    if (!ok) continue;
+    for (var j = 0; j < RACE_TARGETS; j++) {
+      var v = u32(car.data + off + 16 + j * 4);
+      if (!ttPlausible(v) && v !== 0) { ok = false; break; }
+    }
+    if (ok) { TT_BASE = off; break; }
+  }
+  return TT_BASE;
+}
+
+function ttPlausible(v) { return v >= 10000 && v <= 400000; }
+
+/* A marcacao [Untested] e literal no rotulo: nenhum destes alvos foi
+   confirmado contra o jogo, so achados por padrao no save. */
+function ttMark(label) { return label + " [" + t("ttUntested") + "]"; }
+
+var TT_EVENTS = [{ key: "ttHollywood2", label: "Hollywood time trial: '99 Eclipse - Race 2", target: 0, rec: 0 }];
+
+/* Os 16 alvos de corrida ficam logo depois dos 4 de time trial. Nomes ainda
+   nao mapeados (a tabela do jogo nao foi dumpada). */
+for (var _r = 0; _r < RACE_TARGETS; _r++) {
+  TT_EVENTS.push({ key: "raceTarget" + _r, label: "Race target #" + (_r + 1), target: 4 + _r, rec: 0 });
+}
 
 function ttEventName(e) {
-  return e.label || t(e.key);
+  return ttMark(e.label || t(e.key));
 }
+
+function resetTtBase() { TT_BASE = null; }
 
 function renderTimeTrial() {
   var host = el("ttEvent");
@@ -23,19 +62,28 @@ function renderTimeTrial() {
 
 function paintTimeTrial() {
   var e = TT_EVENTS[+el("ttEvent").value || 0], car = sec("Career");
-  var at = car.data + OFF.ttTarget + e.target * OFF.ttTargetStride;
-  el("ttAt").textContent = "Career+0x" + (OFF.ttTarget + e.target * OFF.ttTargetStride).toString(16).toUpperCase();
+  var base = ttBase();
+  if (base < 0) {
+    el("ttAt").textContent = "Career+?";
+    el("ttTarget").value = "";
+    el("ttTarget").disabled = true;
+    return;
+  }
+  el("ttTarget").disabled = false;
+  var at = car.data + base + e.target * OFF.ttTargetStride;
+  el("ttAt").textContent = "Career+0x" + (base + e.target * OFF.ttTargetStride).toString(16).toUpperCase();
   el("ttTarget").value = msToText(u32(at));
   el("ttTarget").setAttribute("aria-label", t("ttTarget") + " " + ttEventName(e));
 }
 
 el("ttTarget").addEventListener("input", function () {
-  var e = TT_EVENTS[+el("ttEvent").value || 0], car = sec("Career"), st = sec("Stats");
+  var e = TT_EVENTS[+el("ttEvent").value || 0], car = sec("Career");
+  var base = ttBase();
   this.value = maskTime(this.value, this.dataset.maskPrev);
   this.dataset.maskPrev = this.value;
   var ms = textToMs(this.value);
-  if (ms === null) return;
-  setU32(car.data + OFF.ttTarget + e.target * OFF.ttTargetStride, ms);
+  if (ms === null || base < 0) return;
+  setU32(car.data + base + e.target * OFF.ttTargetStride, ms);
   mark();
 });
 
