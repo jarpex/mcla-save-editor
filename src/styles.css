@@ -1752,6 +1752,11 @@ input::placeholder { color: var(--ink-faint); }
   text-transform: uppercase;
 }
 .stat input { padding: 5px 8px; font-size: 12.5px; text-align: right; }
+.stat input:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  color: var(--muted-foreground);
+}
 
 /* cursor, texto, campo: tres colunas, o campo fecha a direita. */
 .stat.wide { grid-template-columns: 12px minmax(0, 1fr) 128px; }

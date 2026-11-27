@@ -450,6 +450,13 @@ function drawStats(q) {
     inp.setAttribute("aria-label", t("aValue", r.key));
     inp.value = statRead(r);
 
+    /* gCOL nao e editavel: a caixa fica travada e o titulo explica por que. */
+    if (r.key === "gCOL") {
+      inp.disabled = true;
+      inp.title = t("gColSynced");
+      row.title = t("gColSynced");
+    }
+
     row.appendChild(cur);
     row.appendChild(key);
     row.appendChild(name);
@@ -475,12 +482,16 @@ function drawStats(q) {
 function statIsHours(r) { return r.key === "ghTC" || r.key === "ghTP"; }
 
 function statRead(r) {
+  /* gCOL e derivado: conta as caixas marcadas, como a tela do jogo. */
+  if (r.key === "gCOL") return String(collectFound());
   if (r.isHours) return hoursToText(view.getFloat32(r.at + 12));
   if (r.isTime) return msToText(u32(r.at + 12));
   return r.isFloat ? view.getFloat32(r.at + 12).toFixed(4) : u32(r.at + 12);
 }
 
 function statWrite(r, val) {
+  /* gCOL nao se escreve: ele segue as caixas de Collectables. */
+  if (r.key === "gCOL") return false;
   if (r.isTime) {
     var ms = textToMs(val);
     if (ms === null) return false;
@@ -498,6 +509,25 @@ function statWrite(r, val) {
   if (r.isFloat) view.setFloat32(r.at + 12, v);
   else setU32(r.at + 12, Math.max(0, Math.min(4294967295, Math.floor(v))));
   return true;
+}
+
+/* Mantem gCOL (raw + campo na tela) junto das caixas marcadas. */
+function syncGcol() {
+  var r = STATS.filter(function (x) { return x.key === "gCOL"; })[0];
+  if (!r) return;
+  var n = collectFound();
+  setU32(r.at + 12, n);
+  var row = [...el("stats").children].find(function (c) {
+    return c.querySelector(".key") && c.querySelector(".key").textContent === "gCOL";
+  });
+  if (row) row.querySelector("input").value = String(n);
+}
+
+/* Quantas caixas estao marcadas em LocalOptions. gCOL e a mesma conta. */
+function collectFound() {
+  var lo = sec("LocalOptions"), base = lo.data + OFF.collect, c = 0;
+  for (var i = 0; i < OFF.collectN; i++) if (bytes[base + i] === 1) c++;
+  return c;
 }
 
 /* ---------- Vehicle Stats ---------- */
@@ -818,6 +848,7 @@ function drawCollect() {
           var lo = sec("LocalOptions"), b0 = lo.data + OFF.collect, c = 0;
           for (var q = 0; q < OFF.collectN; q++) if (bytes[b0 + q] === 1) c++;
           el("colCount").textContent = c + " / " + OFF.collectN;
+          syncGcol();
           var z = 0;
           for (var q2 = 0; q2 < g.n; q2++) if (bytes[b0 + g.at + q2] === 1) z++;
           badge.textContent = z + " / " + g.n;
@@ -852,6 +883,9 @@ function drawCollect() {
   });
 
   el("colCount").textContent = found + " / " + OFF.collectN;
+
+  /* gCOL na tabela de estatisticas segue a mesma conta. */
+  syncGcol();
 
   /* As duas mesmas acoes da Progressao: marcar ou limpar tudo de uma vez. */
   el("colAll").onclick = function () { collectSet(1); };
