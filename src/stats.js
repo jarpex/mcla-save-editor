@@ -3,42 +3,110 @@
 var STATS = [];
 
 var STAT_NAMES = {
-  gBRN: "Total Burnouts",
+  /* Game Stats */
+  gBRN: "Total Burnout",
   gCOL: "Collectables",
-  gCPA: "Totals Cops Activated",
+  gCPA: "Total Cops Activated",
   gCPL: "Total Cops Lost",
+  gCPR: "Total Arrests",
   gCWN: "Non Career Consecutive Wins",
-  gDAM: "Total damage points",
+  gDAM: "Total Damage Points",
   gHOP: "Total Opponents Hit",
   gHPR: "Total Props Hit",
   gHTR: "Total Traffic Hit",
   gNIT: "Total Nitrous",
   gOUT: "Total Damage Out",
   gRCP: "Races Completed",
-  gROR: "Total Roar Special Ability",
-  gSST: "Total Slipstream Turbo",
+  gSST: "Total SST",
   gWIN: "Total Numbers of Wins",
   gWIP: "Total Wipeouts",
+  gZON: "Total Zone Special Ability",
   ghTC: "Total Hours Cruising",
   ghTP: "Total Hours Played",
   gk2W: "Two Wheel Driving Distance (miles)",
   gkDS: "Total Distance Traveled (miles)",
+  gkWL: "Total Wheelie Distance (miles)",
   gmJD: "Max. Jump Distance (meters)",
-  gsJT: "Total Jump Time (seconds)"
+  gsJT: "Total Jump Time (seconds)",
+
+  /* Career Stats */
+  "k$CE": "Total Cash Earned",
+  k$WA: "Wager Win Amount",
+  "k%AG": "Percent Completed",
+  k2ND: "Number of Second Place",
+  k3RD: "Number of Third Place",
+  "k:TB": "Time Trial Record",
+  kARS: "Average Restarts",
+  kCCW: "Most Consecutive Wins",
+  kCWN: "Career Consecutive Wins",
+  kDLT: "Total Deliveries",
+  kEXW: "Exotic Wins",
+  kFWN: "Freeway Wins",
+  kHOK: "Hookmen Beaten",
+  kLED: "Most Lead Changes",
+  kLOW: "Lowrider Wins",
+  kLUW: "Luxury Wins",
+  kMOW: "Motorcycle Wins",
+  kMRS: "Max Restarts in a Race",
+  kMUW: "Muscle Wins",
+  kPDS: "Payback Destroyed",
+  kRCP: "Races Completed",
+  kRLW: "Red Light Wins",
+  kSUW: "SUV Wins",
+  kTRS: "Total Restarts",
+  kTUW: "Tuner Wins",
+  kWIN: "Number of Wins",
+  khTC: "Hours Cruising",
+
+  /* Vehicle Stats */
+  vWIN: "Number of Wins",
+  vkDT: "Distance Traveled (miles)",
+
+  /* Race Stats */
+  "r:TI": "Race Time"
 };
 
-function statName(r) { return STAT_NAMES[r.key] || ""; }
+/* Areas, na ordem em que a jogo grava os registros repetidos. */
+var AREA_NAMES = ["Hollywood", "Beaches", "Downtown", "South Central"];
+var TT_NAMES = [
+  "Hollywood: '99 Eclipse",
+  "Beach: '69 Mustang",
+  "Hills: '71 Miura SV",
+  "Downtown: '99 3000GT",
+  "South Central: '64 Impala"
+];
+
+/* Chaves que aparecem mais de uma vez: k$WA (4 areas), k:TB (5 time trials),
+   tMTP (14), vWIN (21), vkDT (67), r:TI (69). O numero da ocorrencia entra
+   no nome, senao as quatro apostas ficam todas "Wager Win Amount". */
+var REPEATED = { "k$WA": 1, "k:TB": 1, tMTP: 1, vWIN: 1, vkDT: 1, "r:TI": 1 };
+
+function statName(r) {
+  var base = STAT_NAMES[r.key];
+  if (!base) return "";
+  if (!REPEATED[r.key]) return base;
+  var names = r.key === "k$WA" ? AREA_NAMES
+            : r.key === "k:TB" ? TT_NAMES
+            : null;
+  if (names && names[r.occ]) return base + " \u00b7 " + names[r.occ];
+  return r.occ ? base + " #" + (r.occ + 1) : base;
+}
 
 function renderStats() {
   var s = sec("Stats");
   STATS = [];
   var start = s.data + (((2 - (s.data % 16)) % 16) + 16) % 16;
+  var seen = {};
   for (var o = start; o + 16 <= s.data + s.size; o += 16) {
     var k = ascii(o, 4);
-    if (!/^[A-Za-z][A-Za-z0-9]{3}$/.test(k)) continue;
+    /* Aceita $, % e : no codigo: k$CE, k%AG, k:TB e r:TI sao reais e ficavam
+       de fora da regex antiga, que so deixava [A-Za-z0-9]. */
+    if (!/^[A-Za-z][A-Za-z0-9$%:]{3}$/.test(k)) continue;
     var kind = bytes[o + 8];
+    var occ = seen[k] || 0;
+    seen[k] = occ + 1;
     STATS.push({
-      at: o, key: k,
+      at: o, key: k, occ: occ,
       isFloat: kind === 0x28 || kind === 0x00,
       isHours: statIsHours({ key: k })
     });

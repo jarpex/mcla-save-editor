@@ -489,9 +489,13 @@ if (!real) {
    que a loja chama. Entao o teste maxe por maxTune e confere o botao. */
 var t0 = tuneBlock(0);
 ctx.maxTune(0);
-for (var c = 0; c < TUNE_N; c++) {
+/* O save pode ter moto no slot 0: 6 categorias em indices espalhados
+   (0,4,5,6,8,12), nao as 13 seguidas de um carro. O teste usa a mesma lista
+   que a pagina usa, em vez de contar de 0 ate 13. */
+var cats0 = ctx.tuneCatIdx(ctx.readSlot(0).car);
+cats0.forEach(function (c) {
   assert.strictEqual(ctx.bytes[t0 + TUNE_LV + c], 2, "categoria " + c + " nao foi para o nivel 2");
-}
+});
 assert.strictEqual(ctx.bytes[t0 + TUNE_PCT], 100, "a porcentagem nao foi para 100");
 
 // o bloco seguinte nao pode ser tocado: um stride adiante, byte a byte
