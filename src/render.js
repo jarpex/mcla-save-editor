@@ -271,6 +271,11 @@ function renderCoverage() {
   var statsBytes = named * 16;
 
   var known = slotBytes + OFF.collectN + statsBytes + progBytes + 12;
+  /* Potencial: a tabela de Stats inteira conta, porque a estrutura dela
+     (linha de 16 bytes, FourCC, tipo, valor) e conhecida; o que falta e o
+     significado das linhas sem nome. A barra mostra os dois: teal atras,
+     cyan na frente. */
+  var potential = known - statsBytes + st.size;
   var fields = 0;
   secs.list.forEach(function (s) {
     (SECTION_NOTES[s.name] || []).forEach(function (n) { if (!n.sub) fields++; });
@@ -284,8 +289,10 @@ function renderCoverage() {
   var unknown = Math.max(0, total - known - container);
   var pct = total ? (known / total) * 100 : 0;
 
+  var potPct = total ? (potential / total) * 100 : 0;
   el("covPct").textContent = pct.toFixed(1) + "%";
   el("covFill").style.width = pct + "%";
+  el("covPot").style.width = potPct + "%";
   el("covKnown").textContent = nf(known) + " B";
   el("covContainer").textContent = nf(container) + " B";
   el("covUnknown").textContent = nf(unknown) + " B";

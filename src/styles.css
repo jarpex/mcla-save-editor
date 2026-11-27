@@ -533,19 +533,55 @@ input { caret-color: var(--cyan); }
   text-transform: uppercase;
   color: var(--muted-foreground);
 }
+/* Mesma ideia das barras de desempenho: uma camada de fundo diz o maximo
+   possivel (teal) e a de cima, mais clara, o que ja foi lido (cyan). */
 .cov-bar {
-  height: 6px;
-  border-radius: 3px;
-  background: #1b2228;
+  position: relative;
+  height: 15px;
+  border: 1.5px solid #758088;
+  border-radius: 1px;
+  background: #090c0f;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.7);
   overflow: hidden;
 }
+.cov-pot,
 .cov-fill {
-  height: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
   width: 0;
-  border-radius: 3px;
-  background: linear-gradient(90deg, #29c5c0 0%, #56eae5 100%);
   transition: width 0.24s var(--out);
 }
+.cov-pot {
+  z-index: 1;
+  background: var(--sea-green);
+}
+.cov-fill {
+  z-index: 2;
+  background: var(--cyan-bright);
+  box-shadow: 0 0 8px rgba(92, 230, 225, 0.45);
+}
+.cov-legend {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 10.5px;
+  color: var(--muted-foreground);
+}
+.cov-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.cov-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  flex: none;
+}
+.cov-dot-act { background: var(--cyan-bright); }
+.cov-dot-pot { background: var(--sea-green); }
 .cov-rows {
   display: grid;
   gap: 5px;
