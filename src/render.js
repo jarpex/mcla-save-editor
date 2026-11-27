@@ -79,6 +79,9 @@ function render() {
       writeField(o, 32, "blank");
       lbl.value = "";
       writeField(o + OFF.slotLabel, 33, "");
+      /* Sem isso o slot vazio continua com o tune do carro anterior, e ao
+         colocar outro carro ali o nivel volta junto. */
+      clearTune(n);
     }
     rowEl.classList.toggle("filled", !!val);
     /* The new vehicle may be a bike with six categories instead of a car

@@ -18,6 +18,7 @@ var OFF = {
   plateStrideBack: 1,
 
   tuneBase: 1293,
+  tuneN: 13,
   tuneLv: 95,
   tunePct: 126,
 

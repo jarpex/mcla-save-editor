@@ -49,6 +49,15 @@ function maxTune(n) {
 }
 
 /* Everything the UI needs about one slot's tune, in one object. */
+/* Zera o bloco de tune do slot: 13 niveis em +95 e a porcentagem em +126.
+   O bloco fica fisicamente no stride anterior (tuneAt), entao usamos tuneAt
+   pra ler e pra escrever -- os dois tem que concordar. */
+function clearTune(n) {
+  var at = tuneAt(n);
+  for (var i = 0; i < OFF.tuneN; i++) bytes[at + OFF.tuneLv + i] = 0;
+  bytes[at + OFF.tunePct] = 0;
+}
+
 function tuneInfo(n) {
   var car = readSlot(n).car;
   var moto = isMoto(car);

@@ -401,6 +401,15 @@ r1.sel.value = "";
 r1.sel._on.change.call(r1.sel);
 assert.strictEqual(str(slot1, 5), "blank", "esvaziar o slot nao gravou blank");
 
+// e tem que limpar o tune junto: senao o carro seguinte herda o nivel
+var t1 = ctx.tuneAt(1);
+for (var ti2 = 0; ti2 < ctx.OFF.tuneN; ti2++) {
+  assert.strictEqual(ctx.bytes[t1 + ctx.OFF.tuneLv + ti2], 0,
+    "o slot vazio ficou com nivel de tune em +%d" % (ctx.OFF.tuneLv + ti2));
+}
+assert.strictEqual(ctx.bytes[t1 + ctx.OFF.tunePct], 0,
+  "o slot vazio ficou com a porcentagem de tune");
+
 // ---------- garagem: rotulo ----------
 
 assert.strictEqual(typeof r1.lbl._on.input, "function", "o campo de rotulo nao foi ligado");
