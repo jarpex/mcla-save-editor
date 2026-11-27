@@ -381,7 +381,7 @@ function drawVehicles(q) {
     shown++;
 
     var row = document.createElement("div");
-    row.className = "stat";
+    row.className = "stat plain";
 
     var cur = document.createElement("span");
     cur.className = "cursor";
@@ -430,7 +430,7 @@ function drawRaces(q) {
     shown++;
 
     var row = document.createElement("div");
-    row.className = "stat";
+    row.className = "stat plain";
 
     var cur = document.createElement("span");
     cur.className = "cursor";
@@ -495,7 +495,7 @@ function drawCollect() {
       if (isFound) found++;
 
       var row = document.createElement("div");
-      row.className = "stat";
+      row.className = "stat plain";
 
       var cur = document.createElement("span");
       cur.className = "cursor";

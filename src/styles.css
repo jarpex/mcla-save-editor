@@ -1577,6 +1577,8 @@ input::placeholder { color: var(--ink-faint); }
 
 /* cursor, texto, campo: tres colunas, o campo fecha a direita. */
 .stat.wide { grid-template-columns: 12px minmax(0, 1fr) 128px; }
+/* cursor, nome, tipo, campo: quatro colunas, sem a coluna de codigo. */
+.stat.plain { grid-template-columns: 12px minmax(0, 1fr) auto 128px; }
 .stat .who { display: grid; gap: 2px; min-width: 0; }
 .stat .who .key {
   font-family: var(--display);
