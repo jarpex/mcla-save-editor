@@ -827,12 +827,13 @@ function drawCollect() {
       box.id = "col-" + g.key + "-" + i;
       box.setAttribute("aria-label", name.textContent);
 
-      var mark = document.createElement("label");
-      mark.className = "check";
-      mark.setAttribute("for", box.id);
+      /* Nao chamar de `mark`: o nome colide com a funcao global mark(). */
+      var boxLabel = document.createElement("label");
+      boxLabel.className = "check";
+      boxLabel.setAttribute("for", box.id);
 
       wrap.appendChild(box);
-      wrap.appendChild(mark);
+      wrap.appendChild(boxLabel);
 
       row.appendChild(cur);
       row.appendChild(name);
