@@ -162,17 +162,6 @@ document.querySelectorAll("[data-set-lang]").forEach(function (opt) {
 document.addEventListener("click", function (e) {
   if (!e.target.closest("#langMenu")) closeLangMenu();
 
-  /* Hex Sections: clicking a section row opens its known offsets. */
-  var row = e.target.closest(".sec-row");
-  if (row) {
-    var detail = el("secBody").querySelector('.sec-detail[data-for="' + row.dataset.sec + '"]');
-    if (!detail) return;
-    var open = detail.hasAttribute("hidden");
-    if (open) detail.removeAttribute("hidden");
-    else detail.setAttribute("hidden", "");
-    row.classList.toggle("open", open);
-    return;
-  }
   /* A group inside an open section is a spoiler of its own. */
   var head = e.target.closest(".doc-head");
   if (head) {

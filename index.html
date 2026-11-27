@@ -70,7 +70,7 @@
               <span class="chev">&gt;</span><span data-i18n="tabCareer">Carreira &amp; Stats</span>
             </button>
             <button class="tab-btn" type="button" data-tab="sections">
-              <span class="chev">&gt;</span><span data-i18n="tabSections">Se&ccedil;&otilde;es Hex</span>
+              <span class="chev">&gt;</span><span data-i18n="tabSections">Almanaque</span>
             </button>
             <span class="tab-hint" data-i18n="tabKeys">Q / E</span>
           </nav>
@@ -177,25 +177,15 @@
                   </div>
                 </div>
 
-                <!-- Hex Sections panel -->
                 <div class="panel" data-group="sections">
                   <header>
-                    <svg class="hdr-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
-                    <span data-i18n="sections">Secoes</span>
-                    <span class="count" id="secCount"></span>
+                    <svg class="hdr-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h7v16H4z"/><path d="M13 4h7v16h-7z"/><path d="M7 8h1M7 12h1M16 8h1M16 12h1"/></svg>
+                    <span data-i18n="almanac">Almanaque</span>
+                    <span class="count" id="alnCount"></span>
                   </header>
-                  <div class="body sections-body">
-                    <table class="sections">
-                      <thead>
-                        <tr>
-                          <th data-i18n="thName">Nome</th>
-                          <th data-i18n="thStart">Inicio</th>
-                          <th>Bytes</th>
-                        </tr>
-                      </thead>
-                      <tbody id="secBody"></tbody>
-                    </table>
-
+                  <div class="body">
+                    <p class="aln-hint" data-i18n="alnHint">Cada byte do arquivo, em ordem. Abra um bloco para ir mais fundo.</p>
+                    <div class="almanac" id="almanac"></div>
                     <div class="coverage" id="coverage">
                       <div class="cov-top">
                         <span class="cov-pct" id="covPct">0%</span>
@@ -332,18 +322,6 @@
   </div>
 </div>
 
-<!-- Almanac panel -->
-                <div class="panel" data-group="sections">
-                  <header>
-                    <svg class="hdr-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h7v16H4z"/><path d="M13 4h7v16h-7z"/><path d="M7 8h1M7 12h1M16 8h1M16 12h1"/></svg>
-                    <span data-i18n="almanac">Almanaque</span>
-                    <span class="count" id="alnCount"></span>
-                  </header>
-                  <div class="body">
-                    <p class="aln-hint" data-i18n="alnHint">Every byte of the file, in order. Open a block to go deeper.</p>
-                    <div class="almanac" id="almanac"></div>
-                  </div>
-                </div>
 
 <!-- Performance Shop Modal -->
 <div class="shop-backdrop" id="shopModal" hidden role="dialog" aria-modal="true" aria-labelledby="shopTitle">

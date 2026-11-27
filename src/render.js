@@ -9,53 +9,8 @@ function render() {
   el("rep").value = nf(repVal);
   syncWalletControls();
 
-  el("secCount").textContent = secs.list.length + " " + t("nSections");
-
-  /* One table per group, one group per spoiler. A row with `sub` is a field
-     inside the block above it and shows only its own offset. */
-  function groupTable(g) {
-    /* A `sub` row is a field inside the block above: it shows the block base
-       plus its own addend. A `text` row is prose, not an offset. */
-    var base = 0;
-    var body = g.rows.map(function (n) {
-      if (n.text) {
-        return '<tr class="doc-note"><td colspan="3">' + t(n.k) + "</td></tr>";
-      }
-      if (!n.sub) base = n.at;
-      var at = n.sub ? base + (n.add || 0) : n.at;
-      var label = t(n.k);
-      if (n.sub && n.add) label += " \u00b7 +" + n.add;
-      if (n.back) label += " \u00b7 \u2212" + n.back + " stride";
-      return "<tr><td>0x" + at.toString(16).toUpperCase() + "</td>" +
-        "<td>" + (n.size || "-") + "</td><td>" + label + "</td></tr>";
-    }).join("");
-    return '<div class="doc-group">' +
-      '<div class="doc-head"><span class="chev">&gt;</span>' +
-      "<span>" + t(g.k) + "</span></div>" +
-      '<div class="doc-body"><div class="doc-inner">' +
-      '<table class="offsets">' + body + "</table>" +
-      "</div></div></div>";
-  }
-
-  var rows = '<tr class="sec-row file-row" data-sec="File">' +
-    "<td>File<span class=\"chev\">&gt;</span></td><td>0x0</td><td>" +
-    nf(secs.endedAt) + "</td></tr>";
-  rows += '<tr class="sec-detail" data-for="File" hidden><td colspan="3">' +
-    SECTION_NOTES.File.map(groupTable).join("") + "</td></tr>";
-
-  secs.list.forEach(function (s) {
-    var notes = SECTION_NOTES[s.name] || [];
-    rows += "<tr class=\"sec-row\" data-sec=\"" + s.name + "\">" +
-      "<td>" + s.name + (notes.length ? '<span class="chev">&gt;</span>' : "") + "</td>" +
-      "<td>0x" + s.data.toString(16).toUpperCase() + "</td>" +
-      "<td>" + nf(s.size) + "</td>" +
-      "</tr>";
-    if (notes.length) {
-      rows += "<tr class=\"sec-detail\" data-for=\"" + s.name + "\" hidden><td colspan=\"3\">" +
-        notes.map(groupTable).join("") + "</td></tr>";
-    }
-  });
-  el("secBody").innerHTML = rows;
+  /* The Sections tab is the almanac: the old per-section offset tables are
+     gone, SECTION_NOTES now only feeds the coverage counter. */
   renderAlmanac();
 
   var opts = '<option value="">- ' + t("empty") + " -</option>";
