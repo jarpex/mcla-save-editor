@@ -216,6 +216,9 @@ function almanacLocal(base, size) {
   }
   nodes.push(almanacNode("docRecordArray", tune0, recCount * stride, "docTRecArray", {
     note: "docRecordArrayNote",
+    /* The vendor byte and the float are two halves of one number; the game
+       adds them, so the pair is documented once per record. */
+    extra: "docTuneFormula",
     children: recs
   }));
 

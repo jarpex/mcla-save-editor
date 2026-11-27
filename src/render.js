@@ -324,6 +324,7 @@ function almanacNodeHtml(n, depth) {
     '<span class="aln-type">' + almanacType(n) + "</span></div>";
   var body = "";
   if (n.note) body += '<p class="aln-note">' + t(n.note) + "</p>";
+  if (n.extra) body += '<p class="aln-note">' + t(n.extra) + "</p>";
   body += almanacRows(n);
   if (hasKids) body += kids.map(function (c) { return almanacNodeHtml(c, depth + 1); }).join("");
   if (!hasKids && !n.note && !n.rows) {
@@ -361,12 +362,13 @@ function renderUseful() {
   }).join("");
   el("useCount").textContent = groups.length + " " + t("alnBlocks");
 
-  /* Picking a vendor shows the float the game writes at +0x27. */
+  /* Picking a vendor shows the number the game works with: the vendor byte
+     plus the float at +0x27. */
   Array.prototype.forEach.call(host.querySelectorAll(".useful-select"), function (sel) {
     sel.addEventListener("change", function () {
       var opt = sel.options[sel.selectedIndex];
       var out = sel.parentNode.querySelector(".useful-float");
-      if (out) out.textContent = opt.getAttribute("data-float") || "-";
+      if (out) out.textContent = opt.getAttribute("data-total") || "-";
     });
   });
 }

@@ -86,22 +86,30 @@ function usefulRaw(catIdx) {
 }
 
 /* The vendor dropdown of one category: stock first, then the collected list.
-   The float written at +0x27 rides along as option data, so picking a vendor
-   shows the number the game would store. */
+   The number the game works with is the vendor byte plus the float at +0x27,
+   so the readout shows the sum and the option carries both terms. */
 function usefulVendorSelect(catIdx) {
   var v = TUNE_VENDORS[catIdx];
   if (!v) return { html: '<span class="useful-none">' + t("usefulNone") + "</span>" };
-  var opts = '<option value="0" data-float="' + v.stock.toFixed(4) + '">' +
-    t("usefulStock") + "</option>";
+  /* The index is the position in the vendor list, 0-based: 5zigen is 0 and
+     the float at +0x27 is 0.9601, so the game's number is 0.9601. Stock is
+     index 0 as well, with the factory float and level 0, which is how a save
+     says "no part"; the level byte is what tells the two apart. */
+  function opt(idx, name, f) {
+    var total = idx + f;
+    return '<option value="' + idx + '" data-idx="' + idx + '" data-float="' + f + '"' +
+      ' data-total="' + total.toFixed(4) + '">' + name + "</option>";
+  }
+  var opts = '<option value="stock" data-idx="0" data-float="' + v.stock + '"' +
+    ' data-total="' + v.stock.toFixed(4) + '">' + t("usefulStock") + "</option>";
   v.names.forEach(function (n, i) {
     var f = v.floats[i];
-    opts += '<option value="' + (i + 1) + '"' +
-      (f != null ? ' data-float="' + f.toFixed(4) + '"' : "") + ">" + n + "</option>";
+    if (f != null) opts += opt(i, n, f);
   });
   return {
     html: '<span class="useful-sel">' +
       '<select class="useful-select" data-cat="' + catIdx + '">' + opts + "</select>" +
-      '<span class="useful-float">' + v.stock.toFixed(4) + "</span></span>"
+      '<span class="useful-float">' + (0 + v.stock).toFixed(4) + "</span></span>"
   };
 }
 
