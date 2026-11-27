@@ -69,6 +69,8 @@ function render() {
     var o = slotAt(n);
     var sel = rowEl.querySelector("select");
     var lbl = rowEl.querySelector("input.lbl");
+    /* O carro que estava ali antes: serve de base pro reset da aparencia. */
+    var prev = readSlot(n).car;
     sel.value = val;
     if (val) {
       writeField(o, 32, val);
@@ -76,6 +78,10 @@ function render() {
       writeField(o + OFF.slotLabel, 33, lbl.value);
       writeAppearance(o, val);
     } else {
+      /* Primeiro a aparencia volta ao stock do carro que saiu: so apagar o
+         nome deixa as rodas e o kit do tunado no slot, e o carro seguinte
+         herda isso. Depois sim o slot vira "blank" e o tune zera. */
+      if (prev) writeAppearance(o, prev);
       writeField(o, 32, "blank");
       lbl.value = "";
       writeField(o + OFF.slotLabel, 33, "");

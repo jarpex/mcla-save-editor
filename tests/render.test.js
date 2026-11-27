@@ -419,10 +419,22 @@ assert.ok(preset, "a tabela STOCK_APPEARANCE nao carregou");
   }
 }
 
+/* Antes de esvaziar, suja a aparencia de proposito: e o caso real de um
+   carro tunado. Esvaziar tem que devolver o stock, nao so apagar o nome. */
+var dirty = [11, 22, 33, 44, 55, 66, 77, 88, 99, 111, 222, 233];
+for (var di = 0; di < APPEAR.length; di++) ctx.bytes[slot1 + APPEAR[di]] = dirty[di];
+
 // esvaziar de volta grava "blank", que e o que o jogo poe num slot vazio
 r1.sel.value = "";
 r1.sel._on.change.call(r1.sel);
 assert.strictEqual(str(slot1, 5), "blank", "esvaziar o slot nao gravou blank");
+
+/* A aparencia volta ao stock do carro que saiu (vp_aud_rs4_07), junto com o
+   nome. Sem isso as rodas e o kit tunados ficam no slot. */
+for (var ai2 = 0; ai2 < APPEAR.length; ai2++) {
+  assert.strictEqual(ctx.bytes[slot1 + APPEAR[ai2]], preset[ai2],
+    "esvaziar nao devolveu a aparencia de stock em +" + APPEAR[ai2]);
+}
 
 // e tem que limpar o tune junto: senao o carro seguinte herda o nivel
 var t1 = ctx.tuneAt(1);
