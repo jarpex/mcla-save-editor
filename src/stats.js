@@ -768,7 +768,8 @@ function drawCollect() {
       if (isFound) found++;
 
       var row = document.createElement("div");
-      row.className = "stat plain";
+      /* A ultima coluna e a caixa (22px), nao os 128px do campo de texto. */
+      row.className = "stat plain bool";
 
       var cur = document.createElement("span");
       cur.className = "cursor";
@@ -778,38 +779,51 @@ function drawCollect() {
       name.className = "name";
       name.textContent = t(g.key) + " " + (i + 1);
 
+      /* E um booleano de verdade: caixa marcada ou nao, sem campo de texto
+         para digitar "1"/"0". */
       var kind = document.createElement("span");
       kind.className = "kind";
       kind.textContent = t(isFound ? "colFound" : "colHidden");
 
-      var inp = document.createElement("input");
-      inp.type = "text";
-      inp.inputMode = "numeric";
-      inp.value = isFound ? "1" : "0";
-      inp.setAttribute("aria-label", name.textContent);
+      /* O que se ve e o label .check, que e a quarta coluna da linha. O input
+         fica invisivel logo antes dele, dentro do mesmo wrapper: assim o
+         seletor :checked + .check funciona e o clique no desenho tambem. */
+      var wrap = document.createElement("div");
+      wrap.className = "check-wrap";
+
+      var box = document.createElement("input");
+      box.type = "checkbox";
+      box.checked = isFound;
+      box.id = "col-" + g.key + "-" + i;
+      box.setAttribute("aria-label", name.textContent);
+
+      var mark = document.createElement("label");
+      mark.className = "check";
+      mark.setAttribute("for", box.id);
+
+      wrap.appendChild(box);
+      wrap.appendChild(mark);
 
       row.appendChild(cur);
       row.appendChild(name);
       row.appendChild(kind);
-      row.appendChild(inp);
+      row.appendChild(wrap);
 
-      inp.addEventListener("input", function () {
-        var n = Number(String(this.value).replace(",", "."));
-        if (!isFinite(n)) return;
-        setU8(at, n >= 1 ? 1 : 0);
-        /* Contador do cabecalho e da zona contam na memoria, nao no DOM. */
-        var lo = sec("LocalOptions"), b0 = lo.data + OFF.collect, c = 0;
-        for (var q = 0; q < OFF.collectN; q++) if (bytes[b0 + q] === 1) c++;
-        el("colCount").textContent = c + " / " + OFF.collectN;
-        var z = 0;
-        for (var q2 = 0; q2 < g.n; q2++) if (bytes[b0 + g.at + q2] === 1) z++;
-        badge.textContent = z + " / " + g.n;
-        mark();
-      });
-      inp.addEventListener("blur", function () {
-        this.value = bytes[at] === 1 ? "1" : "0";
-      });
-
+      /* `at` vem de um var dentro do for: sem capturar em IIFE todas as
+         caixas escreveriam no ultimo endereco da zona. */
+      (function (addr) {
+        box.addEventListener("change", function () {
+          setU8(addr, this.checked ? 1 : 0);
+          /* Contador do cabecalho e da zona contam na memoria, nao no DOM. */
+          var lo = sec("LocalOptions"), b0 = lo.data + OFF.collect, c = 0;
+          for (var q = 0; q < OFF.collectN; q++) if (bytes[b0 + q] === 1) c++;
+          el("colCount").textContent = c + " / " + OFF.collectN;
+          var z = 0;
+          for (var q2 = 0; q2 < g.n; q2++) if (bytes[b0 + g.at + q2] === 1) z++;
+          badge.textContent = z + " / " + g.n;
+          mark();
+        });
+      })(at);
       inner.appendChild(row);
     }
 
