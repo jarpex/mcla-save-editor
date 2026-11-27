@@ -148,6 +148,9 @@ var RACE_NAMES = [
   ""
 ];
 
+/* Carros que tem registro em vWIN, na ordem em que a jogo grava (a mesma
+   ordem do menu, so sem os carros que nunca venceram). A lista e esparsa de
+   proposito: nao da para derivar os nomes de CAR_ORDER_NAMES por indice. */
 var WIN_CAR_NAMES = [
   "1998 240SX",
   "1969 Camaro RS SS",
@@ -281,8 +284,15 @@ function renderStats() {
   el("vehCount").textContent = VEH_KEYS.length + " " + t("nRecords");
   el("raceCount").textContent = RACE_KEYS.length + " " + t("nRecords");
 
-  /* Uma linha por carro: vWIN e esparso (so quem tem vitoria) e vkDT tem
-     todos, entao cruzamos pelo nome do carro em vez do indice. */
+  /* Uma linha por carro, como a jogo mostra.
+     vWIN e esparso: so grava quem tem pelo menos uma vitoria (21 registros
+     neste save), e os indices sao comprimidos, sem buraco para carro sem
+     vitoria. vkDT nao e esparso: tem um registro por carro (67, um a mais
+     que os 66 nomes do menu).
+     Por isso o cruzamento e pelo nome do carro, nunca pelo indice: usar o
+     indice juntaria "1998 240SX" (vWIN[0]) com "1983 Golf/GTI" (vkDT[0]),
+     que e justamente o carro que nunca venceu. Quem nao aparece em vWIN
+     fica com win: null e o campo sai travado em 0. */
   VEH_ROWS = [];
   var winByCar = {};
   VEH_KEYS.forEach(function (r) {
