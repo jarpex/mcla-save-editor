@@ -589,8 +589,10 @@ assert.strictEqual(typeof careerRecord._on.input, "function",
 if (!real) {
   assert.strictEqual(ttTarget.value, "00:00.00",
     "o alvo lido do save sintetico esta errado");
-  assert.strictEqual(careerRecord.value, "00:00.00",
-    "o recorde lido do save sintetico esta errado");
+  /* O save sintetico nao tem tabela de estatisticas, entao o recorde fica
+     vazio: nao ha linha k:TB para ler. */
+  assert.strictEqual(careerRecord.value, "",
+    "o recorde devia estar vazio sem a tabela de Stats");
 }
 
 // 02:08.54 = 128540 ms, o mesmo tempo do save de referencia
@@ -598,10 +600,11 @@ ttTarget.value = "02:08.54";
 ttTarget._on.input.call(ttTarget);
 assert.strictEqual(ctx.view.getUint32(careerAt + 0x727D), 128540,
   "digitar no alvo nao gravou na tabela de Career");
-assert.strictEqual(ctx.view.getUint32(statsAt + 0x578), 128540,
-  "digitar no alvo nao gravou o recorde em Stats");
-assert.strictEqual(ctx.view.getUint32(statsAt + 0x6A8), 128540,
-  "digitar no alvo nao gravou a copia do recorde");
+/* O alvo mora so em Career: Stats+0x578 e gWIP (total de wipeouts) e nao
+   pode ser tocado, senao a estatistica de queda vai junto. No save real ele
+   guarda 180; o que importa e nao virar 128540. */
+assert.notStrictEqual(ctx.view.getUint32(statsAt + 0x578), 128540,
+  "o alvo invadiu Stats+0x578, que e gWIP");
 
 // o alvo seguinte da tabela nao pode ser tocado (no save sintetico ele e 0)
 if (!real) {
@@ -615,15 +618,16 @@ ttTarget._on.input.call(ttTarget);
 assert.strictEqual(ctx.view.getUint32(careerAt + 0x727D), 128540,
   "um tempo impossivel foi gravado mesmo assim");
 
-// o recorde tem caminho proprio e escreve nas duas copias
-careerRecord.value = "04:15.32";
-careerRecord._on.input.call(careerRecord);
-assert.strictEqual(ctx.view.getUint32(statsAt + 0x578), 255320,
-  "o campo de recorde nao gravou em Stats+0x578");
-assert.strictEqual(ctx.view.getUint32(statsAt + 0x6A8), 255320,
-  "o campo de recorde nao gravou em Stats+0x6A8");
-assert.strictEqual(ctx.view.getUint32(careerAt + 0x727D), 128540,
-  "mudar so o recorde mexeu no alvo da missao");
+// o recorde e uma linha k:TB como as outras quatro
+if (real) {
+  var tb0 = ctx.statValueAt("k:TB", 0);
+  careerRecord.value = "04:15.32";
+  careerRecord._on.input.call(careerRecord);
+  assert.strictEqual(ctx.view.getUint32(tb0), 255320,
+    "o campo de recorde nao gravou na primeira linha k:TB");
+  assert.strictEqual(ctx.view.getUint32(careerAt + 0x727D), 128540,
+    "mudar so o recorde mexeu no alvo da missao");
+}
 
 // ---------- horas de jogo (h:mm) ----------
 // khTC guarda horas fracionarias; a tela mostra h:mm e aceita h:mm de volta.

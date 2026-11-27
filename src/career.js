@@ -36,10 +36,6 @@ el("ttTarget").addEventListener("input", function () {
   var ms = textToMs(this.value);
   if (ms === null) return;
   setU32(car.data + OFF.ttTarget + e.target * OFF.ttTargetStride, ms);
-  if (e.rec !== null) {
-    setU32(st.data + OFF.ttRecord, ms);
-    setU32(st.data + OFF.ttEventRec, ms);
-  }
   mark();
 });
 
@@ -54,21 +50,12 @@ el("ttTarget").addEventListener("input", function () {
 var FMT_LABEL = { int: "hintInt", dec: "hintDec", time: "timeKind", hours: "hintHours" };
 
 var CAREER_RECORDS = [
-  {
-    id: "careerRecord",
-    code: "k:TB",
-    titleKey: "ttHollywood",
-    fmt: "time",
-    read: function () { return msToText(u32(sec("Stats").data + OFF.ttRecord)); },
-    write: function (val) {
-      var ms = textToMs(val);
-      if (ms === null) return false;
-      var st = sec("Stats");
-      setU32(st.data + OFF.ttRecord, ms);
-      setU32(st.data + OFF.ttEventRec, ms);
-      return true;
-    }
-  },
+  /* Os cinco time trials sao o mesmo FourCC (k:TB) em cinco ocorrencias. */
+  { code: "k:TB", occ: 0, id: "careerRecord", titleKey: "ttHollywood", fmt: "time", stat: "k:TB" },
+  { code: "k:TB", occ: 1, titleKey: "ttBeach", fmt: "time", stat: "k:TB" },
+  { code: "k:TB", occ: 2, titleKey: "ttHills", fmt: "time", stat: "k:TB" },
+  { code: "k:TB", occ: 3, titleKey: "ttDowntown", fmt: "time", stat: "k:TB" },
+  { code: "k:TB", occ: 4, titleKey: "ttSouthCentral", fmt: "time", stat: "k:TB" },
   { code: "kCCW", titleKey: "careerMostWins", fmt: "int", stat: "kCCW" },
   { code: "kCWN", titleKey: "careerConsec", fmt: "int", stat: "kCWN" },
   { code: "k2ND", titleKey: "careerSecond", fmt: "int", stat: "k2ND" },
@@ -85,17 +72,33 @@ var CAREER_RECORDS = [
   { code: "kMUW", titleKey: "careerMuscle", fmt: "int", stat: "kMUW" },
   { code: "kTUW", titleKey: "careerTuner", fmt: "int", stat: "kTUW" },
   { code: "kLOW", titleKey: "careerLowrider", fmt: "int", stat: "kLOW" },
+  { code: "kLUW", titleKey: "careerLuxury", fmt: "int", stat: "kLUW" },
+  { code: "kMOW", titleKey: "careerMoto", fmt: "int", stat: "kMOW" },
+  { code: "kMRS", titleKey: "careerMaxRestart", fmt: "int", stat: "kMRS" },
+  { code: "kPDS", titleKey: "careerPayback", fmt: "int", stat: "kPDS" },
+  { code: "kSUW", titleKey: "careerSuv", fmt: "int", stat: "kSUW" },
+  { code: "kEXW", titleKey: "careerExotic", fmt: "int", stat: "kEXW" },
+  { code: "k$CE", titleKey: "careerCash", fmt: "int", stat: "k$CE" },
+  { code: "k%AG", titleKey: "careerPercent", fmt: "int", stat: "k%AG" },
+  { code: "k$WA", occ: 0, titleKey: "careerWagerHollywood", fmt: "int", stat: "k$WA" },
+  { code: "k$WA", occ: 1, titleKey: "careerWagerBeach", fmt: "int", stat: "k$WA" },
+  { code: "k$WA", occ: 2, titleKey: "careerWagerDowntown", fmt: "int", stat: "k$WA" },
+  { code: "k$WA", occ: 3, titleKey: "careerWagerSouthCentral", fmt: "int", stat: "k$WA" },
   { code: "khTC", id: "careerHours", titleKey: "careerHours", fmt: "hours", stat: "khTC" }
 ];
 
 /* Acha a linha de um FourCC na secao Stats e devolve o offset absoluto do
    valor. As linhas tem 16 bytes e comecam no primeiro offset da secao onde
    (offset % 16) == 2, o mesmo calculo de renderStats. */
-function statValueAt(code) {
+function statValueAt(code, occ) {
   var s = sec("Stats");
   var start = s.data + (((2 - (s.data % 16)) % 16) + 16) % 16;
+  var seen = 0;
   for (var o = start; o + 16 <= s.data + s.size; o += 16) {
-    if (ascii(o, 4) === code) return o + 12;
+    if (ascii(o, 4) === code) {
+      if (seen === (occ || 0)) return o + 12;
+      seen++;
+    }
   }
   return -1;
 }
@@ -129,16 +132,26 @@ function textToHours(str) {
 }
 
 function careerRead(rec) {
-  var at = statValueAt(rec.stat);
+  if (rec.read) return rec.read();
+  var at = statValueAt(rec.stat, rec.occ);
   if (at < 0) return "";
+  /* Os cinco time trials guardam milisegundos e a tela mostra mm:ss.cc. */
+  if (rec.fmt === "time") return msToText(u32(at));
   if (rec.fmt === "hours") return hoursToText(view.getFloat32(at));
   if (rec.fmt === "dec") return view.getFloat32(at).toFixed(4);
   return u32(at);
 }
 
 function careerWrite(rec, val) {
-  var at = statValueAt(rec.stat);
+  if (rec.write) return rec.write(val);
+  var at = statValueAt(rec.stat, rec.occ);
   if (at < 0) return false;
+  if (rec.fmt === "time") {
+    var ms = textToMs(val);
+    if (ms === null) return false;
+    setU32(at, ms);
+    return true;
+  }
   if (rec.fmt === "hours") {
     var h = textToHours(val);
     if (h === null) return false;
@@ -202,7 +215,7 @@ function drawCareer(q) {
     inp.type = "text";
     inp.inputMode = "decimal";
     if (rec.id) inp.id = rec.id;
-    inp.value = rec.stat ? careerRead(rec) : rec.read();
+    inp.value = careerRead(rec);
     inp.setAttribute("aria-label", titleText);
 
     row.appendChild(cur);
@@ -217,7 +230,7 @@ function drawCareer(q) {
         this.value = maskTime(this.value, this.dataset.maskPrev);
         this.dataset.maskPrev = this.value;
       }
-      var ok = rec.stat ? careerWrite(rec, this.value) : rec.write(this.value);
+      var ok = careerWrite(rec, this.value);
       if (ok) mark();
     });
 
@@ -225,7 +238,7 @@ function drawCareer(q) {
        "3:15.32" ve "03:15.32". Enquanto digita nao mexo, pra o cursor nao
        pular no meio da edicao. */
     inp.addEventListener("blur", function () {
-      inp.value = rec.stat ? careerRead(rec) : rec.read();
+      inp.value = careerRead(rec);
       inp.dataset.maskPrev = inp.value;
     });
   });
