@@ -58,6 +58,30 @@ function parseClampedInt(raw) {
   return n > MAX_WALLET ? MAX_WALLET : n;
 }
 
+/* Formata o campo do cofrinho: prefixo fixo (o "$" do dinheiro) e separador
+   de milhar. O usuario digita so digitos; a virgula aparece sozinha.
+
+   O caret e reposicionado contando quantos digitos havia antes dele, senao
+   formatar no meio da edicao jogaria o cursor pro fim. */
+function maskWallet(inp, prefix) {
+  var raw = inp.value;
+  var caret = inp.selectionStart == null ? raw.length : inp.selectionStart;
+  var digitsBefore = raw.slice(0, caret).replace(/\D+/g, "").length;
+
+  var digits = raw.replace(/\D+/g, "");
+  var val = parseClampedInt(digits);
+  var body = digits === "" ? "" : nf(val);
+  inp.value = (prefix || "") + body;
+
+  var pos = (prefix || "").length, seen = 0;
+  while (pos < inp.value.length && seen < digitsBefore) {
+    if (/[0-9]/.test(inp.value.charAt(pos))) seen++;
+    pos++;
+  }
+  if (inp.setSelectionRange) inp.setSelectionRange(pos, pos);
+  return val;
+}
+
 function syncWalletControls() {
   var mVal = parseClampedInt(el("money").value);
   var rVal = parseClampedInt(el("rep").value);

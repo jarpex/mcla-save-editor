@@ -715,6 +715,18 @@ input[type="text"], input[type="number"], select {
   color: var(--ink);
   transition: border-color 140ms var(--out), box-shadow 140ms var(--out);
 }
+/* Cofrinho: a tipografia e a mesma do readout da actionbar (display, caixa
+   alta, tabular), com o valor em amarelo. O prefixo "$" e parte do texto. */
+input[type="text"].wallet-in {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+  text-transform: uppercase;
+  color: var(--yellow);
+}
+input[type="text"].wallet-in::placeholder { color: var(--ink-dim); opacity: 0.5; }
 input:hover, select:hover { border-color: var(--edge-bright); }
 input:focus, select:focus {
   border-color: var(--cyan);

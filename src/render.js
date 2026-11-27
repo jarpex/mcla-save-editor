@@ -5,8 +5,8 @@ function render() {
 
   var moneyVal = parseClampedInt(u32(car.data + OFF.money));
   var repVal = parseClampedInt(u32(car.data + OFF.rep));
-  el("money").value = String(moneyVal);
-  el("rep").value = String(repVal);
+  el("money").value = "$" + nf(moneyVal);
+  el("rep").value = nf(repVal);
   syncWalletControls();
 
   el("secCount").textContent = secs.list.length + " " + t("nSections");
@@ -165,14 +165,14 @@ function render() {
   renderCareer();
   renderTimeTrial();
 
-  bindIntField(el("money"), car.data + OFF.money);
-  bindIntField(el("rep"), car.data + OFF.rep);
+  bindIntField(el("money"), car.data + OFF.money, "$");
+  bindIntField(el("rep"), car.data + OFF.rep, "");
 
   document.querySelectorAll("[data-add-money]").forEach(function (btn) {
     btn.onclick = function () {
       var cur = parseClampedInt(el("money").value);
       var next = parseClampedInt(cur + Number(btn.dataset.addMoney));
-      el("money").value = String(next);
+      el("money").value = "$" + nf(next);
       setU32(car.data + OFF.money, next);
       syncWalletControls();
       mark();
@@ -181,7 +181,7 @@ function render() {
   document.querySelectorAll("[data-set-money]").forEach(function (btn) {
     btn.onclick = function () {
       var next = parseClampedInt(btn.dataset.setMoney);
-      el("money").value = String(next);
+      el("money").value = "$" + nf(next);
       setU32(car.data + OFF.money, next);
       syncWalletControls();
       mark();
@@ -191,7 +191,7 @@ function render() {
     btn.onclick = function () {
       var cur = parseClampedInt(el("rep").value);
       var next = parseClampedInt(cur + Number(btn.dataset.addRep));
-      el("rep").value = String(next);
+      el("rep").value = nf(next);
       setU32(car.data + OFF.rep, next);
       syncWalletControls();
       mark();
@@ -200,7 +200,7 @@ function render() {
   document.querySelectorAll("[data-set-rep]").forEach(function (btn) {
     btn.onclick = function () {
       var next = parseClampedInt(btn.dataset.setRep);
-      el("rep").value = String(next);
+      el("rep").value = nf(next);
       setU32(car.data + OFF.rep, next);
       syncWalletControls();
       mark();
@@ -215,7 +215,8 @@ function render() {
   el("status").className = "status";
 }
 
-function bindIntField(inp, offset) {
+/* `prefix` e o texto fixo na frente do numero (o "$" do dinheiro). */
+function bindIntField(inp, offset, prefix) {
   inp.onkeydown = function (e) {
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     var allowed = ["Backspace", "Delete", "Tab", "Escape", "Enter", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"];
@@ -223,16 +224,13 @@ function bindIntField(inp, offset) {
     if (!/^[0-9]$/.test(e.key)) e.preventDefault();
   };
   inp.oninput = function () {
-    var digits = inp.value.replace(/\D+/g, "");
-    var val = parseClampedInt(digits);
-    inp.value = digits === "" ? "" : String(val);
+    var val = maskWallet(inp, prefix);
     setU32(offset, val);
     syncWalletControls();
     mark();
   };
   inp.onblur = function () {
-    var val = parseClampedInt(inp.value);
-    inp.value = String(val);
+    var val = maskWallet(inp, prefix);
     setU32(offset, val);
     syncWalletControls();
     mark();

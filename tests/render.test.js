@@ -305,13 +305,20 @@ assert.strictEqual(typeof rep.oninput, "function",
 assert.strictEqual(typeof money.oninput, "function",
   "render() terminou sem ligar o campo de dinheiro: alguma excecao no meio");
 
+/* Os campos do cofrinho saem formatados: "$1.234" e "2.050". O teste tira o
+   que nao e digito antes de comparar. */
+function plainNum(str) { return Number(String(str).replace(/\D+/g, "")); }
+
 if (!real) {
-  assert.strictEqual(Number(rep.value), 2050, "a rep lida do save esta errada");
-  assert.strictEqual(Number(money.value), 1234, "o dinheiro lido do save esta errado");
+  assert.strictEqual(plainNum(rep.value), 2050, "a rep lida do save esta errada");
+  assert.strictEqual(plainNum(money.value), 1234, "o dinheiro lido do save esta errado");
+  assert.ok(money.value.indexOf("$") === 0, "o dinheiro nao comeca com $");
 }
 
 rep.value = "4242";
 rep.oninput.call(rep);
+/* O separador depende do idioma (pt-BR usa ponto), entao basta ter um. */
+assert.ok(/[^0-9]/.test(rep.value), "a rep nao foi formatada com separador");
 assert.strictEqual(ctx.view.getUint32(careerAt + 0x2E1), 4242,
   "digitar na reputacao nao gravou nos bytes");
 
