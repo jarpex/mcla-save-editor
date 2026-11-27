@@ -90,6 +90,25 @@ var CAREER_RECORDS = [
 /* Acha a linha de um FourCC na secao Stats e devolve o offset absoluto do
    valor. As linhas tem 16 bytes e comecam no primeiro offset da secao onde
    (offset % 16) == 2, o mesmo calculo de renderStats. */
+/* Acha uma linha livre na tabela de Stats e grava o FourCC + tipo nela,
+   devolvendo o offset do valor. A tabela tem 1056 linhas de 16 bytes e a
+   jogo so grava as que usou: num save curto (mc4.sav.tuned) metade das
+   estatisticas de carreira nao tem linha, e sem isso o campo fica vazio e
+   nao aceita nada. */
+function statAlloc(code, isFloat) {
+  var s = sec("Stats");
+  var start = s.data + (((2 - (s.data % 16)) % 16) + 16) % 16;
+  for (var o = start; o + 16 <= s.data + s.size; o += 16) {
+    var k = ascii(o, 4);
+    if (/^[A-Za-z][A-Za-z0-9$%:]{3}$/.test(k)) continue;
+    for (var i = 0; i < 4; i++) bytes[o + i] = code.charCodeAt(i);
+    bytes[o + 8] = isFloat ? 0x28 : 0x29;
+    setU32(o + 12, 0);
+    return o + 12;
+  }
+  return -1;
+}
+
 function statValueAt(code, occ) {
   var s = sec("Stats");
   var start = s.data + (((2 - (s.data % 16)) % 16) + 16) % 16;
@@ -145,6 +164,10 @@ function careerRead(rec) {
 function careerWrite(rec, val) {
   if (rec.write) return rec.write(val);
   var at = statValueAt(rec.stat, rec.occ);
+  /* Sem linha no save (save curto), cria uma livre em vez de recusar. Vale
+     para qualquer ocorrencia: as linhas sao achadas por indice, entao criar
+     a de k:TB 2 funciona desde que a 1 exista. */
+  if (at < 0) at = statAlloc(rec.stat, rec.fmt === "dec");
   if (at < 0) return false;
   if (rec.fmt === "time") {
     var ms = textToMs(val);
