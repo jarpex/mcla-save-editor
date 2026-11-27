@@ -1,3 +1,8 @@
+> [!CAUTION]
+> Everything below is legacy. It is the README of the upstream project this fork came
+> from, kept only as a record of where the work started. The editor has diverged a long
+> way from what that text describes.
+
 # mc4.sav — Midnight Club: Los Angeles save editor
 
 **English** · [Português](README.pt-BR.md)

@@ -1,3 +1,8 @@
+> [!CAUTION]
+> Tudo abaixo é legado. É o README do projeto original de onde este fork saiu, mantido
+> apenas como registro de onde o trabalho começou. O editor já divergiu muito do que
+> esse texto descreve.
+
 # mc4.sav — editor de save do Midnight Club: Los Angeles
 
 [English](README.md) · **Português**
