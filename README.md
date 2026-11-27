@@ -2,8 +2,6 @@
 
 Browser-based save editor and format documentation for **Midnight Club: Los Angeles** (Xbox 360, Complete Edition), as written by the [MC_LA_Recompiled](https://github.com/robertoaraujo77/MC_LA_Recompiled) PC runtime.
 
-![The editor with a save open, showing money, reputation, career progression and the garage slots](og.png)
-
 ## Features
 
 - **Zero build step & 100% client-side**: works directly via `file://` or any static web server (GitHub Pages, Nginx, `python -m http.server`). Nothing is ever uploaded, and the patched `mc4.sav` preserves the exact original byte size.
@@ -36,3 +34,12 @@ Pure binary and data modules are tested directly with Node's built-in test runne
 ```sh
 node --test tests/*.test.js
 ```
+
+## Credits
+
+Based on [onlyzennnn / mcla-save-editor](https://github.com/onlyzennnn/mcla-save-editor), which built upon:
+
+- **[robertoaraujo77 / MC_LA_Recompiled](https://github.com/robertoaraujo77/MC_LA_Recompiled)** - the recompiled PC runtime this work is based on.
+- **holdmysocks** - the original MCLA recompilation, and **RenanQueiroz** for the fork `MC_LA_Recompiled` builds on.
+- **u/leveldock6** - the [r/midnightclub guide](https://www.reddit.com/r/midnightclub/comments/17hht3b/guide_unlocking_the_audi_r8_for_purchase_in_mcla/) that located the Audi R8 lock in `tune/vehicle/0xe94bde63` inside `xarchive_cache.rpf`.
+- **[nicolas-found42 / carmodels#38](https://github.com/nicolas-found42/carmodels/pull/38)** - documented the RPF3 container and Jenkins one-at-a-time name hashing.
