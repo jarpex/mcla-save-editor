@@ -936,6 +936,37 @@ input::placeholder { color: var(--ink-faint); }
 
 /* ---------- Almanac ---------- */
 
+.useful { display: grid; gap: 6px; }
+.useful-table { width: 100%; }
+.useful-table th {
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--row-line);
+  white-space: nowrap;
+}
+.useful-table td {
+  padding: 4px 8px;
+  font-size: 11px;
+  color: var(--ink-dim);
+  white-space: nowrap;
+}
+.useful-table td.mono {
+  font-family: var(--data);
+  color: var(--cyan);
+}
+.useful-table tbody tr:hover td { background: rgba(41, 197, 192, 0.06); }
+.doc-note {
+  margin: 0;
+  padding: 6px 10px;
+  font-size: 11px;
+  color: var(--muted-foreground);
+}
+
 .aln-hint {
   margin: 0 0 8px;
   font-size: 11px;

@@ -12,6 +12,7 @@ function render() {
   /* The Sections tab is the almanac: the old per-section offset tables are
      gone, SECTION_NOTES now only feeds the coverage counter. */
   renderAlmanac();
+  renderUseful();
 
   var opts = '<option value="">- ' + t("empty") + " -</option>";
   ROSTER.forEach(function (n) {
@@ -331,6 +332,31 @@ function almanacNodeHtml(n, depth) {
   return '<div class="aln-node' + (hasKids ? " has-kids" : "") + '">' +
     head + '<div class="aln-body"><div class="aln-inner">' + body +
     "</div></div></div>";
+}
+
+/* Useful Data: the reference tables, one spoiler per table. */
+function renderUseful() {
+  var host = el("useful");
+  if (!host) return;
+  var groups = buildUseful();
+  host.innerHTML = groups.map(function (g) {
+    var head = '<div class="doc-head"><span class="chev">&gt;</span>' +
+      "<span>" + t(g.k) + "</span>" +
+      '<span class="group-count">' + g.rows.length + "</span></div>";
+    var note = g.note ? '<p class="doc-note">' + t(g.note) + "</p>" : "";
+    var cols = g.head.map(function (h) { return "<th>" + t(h) + "</th>"; }).join("");
+    var body = g.rows.map(function (row) {
+      return "<tr>" + row.cells.map(function (c) {
+        return '<td class="' + (c.mono ? "mono" : "") + '">' + c.text + "</td>";
+      }).join("") + "</tr>";
+    }).join("");
+    return '<div class="doc-group">' + head +
+      '<div class="doc-body"><div class="doc-inner">' + note +
+      '<table class="offsets useful-table"><thead><tr>' + cols +
+      "</tr></thead><tbody>" + body + "</tbody></table>" +
+      "</div></div></div>";
+  }).join("");
+  el("useCount").textContent = groups.length + " " + t("alnBlocks");
 }
 
 function renderAlmanac() {
