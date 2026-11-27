@@ -332,6 +332,19 @@
   </div>
 </div>
 
+<!-- Almanac panel -->
+                <div class="panel" data-group="sections">
+                  <header>
+                    <svg class="hdr-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h7v16H4z"/><path d="M13 4h7v16h-7z"/><path d="M7 8h1M7 12h1M16 8h1M16 12h1"/></svg>
+                    <span data-i18n="almanac">Almanaque</span>
+                    <span class="count" id="alnCount"></span>
+                  </header>
+                  <div class="body">
+                    <p class="aln-hint" data-i18n="alnHint">Every byte of the file, in order. Open a block to go deeper.</p>
+                    <div class="almanac" id="almanac"></div>
+                  </div>
+                </div>
+
 <!-- Performance Shop Modal -->
 <div class="shop-backdrop" id="shopModal" hidden role="dialog" aria-modal="true" aria-labelledby="shopTitle">
   <div class="shop-dialog" id="shopDialog" tabindex="-1">
@@ -483,6 +496,7 @@
   <script src="src/preface.js"></script>
   <script src="src/i18n.js"></script>
   <script src="src/data.js"></script>
+  <script src="src/almanac.js"></script>
   <script src="src/core.js"></script>
   <script src="src/garage.js"></script>
   <script src="src/ui.js"></script>

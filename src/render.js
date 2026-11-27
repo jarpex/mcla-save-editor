@@ -56,6 +56,7 @@ function render() {
     }
   });
   el("secBody").innerHTML = rows;
+  renderAlmanac();
 
   var opts = '<option value="">- ' + t("empty") + " -</option>";
   ROSTER.forEach(function (n) {
@@ -330,4 +331,58 @@ function renderCoverage() {
   el("covStats").textContent = named + " / " + STATS.length + " linhas";
   el("covProg").textContent = progTotal() + " \u00d7 65 B";
   el("covUnnamed").textContent = nf(unnamed);
+}
+
+
+/* ---------- Almanac ----------
+
+   The whole file as a tree of blocks. Every node shows its type, its start
+   and its end; a node with children opens into the next level. Unknown
+   ranges are real nodes, so the tree tiles the file with no gaps. */
+
+function almanacType(n) {
+  return n.type ? t(n.type) : "";
+}
+
+function almanacRows(n) {
+  if (!n.rows || !n.rows.length) return "";
+  return '<table class="offsets aln-rows">' + n.rows.map(function (r) {
+    var label = r.k ? t(r.k) : "";
+    /* A generic label would leave the row anonymous, so the offset carries it. */
+    if (label === t("offAppearAt")) label += " · 0x" + r.at.toString(16).toUpperCase();
+    return "<tr><td>0x" + r.at.toString(16).toUpperCase() + "</td>" +
+      "<td>" + r.size + "</td><td>" + (r.type ? t(r.type) : "") + "</td>" +
+      "<td>" + label + "</td></tr>";
+  }).join("") + "</table>";
+}
+
+function almanacNodeHtml(n, depth) {
+  var kids = n.children || [];
+  var hasKids = kids.length > 0;
+  var head = '<div class="aln-head" style="--d:' + depth + '">' +
+    (hasKids ? '<span class="chev">&gt;</span>' : '<span class="chev"></span>') +
+    '<span class="aln-name">' + t(n.k) + "</span>" +
+    '<span class="aln-range">0x' + n.at.toString(16).toUpperCase() +
+    "..0x" + (n.at + n.size).toString(16).toUpperCase() + "</span>" +
+    '<span class="aln-size">' + nf(n.size) + " B</span>" +
+    '<span class="aln-type">' + almanacType(n) + "</span></div>";
+  var body = "";
+  if (n.note) body += '<p class="aln-note">' + t(n.note) + "</p>";
+  body += almanacRows(n);
+  if (hasKids) body += kids.map(function (c) { return almanacNodeHtml(c, depth + 1); }).join("");
+  if (!hasKids && !n.note && !n.rows) {
+    body += '<p class="aln-note">' + t("docUnknownNote") + "</p>";
+  }
+  return '<div class="aln-node' + (hasKids ? " has-kids" : "") + '">' +
+    head + '<div class="aln-body"><div class="aln-inner">' + body +
+    "</div></div></div>";
+}
+
+function renderAlmanac() {
+  var host = el("almanac");
+  if (!host) return;
+  var tree = buildAlmanac();
+  host.innerHTML = tree.map(function (n) { return almanacNodeHtml(n, 0); }).join("");
+  /* The count is the top level only; the nested blocks are one click away. */
+  el("alnCount").textContent = tree.length + " " + t("alnBlocks");
 }

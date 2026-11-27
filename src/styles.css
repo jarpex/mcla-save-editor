@@ -949,6 +949,80 @@ input::placeholder { color: var(--ink-faint); }
   padding: 5px 6px;
 }
 
+/* ---------- Almanac ---------- */
+
+.aln-hint {
+  margin: 0 0 8px;
+  font-size: 11px;
+  color: var(--muted-foreground);
+}
+
+.almanac {
+  display: grid;
+  gap: 4px;
+  font-family: var(--data);
+  font-size: 11.5px;
+}
+
+.aln-node { border: 1px solid var(--row-line); border-radius: 4px; background: #0d1115; }
+.aln-node.has-kids > .aln-head { color: var(--ink); }
+
+.aln-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 9px;
+  cursor: pointer;
+  user-select: none;
+  border-radius: 4px;
+  transition: background 140ms var(--out), color 140ms var(--out);
+}
+.aln-head:hover { background: rgba(41, 197, 192, 0.08); }
+.aln-head .chev {
+  display: inline-block;
+  width: 8px;
+  color: var(--edge);
+  font-size: 9px;
+  line-height: 1;
+  transition: transform 0.14s var(--out), color 0.14s var(--out);
+}
+.aln-node.open > .aln-head .chev { transform: rotate(90deg); color: var(--yellow); }
+
+.aln-name {
+  font-family: var(--display);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--cyan);
+}
+.aln-range { margin-left: auto; color: var(--ink-dim); font-variant-numeric: tabular-nums; }
+.aln-size { color: var(--ink-dim); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.aln-type {
+  min-width: 74px;
+  text-align: right;
+  color: var(--yellow);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.aln-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.22s var(--out);
+}
+.aln-node.open > .aln-body { grid-template-rows: 1fr; }
+.aln-inner { overflow: hidden; min-height: 0; }
+.aln-inner > .aln-node { margin: 4px 6px 4px 14px; }
+
+.aln-note {
+  margin: 0;
+  padding: 6px 10px;
+  font-size: 11px;
+  color: var(--muted-foreground);
+}
+.aln-rows { padding: 0 6px 6px; }
+.aln-rows td:nth-child(3) { color: var(--yellow); white-space: nowrap; }
+
 /* ---------- Garage Slots ---------- */
 
 .garage-tools {

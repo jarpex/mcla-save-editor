@@ -176,9 +176,12 @@ document.addEventListener("click", function (e) {
   /* A group inside an open section is a spoiler of its own. */
   var head = e.target.closest(".doc-head");
   if (head) {
-    var group = head.parentElement;
-    group.classList.toggle("open");
+    head.parentElement.classList.toggle("open");
+    return;
   }
+  /* Almanac nodes nest: only the closest head reacts. */
+  var aln = e.target.closest(".aln-head");
+  if (aln) aln.parentElement.classList.toggle("open");
 });
 
 function pickLang() {
