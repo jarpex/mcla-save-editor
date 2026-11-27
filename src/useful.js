@@ -6,14 +6,22 @@
 
    `buildUseful()` returns groups of rows; renderUseful() draws them. */
 
-/* The class of a car, read off the prefab name. Nothing here is a guess about
-   the game: the name is the only source, so the label says what it saw. */
+/* The class of a car, straight from the game's own vehicle list. A name the
+   list does not carry is "other", and the editor still shows it. */
 function usefulClass(car) {
-  if (MOTO[car]) return "usefulMoto";
-  if (/police|chp|plc/.test(car)) return "usefulPolice";
-  if (/citybus/.test(car)) return "usefulBus";
-  if (/_DUB$/.test(car)) return "usefulDub";
-  return "usefulCar";
+  var c = VEHICLE_CLASS[car];
+  return c ? "useful_" + c[0] : "usefulOther";
+}
+
+/* "Group 3" as the game writes it; null when the list has no entry. */
+function usefulGroup(car) {
+  var c = VEHICLE_CLASS[car];
+  return c ? t("usefulGroup") + " " + c[1] : "-";
+}
+
+/* Bikes are the only class the editor treats as motorcycles. */
+function usefulIsBike(car) {
+  return !!(VEHICLE_CLASS[car] && VEHICLE_CLASS[car][0] === "bikes");
 }
 
 /* null means the game data was never collected for that car. */
@@ -118,25 +126,37 @@ function usefulVendorSelect(catIdx) {
 function buildUseful() {
   var groups = [];
 
-  /* Every vehicle the editor knows, in roster order. */
-  var rows = ROSTER.map(function (car) {
+  /* Every vehicle the editor knows, split the way the game splits it: cars
+     first, then bikes. Within each, roster order. */
+  var cars = [], bikes = [];
+  ROSTER.forEach(function (car) {
     var perf = usefulPerf(car);
-    return {
+    var row = {
       cells: [
         { text: car, mono: true },
         { text: CAR_TITLES[car] || "" },
         { text: t(usefulClass(car)) },
+        { text: usefulGroup(car) },
         { text: perf ? usefulRange(car, "accel") : t("usefulNoData") },
         { text: perf ? usefulRange(car, "speed") : t("usefulNoData") },
         { text: perf ? usefulRange(car, "hand") : t("usefulNoData") }
       ]
     };
+    (usefulIsBike(car) ? bikes : cars).push(row);
   });
   groups.push({
     k: "usefulRoster",
     note: "usefulRosterNote",
-    head: ["usefulInternal", "usefulTitle", "usefulClass", "usefulAccel", "usefulSpeed", "usefulHand"],
-    rows: rows
+    head: ["usefulInternal", "usefulTitle", "usefulClass", "usefulGroup",
+           "usefulAccel", "usefulSpeed", "usefulHand"],
+    rows: cars
+  });
+  groups.push({
+    k: "usefulBikes",
+    note: "usefulBikesNote",
+    head: ["usefulInternal", "usefulTitle", "usefulClass", "usefulGroup",
+           "usefulAccel", "usefulSpeed", "usefulHand"],
+    rows: bikes
   });
 
   /* The 13 categories in index order. The third column shows which vehicle

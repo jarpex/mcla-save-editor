@@ -211,6 +211,88 @@ var CAR_TITLES = {
   vp_se_chv_chp_96: "1996 Chevrolet Impala SS Police CHP"
 };
 
+/* The class and group the game itself lists the vehicle under, taken from the
+   in-game vehicle list. `group` is the number in brackets there; a bike is
+   `bikes` and is the only class the editor treats as a motorcycle.
+   A name absent here is "other": the game list has no entry for it. */
+var VEHICLE_CLASS = {
+  vp_vw_golf_83: ["tuners", 1],
+  vp_vw_scirocco_88: ["tuners", 1],
+  vp_nsn_240sx_98: ["tuners", 1],
+  vp_dsn_280z_75: ["tuners", 1],
+  vp_chv_cobalt_05: ["tuners", 2],
+  vp_frd_focus_04: ["tuners", 2],
+  vp_mit_eclipse_99: ["tuners", 2],
+  vp_pon_solstice_06: ["tuners", 2],
+  vp_mzd_rx8_06: ["tuners", 2],
+  vp_mit_3000gt_99: ["tuners", 3],
+  vp_nsn_350z_06: ["tuners", 3],
+  vp_vw_golf_07: ["tuners", 3],
+  vpd_mit_eclipse_09: ["tuners", 3],
+  vp_nsn_skyline_99: ["tuners", 3],
+  vp_mit_evo_06: ["tuners", 3],
+  vp_mzd_rx7_95: ["tuners", 3],
+  vp_aud_rs4_07: ["tuners", 3],
+  vpd_mit_evox_08: ["tuners", 3],
+
+  vp_chv_camaross_69: ["muscle", 2],
+  vp_frd_boss302_69: ["muscle", 2],
+  vp_dge_challenger_70: ["muscle", 2],
+  vp_pon_transam_79: ["muscle", 2],
+  vp_buk_grandnational_87: ["muscle", 2],
+  vp_chv_impala_96: ["muscle", 2],
+  vpd_pon_gto_66: ["muscle", 2],
+  vpd_chv_chevelle_70: ["muscle", 2],
+  vp_frd_mustang_06: ["muscle", 3],
+  vp_chv_camaro_06: ["muscle", 3],
+  vp_dge_charger_06: ["muscle", 3],
+  vp_dge_challenger_06: ["muscle", 3],
+  vp_chv_camaro_06_DUB: ["muscle", 3],
+  vp_dge_challenger_06_DUB: ["muscle", 3],
+  vp_chv_corvettez06_07: ["muscle", 4],
+  vp_sln_s281_06: ["muscle", 4],
+
+  vp_cry_300c_06: ["luxury", 3],
+  vpd_aud_s5_08: ["luxury", 3],
+  vp_mbz_s600_07: ["luxury", 4],
+  vp_mbz_s600_07_DUB: ["luxury", 4],
+  vp_mbz_sl65_07: ["luxury", 4],
+  vpd_cad_xlrv_08: ["luxury", 4],
+  vpd_mbz_clk63amg_08: ["luxury", 4],
+  vpd_mbz_cl65amg_08: ["luxury", 4],
+
+  vp_duc_monster_s4r_07: ["bikes", 2],
+  vp_duc_999r_06: ["bikes", 3],
+  vp_kaw_ninja_zx14_06: ["bikes", 4],
+  vpd_duc_1098_07: ["bikes", 4],
+
+  vp_lam_miura_71: ["exotics", 4],
+  vp_am_vantage_07: ["exotics", 4],
+  vp_aud_r8_08: ["exotics", 4],
+  vpd_am_db9_08: ["exotics", 4],
+  vp_lam_gallardo_06: ["exotics", 4],
+  vp_lam_murcielago_06: ["exotics", 4],
+  vp_lam_murcielago_06_DUB: ["exotics", 4],
+  vp_frd_gt_06: ["exotics", 4],
+  vp_frd_cobra_04: ["exotics", 4],
+  vp_sln_s7_06: ["exotics", 4],
+
+  vpd_chv_belair_55: ["lowriders", 1],
+  vpd_buk_riviera_63: ["lowriders", 2],
+  vpd_chv_impala_64: ["lowriders", 2],
+  vpd_chv_malibu_65: ["lowriders", 2],
+
+  vpd_lr_hse_08: ["suvs", 3],
+  vpd_lr_sport_08: ["suvs", 3],
+
+  vp_chv_police_96: ["police", 2],
+  vp_se_chv_plc_96: ["police", 2],
+  vp_se_chv_chp_96: ["police", 4],
+  vp_se_dge_plc_06: ["police", 3],
+  vp_se_dge_ubp_06: ["police", 3],
+  vp_se_dge_chp_06: ["police", 4]
+};
+
 /* Stock and max performance for the shop bars, per car.
    Shape: { accel: [stock, max], speed: [stock, max], hand: [stock, max] }, 0..100.
    null falls back to DEFAULT_CAR_PERF or DEFAULT_MOTO_PERF. */
