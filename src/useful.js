@@ -16,18 +16,37 @@ function usefulClass(car) {
   return "usefulCar";
 }
 
-/* Stock and max of one performance axis, as the editor shows them. */
-function usefulRange(car, axis) {
-  var p = VEHICLE_PERF_STATS[car];
-  if (!p) p = MOTO[car] ? DEFAULT_MOTO_PERF : DEFAULT_CAR_PERF;
-  var r = p[axis];
-  return r ? r[0] + " \u2192 " + r[1] : "-";
-}
-
+/* null means the game data was never collected for that car. */
 function usefulPerf(car) {
   var p = VEHICLE_PERF_STATS[car];
   if (p === null) return null;
   return p || (MOTO[car] ? DEFAULT_MOTO_PERF : DEFAULT_CAR_PERF);
+}
+
+/* Stock and max of one performance axis, as the editor shows them. */
+function usefulRange(car, axis) {
+  var r = usefulPerf(car)[axis];
+  return r ? r[0] + " \u2192 " + r[1] : "-";
+}
+
+/* The vendor dropdown of one category: stock first, then the collected list.
+   The float written at +0x27 rides along as option data, so picking a vendor
+   shows the number the game would store. */
+function usefulVendorSelect(catIdx) {
+  var v = TUNE_VENDORS[catIdx];
+  if (!v) return { html: '<span class="useful-none">' + t("usefulNone") + "</span>" };
+  var opts = '<option value="0" data-float="' + v.stock.toFixed(4) + '">' +
+    t("usefulStock") + "</option>";
+  v.names.forEach(function (n, i) {
+    var f = v.floats[i];
+    opts += '<option value="' + (i + 1) + '"' +
+      (f != null ? ' data-float="' + f.toFixed(4) + '"' : "") + ">" + n + "</option>";
+  });
+  return {
+    html: '<span class="useful-sel">' +
+      '<select class="useful-select" data-cat="' + catIdx + '">' + opts + "</select>" +
+      '<span class="useful-float">' + v.stock.toFixed(4) + "</span></span>"
+  };
 }
 
 /* ---------- the tables ---------- */
@@ -56,51 +75,31 @@ function buildUseful() {
     rows: rows
   });
 
-  /* The 13 tuning categories and who carries them. */
-  var cats = TUNE_CATS.map(function (name, i) {
-    var v = TUNE_VENDORS[i];
-    return {
+  /* The 13 categories, split by who carries them: a bike has the six in
+     MOTO_CATS, so the rest are cars only. The vendor column is a dropdown
+     where a list exists, plain text where none was collected. */
+  var all = [], carOnly = [];
+  TUNE_CATS.forEach(function (name, i) {
+    var row = {
       cells: [
         { text: String(i) },
         { text: name },
-        { text: t("usefulAllCars") },
-        { text: v ? v.names.length + " " + t("usefulVendors") : t("usefulNone") }
+        usefulVendorSelect(i)
       ]
     };
+    (MOTO_CATS.indexOf(i) >= 0 ? all : carOnly).push(row);
   });
   groups.push({
-    k: "usefulCats",
-    note: "usefulCatsNote",
-    head: ["usefulIdx", "usefulPart", "usefulFits", "usefulVendorCount"],
-    rows: cats
+    k: "usefulCatsAll",
+    note: "usefulCatsAllNote",
+    head: ["usefulIdx", "usefulPart", "usefulVendors"],
+    rows: all
   });
-
-  /* The exhaust vendor list, the only one collected so far. */
-  var ex = TUNE_VENDORS[0];
-  var vrows = [];
-  if (ex) {
-    vrows.push({
-      cells: [
-        { text: "0" },
-        { text: t("usefulStock") },
-        { text: ex.stock.toFixed(4) }
-      ]
-    });
-    ex.names.forEach(function (n, i) {
-      vrows.push({
-        cells: [
-          { text: String(i + 1) },
-          { text: n },
-          { text: ex.floats[i] != null ? ex.floats[i].toFixed(4) : "-" }
-        ]
-      });
-    });
-  }
   groups.push({
-    k: "usefulExhaust",
-    note: "usefulExhaustNote",
-    head: ["usefulIdx", "usefulVendor", "usefulFloat"],
-    rows: vrows
+    k: "usefulCatsCar",
+    note: "usefulCatsCarNote",
+    head: ["usefulIdx", "usefulPart", "usefulVendors"],
+    rows: carOnly
   });
 
   return groups;

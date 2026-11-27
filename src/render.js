@@ -347,7 +347,10 @@ function renderUseful() {
     var cols = g.head.map(function (h) { return "<th>" + t(h) + "</th>"; }).join("");
     var body = g.rows.map(function (row) {
       return "<tr>" + row.cells.map(function (c) {
-        return '<td class="' + (c.mono ? "mono" : "") + '">' + c.text + "</td>";
+        /* A cell is either text or raw markup (the vendor dropdown). */
+        var inner = c.html != null ? c.html
+          : '<span class="' + (c.mono ? "mono" : "") + '">' + c.text + "</span>";
+        return "<td>" + inner + "</td>";
       }).join("") + "</tr>";
     }).join("");
     return '<div class="doc-group">' + head +
@@ -357,6 +360,15 @@ function renderUseful() {
       "</div></div></div>";
   }).join("");
   el("useCount").textContent = groups.length + " " + t("alnBlocks");
+
+  /* Picking a vendor shows the float the game writes at +0x27. */
+  Array.prototype.forEach.call(host.querySelectorAll(".useful-select"), function (sel) {
+    sel.addEventListener("change", function () {
+      var opt = sel.options[sel.selectedIndex];
+      var out = sel.parentNode.querySelector(".useful-float");
+      if (out) out.textContent = opt.getAttribute("data-float") || "-";
+    });
+  });
 }
 
 function renderAlmanac() {
