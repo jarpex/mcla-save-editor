@@ -504,34 +504,19 @@ input { caret-color: var(--cyan); }
   .sections-body { grid-template-columns: minmax(0, 1fr); }
 }
 
-.coverage {
-  border: 1px solid var(--edge);
-  border-radius: 6px;
-  background: #10151a;
-  padding: 14px;
+/* Coverage is a panel of its own, so the panel body carries the grid. */
+.panel[data-group="sections"] > .body {
   display: grid;
   gap: 12px;
   min-width: 0;
 }
-.cov-top {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  flex-wrap: wrap;
-}
 .cov-pct {
   font-family: var(--display);
-  font-size: 30px;
+  font-size: 15px;
   font-weight: 700;
   line-height: 1;
   color: var(--yellow);
-}
-.cov-label {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--muted-foreground);
+  font-variant-numeric: tabular-nums;
 }
 /* Same idea as the performance bars: a back layer shows the most possible
    (teal) and the one on top, lighter, what was already read (cyan). */

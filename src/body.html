@@ -44,7 +44,7 @@
               <span class="chev">&gt;</span><span data-i18n="tabCareer">Carreira &amp; Stats</span>
             </button>
             <button class="tab-btn" type="button" data-tab="sections">
-              <span class="chev">&gt;</span><span data-i18n="tabSections">Almanaque</span>
+              <span class="chev">&gt;</span><span data-i18n="tabSections">Secoes Hex</span>
             </button>
             <span class="tab-hint" data-i18n="tabKeys">Q / E</span>
           </nav>
@@ -153,6 +153,35 @@
 
                 <div class="panel" data-group="sections">
                   <header>
+                    <svg class="hdr-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 19V9"/><path d="M10 19V5"/><path d="M16 19v-7"/><path d="M22 19H2"/></svg>
+                    <span data-i18n="covTitle">cobertura do save</span>
+                    <span class="count cov-pct" id="covPct">0%</span>
+                  </header>
+                  <div class="body">
+                    <div class="cov-bar" aria-hidden="true">
+                      <div class="cov-pot" id="covPot"></div>
+                      <div class="cov-fill" id="covFill"></div>
+                    </div>
+                    <div class="cov-legend">
+                      <span class="cov-key"><i class="cov-dot cov-dot-act"></i><span data-i18n="covAct">procurado</span></span>
+                      <span class="cov-key"><i class="cov-dot cov-dot-pot"></i><span data-i18n="covPot">potencial</span></span>
+                    </div>
+                    <div class="cov-rows">
+                      <div class="cov-row"><span data-i18n="covKnown">campos conhecidos</span><b id="covKnown">0 B</b></div>
+                      <div class="cov-row"><span data-i18n="covContainer">estrutura (cabecalho + secoes)</span><b id="covContainer">0 B</b></div>
+                      <div class="cov-row"><span data-i18n="covUnknown">desconhecido</span><b id="covUnknown">0 B</b></div>
+                      <div class="cov-row"><span data-i18n="covFields">offsets documentados</span><b id="covFields">0</b></div>
+                      <div class="cov-row cov-sub"><span data-i18n="covSlots">slots de carro</span><b id="covSlots">0</b></div>
+                      <div class="cov-row cov-sub"><span data-i18n="covStats">tabela de estatisticas</span><b id="covStats">0 B</b></div>
+                      <div class="cov-row cov-sub"><span data-i18n="covProg">blocos de progressao</span><b id="covProg">0</b></div>
+                      <div class="cov-row cov-sub"><span data-i18n="covUnnamed">linhas sem nome</span><b id="covUnnamed">0</b></div>
+                    </div>
+                    <p class="cov-note" data-i18n="covNote">Contado byte a byte: cada offset da lista vale o seu tamanho.</p>
+                  </div>
+                </div>
+
+                <div class="panel" data-group="sections">
+                  <header>
                     <svg class="hdr-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h7v16H4z"/><path d="M13 4h7v16h-7z"/><path d="M7 8h1M7 12h1M16 8h1M16 12h1"/></svg>
                     <span data-i18n="almanac">Almanaque</span>
                     <span class="count" id="alnCount"></span>
@@ -160,34 +189,8 @@
                   <div class="body">
                     <p class="aln-hint" data-i18n="alnHint">Cada byte do arquivo, em ordem. Abra um bloco para ir mais fundo.</p>
                     <div class="almanac" id="almanac"></div>
-                                        <div class="coverage" id="coverage">
-                      <div class="cov-top">
-                        <span class="cov-pct" id="covPct">0%</span>
-                        <span class="cov-label" data-i18n="covTitle">cobertura do save</span>
-                      </div>
-                      <div class="cov-bar" aria-hidden="true">
-                        <div class="cov-pot" id="covPot"></div>
-                        <div class="cov-fill" id="covFill"></div>
-                      </div>
-                      <div class="cov-legend">
-                        <span class="cov-key"><i class="cov-dot cov-dot-act"></i><span data-i18n="covAct">procurado</span></span>
-                        <span class="cov-key"><i class="cov-dot cov-dot-pot"></i><span data-i18n="covPot">potencial</span></span>
-                      </div>
-                      <div class="cov-rows">
-                        <div class="cov-row"><span data-i18n="covKnown">campos conhecidos</span><b id="covKnown">0 B</b></div>
-                        <div class="cov-row"><span data-i18n="covContainer">estrutura (cabecalho + secoes)</span><b id="covContainer">0 B</b></div>
-                        <div class="cov-row"><span data-i18n="covUnknown">desconhecido</span><b id="covUnknown">0 B</b></div>
-                        <div class="cov-row"><span data-i18n="covFields">offsets documentados</span><b id="covFields">0</b></div>
-                        <div class="cov-row cov-sub"><span data-i18n="covSlots">slots de carro</span><b id="covSlots">0</b></div>
-                        <div class="cov-row cov-sub"><span data-i18n="covStats">tabela de estatisticas</span><b id="covStats">0 B</b></div>
-                        <div class="cov-row cov-sub"><span data-i18n="covProg">blocos de progressao</span><b id="covProg">0</b></div>
-                        <div class="cov-row cov-sub"><span data-i18n="covUnnamed">linhas sem nome</span><b id="covUnnamed">0</b></div>
-                      </div>
-                      <p class="cov-note" data-i18n="covNote">Contado byte a byte: cada offset da lista vale o seu tamanho.</p>
-                    </div>
                   </div>
                 </div>
-              </div>
 
               <div class="col-stack" id="rightCol">
                 <!-- Garage & Wallet right column -->
