@@ -2,7 +2,7 @@
 
 var STATS = [];
 /* Sub-listas por tela do jogo, preenchidas em renderStats. */
-var GAME_KEYS = [], VEH_KEYS = [], RACE_KEYS = [];
+var GAME_KEYS = [], VEH_KEYS = [], RACE_KEYS = [], VEH_ROWS = [];
 
 var STAT_NAMES = {
   /* Game Stats */
@@ -281,6 +281,22 @@ function renderStats() {
   el("vehCount").textContent = VEH_KEYS.length + " " + t("nRecords");
   el("raceCount").textContent = RACE_KEYS.length + " " + t("nRecords");
 
+  /* Uma linha por carro: vWIN e esparso (so quem tem vitoria) e vkDT tem
+     todos, entao cruzamos pelo nome do carro em vez do indice. */
+  VEH_ROWS = [];
+  var winByCar = {};
+  VEH_KEYS.forEach(function (r) {
+    if (r.key === "vWIN") winByCar[WIN_CAR_NAMES[r.occ]] = r;
+  });
+  VEH_KEYS.forEach(function (r) {
+    if (r.key !== "vkDT") return;
+    var car = CAR_ORDER_NAMES[r.occ];
+    /* vkDT tem 67 registros e a lista de nomes do menu tem 66: o ultimo
+       registro nao tem carro e fica de fora. */
+    if (!car) return;
+    VEH_ROWS.push({ car: car, dist: r, win: winByCar[car] || null });
+  });
+
   el("statFilter").oninput = function () { drawStats(this.value); };
   el("vehFilter").oninput = function () { drawVehicles(this.value); };
   el("raceFilter").oninput = function () { drawRaces(this.value); };
@@ -375,13 +391,15 @@ function drawVehicles(q) {
   host.innerHTML = "";
   var shown = 0;
 
-  VEH_KEYS.forEach(function (r) {
-    var label = statName(r);
-    if (q && label.toLowerCase().indexOf(q) === -1) return;
+  /* O jogo mostra uma linha por carro com os dois numeros: vitórias e
+     distância. As duas listas vem de registros diferentes (vWIN so tem
+     quem venceu, vkDT tem todos), VEH_ROWS ja cruzou os dois. */
+  VEH_ROWS.forEach(function (row) {
+    if (q && row.car.toLowerCase().indexOf(q) === -1) return;
     shown++;
 
-    var row = document.createElement("div");
-    row.className = "stat plain";
+    var elRow = document.createElement("div");
+    elRow.className = "stat plain veh";
 
     var cur = document.createElement("span");
     cur.className = "cursor";
@@ -389,31 +407,53 @@ function drawVehicles(q) {
 
     var name = document.createElement("span");
     name.className = "name";
-    name.textContent = label;
+    name.textContent = row.car;
 
-    var kind = document.createElement("span");
-    kind.className = "kind";
-    kind.textContent = t(r.isFloat ? "decimal" : "integer");
+    /* Cada campo leva o seu rotulo curto: sem isso, dois inputs lado a
+       lado nao dizem qual e vitoria e qual e distancia. */
+    var wins = statField(row.win, "vehWins", "integer");
+    var dist = statField(row.dist, "vehDist", "decimal");
 
-    var inp = document.createElement("input");
-    inp.type = "text";
-    inp.inputMode = "decimal";
-    inp.setAttribute("aria-label", t("aValue", r.key));
+    elRow.appendChild(cur);
+    elRow.appendChild(name);
+    elRow.appendChild(wins);
+    elRow.appendChild(dist);
+
+    host.appendChild(elRow);
+  });
+  if (!shown) host.innerHTML = '<p class="empty-note">' + t("noStat") + "</p>";
+}
+
+/* Um campo de stat: rotulo + input, os dois na mesma celula. */
+function statField(r, labelKey, kindKey) {
+  var cell = document.createElement("div");
+  cell.className = "stat-cell";
+
+  var lab = document.createElement("span");
+  lab.className = "cell-label";
+  lab.textContent = t(labelKey);
+
+  var inp = document.createElement("input");
+  inp.type = "text";
+  inp.inputMode = "decimal";
+  inp.setAttribute("aria-label", t(labelKey));
+  if (r) {
     inp.value = statRead(r);
-
-    row.appendChild(cur);
-    row.appendChild(name);
-    row.appendChild(kind);
-    row.appendChild(inp);
-
     inp.addEventListener("input", function () {
       if (statWrite(r, inp.value)) mark();
     });
     inp.addEventListener("blur", function () { inp.value = statRead(r); });
+  } else {
+    /* Carro sem vitoria: o registro nao existe no save (vWIN e esparso),
+       entao mostramos 0 como a jogo faz e travamos o campo. */
+    inp.value = "0";
+    inp.disabled = true;
+    inp.title = t("vehNoWins");
+  }
 
-    host.appendChild(row);
-  });
-  if (!shown) host.innerHTML = '<p class="empty-note">' + t("noStat") + "</p>";
+  cell.appendChild(lab);
+  cell.appendChild(inp);
+  return cell;
 }
 
 /* ---------- Race Stats ---------- */

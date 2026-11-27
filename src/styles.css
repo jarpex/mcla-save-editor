@@ -1613,6 +1613,17 @@ input::placeholder { color: var(--ink-faint); }
 .stat.wide { grid-template-columns: 12px minmax(0, 1fr) 128px; }
 /* cursor, nome, tipo, campo: quatro colunas, sem a coluna de codigo. */
 .stat.plain { grid-template-columns: 12px minmax(0, 1fr) auto 128px; }
+/* Vehicle Stats: uma linha por carro, dois campos rotulados. */
+.stat.plain.veh { grid-template-columns: 12px minmax(0, 1fr) 108px 128px; }
+.stat-cell { display: grid; gap: 3px; min-width: 0; }
+.stat-cell .cell-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.stat-cell input:disabled { opacity: 0.45; }
 .stat .who { display: grid; gap: 2px; min-width: 0; }
 .stat .who .key {
   font-family: var(--display);
