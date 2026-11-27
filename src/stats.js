@@ -150,8 +150,9 @@ var RACE_NAMES = [
 
 /* As quatro telas de corrida do jogo, na ordem em que aparecem no menu.
    Os indices sao as ocorrencias de r:TI na memoria (a ordem gravada e outra,
-   veja RACE_NAMES). Unordered e Landmark tem uma entrada cada: a tela mostra
-   "NO STATS FOR THIS RACE TYPE" e o save guarda so um registro vazio. */
+   veja RACE_NAMES). Unordered e Landmark ficam vazias: a tela do jogo mostra
+   "NO STATS FOR THIS RACE TYPE" e nao ha registro com nome. As duas entradas
+   sem nome da memoria (45 e 68) vao para Unknown. */
 var RACE_GROUPS = [
   { key: "stRaceOrdered", label: "stRaceOrdered", occ: [
   7,
@@ -226,11 +227,10 @@ var RACE_GROUPS = [
   59
 ]
   },
-  { key: "stRaceUnordered", label: "stRaceUnordered", occ: [
-  45
-]
-  },
-  { key: "stRaceLandmark", label: "stRaceLandmark", occ: [
+  { key: "stRaceUnordered", label: "stRaceUnordered", occ: [] },
+  { key: "stRaceLandmark", label: "stRaceLandmark", occ: [] },
+  { key: "stRaceUnknown", label: "stRaceUnknown", occ: [
+  45,
   68
 ]
   }
@@ -341,9 +341,8 @@ function statName(r) {
            : r.key === "vkDT" ? CAR_ORDER_NAMES
            : null;
   if (list && list[r.occ]) return base + " \u00b7 " + list[r.occ];
-  /* Sem nome proprio (as duas entradas de Unordered/Landmark): a tela do
-     jogo diz "NO STATS FOR THIS RACE TYPE", entao usamos o mesmo texto. */
-  if (r.key === "r:TI" && !list[r.occ]) return base + " \u00b7 " + t("raceNoStats");
+  /* As duas entradas sem nome ficam em Unknown; sem texto proprio, usamos o
+     numero da ocorrencia na memoria. */
   return r.occ ? base + " #" + (r.occ + 1) : base;
 }
 
@@ -578,7 +577,10 @@ function drawRaces(q) {
     }).filter(Boolean);
 
     if (q) rows = rows.filter(function (r) { return statName(r).toLowerCase().indexOf(q) !== -1; });
-    if (!rows.length) return;
+    /* Grupo vazio continua na tela: a jogo mostra "NO STATS FOR THIS RACE
+       TYPE" em vez de esconder a categoria. O filtro e a excecao: se ele
+       nao achou nada, a categoria some como qualquer outra. */
+    if (!rows.length && q) return;
 
     var group = document.createElement("div");
     group.className = "stat-group";
@@ -605,6 +607,13 @@ function drawRaces(q) {
     var inner = document.createElement("div");
     inner.className = "stat-group-inner";
     body.appendChild(inner);
+
+    if (!rows.length) {
+      var note = document.createElement("p");
+      note.className = "empty-note";
+      note.textContent = t("raceNoStats");
+      inner.appendChild(note);
+    }
 
     rows.forEach(function (r) {
       shown++;
