@@ -35,7 +35,7 @@ var CAR_PERF_WEIGHTS = [
 
 /* The stock reference is the 1988 Scirocco: every car is scaled against its
    peak (baseScale = basePeakY / refPeakY, so the Scirocco is exactly 1.0).
-   Real per-vehicle stock curves are not collected yet — when they are, this
+   Real per-vehicle stock curves are not collected yet. Until they are, this
    is the block to replace. */
 var DYNO_CONSTANTS = {
   gridCols: 6,

@@ -69,7 +69,7 @@ function render() {
     var o = slotAt(n);
     var sel = rowEl.querySelector("select");
     var lbl = rowEl.querySelector("input.lbl");
-    /* O carro que estava ali antes: serve de base pro reset da aparencia. */
+    /* The car that was there before: the base for the appearance reset. */
     var prev = readSlot(n).car;
     sel.value = val;
     if (val) {
@@ -78,15 +78,16 @@ function render() {
       writeField(o + OFF.slotLabel, 33, lbl.value);
       writeAppearance(o, val);
     } else {
-      /* Primeiro a aparencia volta ao stock do carro que saiu: so apagar o
-         nome deixa as rodas e o kit do tunado no slot, e o carro seguinte
-         herda isso. Depois sim o slot vira "blank" e o tune zera. */
+      /* First the appearance returns to the stock of the car that left:
+         erasing only the name leaves the tuned wheels and kit in the slot
+         and the next car inherits them. Only then the slot becomes "blank"
+         and the tune zeroes. */
       if (prev) writeAppearance(o, prev);
       writeField(o, 32, "blank");
       lbl.value = "";
       writeField(o + OFF.slotLabel, 33, "");
-      /* Sem isso o slot vazio continua com o tune do carro anterior, e ao
-         colocar outro carro ali o nivel volta junto. */
+      /* Without this an empty slot keeps the previous car's tune, and the
+         level comes back with the next car placed there. */
       clearTune(n);
     }
     rowEl.classList.toggle("filled", !!val);
@@ -166,7 +167,7 @@ function render() {
 
   renderProg();
   renderStats();
-  /* Depois de renderStats: a cobertura conta as linhas nomeadas de Stats. */
+  /* After renderStats: coverage counts the named Stats rows. */
   renderCoverage();
   renderCareer();
   renderTimeTrial();
@@ -221,7 +222,7 @@ function render() {
   el("status").className = "status";
 }
 
-/* `prefix` e o texto fixo na frente do numero (o "$" do dinheiro). */
+/* `prefix` is the fixed text in front of the number (the "$" of money). */
 function bindIntField(inp, offset, prefix) {
   inp.onkeydown = function (e) {
     if (e.ctrlKey || e.metaKey || e.altKey) return;
@@ -243,22 +244,22 @@ function bindIntField(inp, offset, prefix) {
   };
 }
 
-/* ---------- Cobertura do save ----------
+/* ---------- Save coverage ----------
 
-   Conta byte a byte o que o editor entende. Nao da para olhar so a lista de
-   offsets: ela tem campos pontuais, mas o editor le e escreve blocos inteiros,
-   e sao eles que dao quase toda a cobertura.
+   Counts byte by byte what the editor understands. The offset list alone is
+   not enough: it holds single fields, but the editor reads and writes whole
+   blocks, and those give almost all the coverage.
 
-   Cada bloco vale o seu tamanho real:
-     - LocalOptions: o array de slots (8176 bytes cada) mais os 60 bytes de
-       colecionaveis. Dentro do slot o editor mexe em nome, rotulo, tune,
-       aparencia e placa.
-     - Stats: so as linhas que tem nome. Uma linha sem nome (a*, t*, x*) nao
-       aparece em tela e nao da para editar, entao nao conta como entendida.
-     - Career: os 65 bytes de cada bloco de progressao (progCount * 65) mais
-       dinheiro, reputacao e o contador.
-   O que sobra e estrutura do arquivo (8 bytes + cabecalho de cada secao) e
-   o que ninguem mapeou ainda: o miolo de Career e o de LocalOptions. */
+   Each block counts its real size:
+     - LocalOptions: the slot array (8176 bytes each) plus the 60 collectable
+       bytes. Inside a slot the editor touches name, label, tune, appearance
+       and plate.
+     - Stats: only the named rows. An unnamed row (a*, t*, x*) never shows on
+       screen and cannot be edited, so it does not count as understood.
+     - Career: the 65 bytes of each progression block (progCount * 65) plus
+       money, reputation and the counter.
+   What is left is file structure (8 bytes plus each section header) and what
+   nobody mapped yet: the body of Career and of LocalOptions. */
 function renderCoverage() {
   if (!bytes) return;
 
@@ -269,16 +270,15 @@ function renderCoverage() {
   var slotBytes = slots * OFF.slotStride;
   var progBytes = progTotal() * OFF.progStride;
 
-  /* Das 304 linhas de Stats, so contam as que a tela sabe nomear. */
+  /* Of the 304 Stats rows, only the ones the screen can name count. */
   var named = 0, unnamed = 0;
   STATS.forEach(function (r) { if (statName(r)) named++; else unnamed++; });
   var statsBytes = named * 16;
 
   var known = slotBytes + OFF.collectN + statsBytes + progBytes + 12;
-  /* Potencial: a tabela de Stats inteira conta, porque a estrutura dela
-     (linha de 16 bytes, FourCC, tipo, valor) e conhecida; o que falta e o
-     significado das linhas sem nome. A barra mostra os dois: teal atras,
-     cyan na frente. */
+  /* Potential: the whole Stats table counts, because its structure (16-byte
+     row, FourCC, type, value) is known; what is missing is the meaning of
+     the unnamed rows. The bar shows both: teal behind, cyan in front. */
   var potential = known - statsBytes + st.size;
   var fields = 0;
   secs.list.forEach(function (s) {
@@ -286,7 +286,7 @@ function renderCoverage() {
   });
   fields += CAREER_RECORDS.length;
 
-  /* Estrutura: 8 bytes de cabecalho do arquivo + 9 + nome por secao. */
+  /* Structure: 8 bytes of file header plus 9 plus name per section. */
   var container = 8;
   secs.list.forEach(function (s) { container += 9 + s.name.length; });
 

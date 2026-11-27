@@ -246,9 +246,9 @@ var SCHEMATICS = {
       </defs>
 
 
-      <!-- Подсвеченные выпускные коллекторы (Headers) -->
+      <!-- Lit exhaust headers (Headers) -->
       <g filter="url(#headerGlow)">
-        <!-- Внешние мягкие стенки труб -->
+        <!-- Soft outer pipe walls -->
         <g stroke="#29c5c0" stroke-width="2.8" stroke-opacity="0.35">
           <path d="M191.5 37 L191.5 33.4 L209.5 33.4 L209.5 37"></path>
           <line x1="200.5" y1="33.4" x2="200.5" y2="22.8"></line>
@@ -257,15 +257,15 @@ var SCHEMATICS = {
           <line x1="200.5" y1="66.6" x2="200.5" y2="77.2"></line>
         </g>
 
-        <!-- Основной контур 4-в-1 и коллекторные отводы -->
+        <!-- Main 4-1 outline and collector branches -->
         <g stroke="#5ce6e1" stroke-width="1.25">
-          <!-- Верхний коллектор -->
+          <!-- Upper collector -->
           <path d="M190 37 L190 33.8 Q190 31.8 192.2 31.8 L196.6 31.8 Q198.4 31.8 198.6 29.8 L199.1 22.8 Q200.5 22.1 201.9 22.8 L202.4 29.8 Q202.6 31.8 204.4 31.8 L208.8 31.8 Q211 31.8 211 33.8 L211 37 L208.2 37 L208.2 34.8 Q208.2 34.2 207.2 34.2 L193.8 34.2 Q192.8 34.2 192.8 34.8 L192.8 37 Z" fill="url(#headerGrad)"></path>
           <line x1="197.5" y1="37" x2="197.5" y2="34.2" stroke-width="1.35"></line>
           <line x1="203.5" y1="37" x2="203.5" y2="34.2" stroke-width="1.35"></line>
           <line x1="198.9" y1="29.6" x2="202.1" y2="29.6" stroke-width="0.85" stroke-opacity="0.65"></line>
 
-          <!-- Нижний коллектор -->
+          <!-- Lower collector -->
           <path d="M190 63 L190 66.2 Q190 68.2 192.2 68.2 L196.6 68.2 Q198.4 68.2 198.6 70.2 L199.1 77.2 Q200.5 77.9 201.9 77.2 L202.4 70.2 Q202.6 68.2 204.4 68.2 L208.8 68.2 Q211 68.2 211 66.2 L211 63 L208.2 63 L208.2 65.2 Q208.2 65.8 207.2 65.8 L193.8 65.8 Q192.8 65.8 192.8 65.2 L192.8 63 Z" fill="url(#headerGrad)"></path>
           <line x1="197.5" y1="63" x2="197.5" y2="65.8" stroke-width="1.35"></line>
           <line x1="203.5" y1="63" x2="203.5" y2="65.8" stroke-width="1.35"></line>
@@ -290,30 +290,30 @@ var SCHEMATICS = {
       </defs>
 
 
-      <!-- Подсвеченный холодный впуск (Cold air intake) -->
+      <!-- Lit cold air intake (Cold air intake) -->
       <g filter="url(#intakeGlow)">
-        <!-- Внешний мягкий ореол -->
+        <!-- Soft outer halo -->
         <g stroke="#29c5c0" stroke-width="2.8" stroke-opacity="0.35">
           <path d="M188 45 L212.5 45 L212.5 55.5 L209.5 59.5 L194 59.5 L194 53 L188 53 Z"></path>
           <path d="M212.5 55.5 Q218 57.5 223.5 58.6 L233 59.2"></path>
         </g>
 
-        <!-- Основной контур ресивера, патрубка и конусного фильтра -->
+        <!-- Main outline of plenum, pipe and cone filter -->
         <g stroke="#5ce6e1" stroke-width="1.25">
-          <!-- Впускной ресивер и дроссельный узел -->
+          <!-- Intake plenum and throttle body -->
           <path d="M187.5 44.5 L212 44.5 Q213.8 44.5 213.8 46.3 L213.8 54.4 L210.5 59.2 Q209.8 60.2 208.4 60.2 L195.2 60.2 Q193.6 60.2 193.6 58.6 L193.6 53.5 L187.5 53.5 Q186.5 53.5 186.5 52.3 L186.5 45.7 Q186.5 44.5 187.5 44.5 Z" fill="url(#intakeGrad)"></path>
 
-          <!-- Внутренние ребра впускного коллектора -->
+          <!-- Inner ribs of the intake manifold -->
           <line x1="191.5" y1="45.2" x2="191.5" y2="52.8" stroke-width="0.85" stroke-opacity="0.55"></line>
           <line x1="197.5" y1="45.2" x2="197.5" y2="52.8" stroke-width="0.85" stroke-opacity="0.55"></line>
           <line x1="203.5" y1="45.2" x2="203.5" y2="52.8" stroke-width="0.85" stroke-opacity="0.55"></line>
           <line x1="209" y1="45.2" x2="209" y2="52.8" stroke-width="0.85" stroke-opacity="0.55"></line>
           <line x1="194" y1="53.5" x2="212.8" y2="53.5" stroke-width="0.85" stroke-opacity="0.5"></line>
 
-          <!-- Впускной патрубок к передней решетке -->
+          <!-- Intake pipe to the front grille -->
           <path d="M213.6 54.5 Q218.5 56.3 223.2 57.1 L223.2 59.9 Q217.5 59.4 211 58.2 Z" fill="url(#intakeGrad)" stroke-width="1.15"></path>
 
-          <!-- Хомут и конусный фильтр нулевого сопротивления -->
+          <!-- Clamp and low-restriction cone filter -->
           <line x1="223.2" y1="56.8" x2="223.2" y2="60.2" stroke-width="1.4"></line>
           <path d="M223.5 56.9 L232.6 57.9 Q234 58.3 234 59.3 Q234 60.3 232.6 60.6 L223.5 60.1 Z" fill="url(#intakeGrad)" stroke-width="1.2"></path>
           <line x1="226.8" y1="57.4" x2="226.8" y2="60.1" stroke-width="0.75" stroke-opacity="0.6"></line>
@@ -338,16 +338,16 @@ var SCHEMATICS = {
       </defs>
 
 
-      <!-- Подсвеченный контур наддува (Forced induction) -->
+      <!-- Lit forced induction outline (Forced induction) -->
       <g filter="url(#forcedGlow)">
-        <!-- Внешний мягкий ореол магистрали -->
+        <!-- Soft outer halo of the charge pipe -->
         <path d="M188.6 41.2 L188.6 28.4 Q188.6 26.5 190.6 26.5 L217.6 26.5 Q219.9 26.5 219.9 28.6 L219.9 41.2" stroke="#29c5c0" stroke-width="3.2" stroke-opacity="0.34"></path>
 
-        <!-- Объемный пайпинг наддува и корпус компрессора / байпасного узла -->
+        <!-- 3D charge piping and compressor / bypass housing -->
         <g stroke="#5ce6e1" stroke-width="1.2">
           <path d="M187.4 41.2 L187.4 28.2 Q187.4 25.4 190.4 25.4 L195.5 25.4 L196.2 24.7 L206.8 24.7 L207.5 25.4 L217.8 25.4 Q221.1 25.4 221.1 28.4 L221.1 41.2 L218.7 41.2 L218.7 28.8 Q218.7 27.7 217.4 27.7 L207.5 27.7 L206.8 28.3 L196.2 28.3 L195.5 27.7 L190.8 27.7 Q189.8 27.7 189.8 28.8 L189.8 41.2 Z" fill="url(#forcedGrad)"></path>
 
-          <!-- Хомуты утолщенного корпуса и фланцы стыковки с двигателем -->
+          <!-- Clamps on the thick housing and engine mating flanges -->
           <line x1="196.4" y1="24.9" x2="196.4" y2="28.1" stroke-width="0.9" stroke-opacity="0.65"></line>
           <line x1="206.6" y1="24.9" x2="206.6" y2="28.1" stroke-width="0.9" stroke-opacity="0.65"></line>
           <rect x="186.8" y="40.4" width="3.6" height="1.3" rx="0.5" fill="#5ce6e1" stroke="none"></rect>
@@ -372,17 +372,17 @@ var SCHEMATICS = {
       </defs>
 
 
-      <!-- Подсвеченный силовой агрегат (Engine upgrade) -->
+      <!-- Lit engine assembly (Engine upgrade) -->
       <g filter="url(#engineGlow)">
-        <!-- Внешний мягкий ореол блока -->
+        <!-- Soft outer halo of the block -->
         <path d="M186 39.5 Q186 37 189 37 L213 37 Q216 37 217 39.5 L219 42.5 L219 57.5 L217 60.5 Q216 63 213 63 L197 63 L196 64.3 L191.5 64.3 L190.5 63 L189 63 Q186 63 186 60.5 Z" stroke="#29c5c0" stroke-width="2.6" stroke-opacity="0.34"></path>
 
-        <!-- Основной контур двигателя и навесного оборудования -->
+        <!-- Main outline of engine and accessories -->
         <g stroke="#5ce6e1" stroke-width="1.25">
-          <!-- Блок цилиндров с головками и нижним выступом поддона -->
+          <!-- Cylinder block with heads and lower sump lip -->
           <path d="M186 39.5 Q186 37 189 37 L213 37 Q216 37 217 39.5 L219 42.5 L219 57.5 L217 60.5 Q216 63 213 63 L197 63 L196 64.3 L191.5 64.3 L190.5 63 L189 63 Q186 63 186 60.5 Z" fill="url(#engineGrad)"></path>
 
-          <!-- Крышки клапанов и разметка цилиндров -->
+          <!-- Valve covers and cylinder markings -->
           <rect x="190" y="39.5" width="22" height="5" rx="1.5" stroke-width="0.9" stroke-opacity="0.7"></rect>
           <rect x="190" y="55.5" width="22" height="5" rx="1.5" stroke-width="0.9" stroke-opacity="0.7"></rect>
           <line x1="195.5" y1="39.8" x2="195.5" y2="44.2" stroke-width="0.8" stroke-opacity="0.5"></line>
@@ -392,10 +392,10 @@ var SCHEMATICS = {
           <line x1="201" y1="55.8" x2="201" y2="60.2" stroke-width="0.8" stroke-opacity="0.5"></line>
           <line x1="206.5" y1="55.8" x2="206.5" y2="60.2" stroke-width="0.8" stroke-opacity="0.5"></line>
 
-          <!-- Центральная плита развала блока -->
+          <!-- Central block valley plate -->
           <rect x="191" y="46.8" width="20" height="6.4" rx="1.5" stroke-width="0.85" stroke-opacity="0.55"></rect>
 
-          <!-- Передний шкив и лопасти крыльчатки охлаждения -->
+          <!-- Front pulley and cooling fan blades -->
           <path d="M219 46.8 L224.2 43.3 L225 44.6 L221 48.5 Z" fill="url(#engineGrad)" stroke-width="1.05"></path>
           <path d="M219 53.2 L224.2 56.7 L225 55.4 L221 51.5 Z" fill="url(#engineGrad)" stroke-width="1.05"></path>
           <path d="M219 47.6 L223.6 48.6 L223.6 51.4 L219 52.4 Z" fill="url(#engineGrad)" stroke-width="1.1"></path>
@@ -419,20 +419,20 @@ var SCHEMATICS = {
       </defs>
 
 
-      <!-- Подсвеченный контур моторной проводки и блока управления (Electronics) -->
+      <!-- Lit engine wiring and ECU outline (Electronics) -->
       <g filter="url(#electronicsGlow)">
-        <!-- Внешний мягкий ореол жгута -->
+        <!-- Soft outer halo of the harness -->
         <g stroke="#29c5c0" stroke-width="3" stroke-opacity="0.34">
           <path d="M179.5 36.5 L206.5 36.5 L206.5 61.5 L179.5 61.5 Z"></path>
           <line x1="179.5" y1="61.5" x2="179.5" y2="77.2"></line>
         </g>
 
-        <!-- Основной контур проводки и разъемного модуля -->
+        <!-- Main outline of wiring and connector module -->
         <g stroke="#5ce6e1" stroke-width="1.35">
           <path d="M179.5 37.7 Q179.5 36.5 180.7 36.5 L205.3 36.5 Q206.5 36.5 206.5 37.7 L206.5 60.3 Q206.5 61.5 205.3 61.5 L179.5 61.5 Z"></path>
           <line x1="179.5" y1="61.5" x2="179.5" y2="69.2"></line>
 
-          <!-- Т-образный узел разветвления и утолщенный разъем у переднего колеса -->
+          <!-- T-splitter and thick connector by the front wheel -->
           <rect x="178.7" y="60.3" width="1.6" height="2.4" rx="0.6" fill="#5ce6e1" stroke="none"></rect>
           <rect x="178.4" y="69.2" width="2.2" height="8.2" rx="1.1" fill="url(#electronicsGrad)" stroke-width="1.15"></rect>
           <line x1="178.7" y1="71.6" x2="180.3" y2="71.6" stroke-width="0.75" stroke-opacity="0.65"></line>
@@ -456,31 +456,31 @@ var SCHEMATICS = {
       </defs>
 
 
-      <!-- Подсвеченная система закиси азота (Nitrous) -->
+      <!-- Lit nitrous system (Nitrous) -->
       <g filter="url(#nitrousGlow)">
-        <!-- Внешний мягкий ореол баллона и магистрали -->
+        <!-- Soft outer halo of bottle and line -->
         <g stroke="#29c5c0" stroke-width="2.8" stroke-opacity="0.34">
           <path d="M29.5 38 L39.5 38 Q41 38 41 39.5 L41 58.5 Q41 61.5 37.2 62.5 L31.8 62.5 Q28 61.5 28 58.5 L28 39.5 Q28 38 29.5 38 Z"></path>
           <path d="M34.5 62.5 L34.5 76.2 Q34.5 77.5 35.8 77.5 L76 77.5 C79 77.5 80 75.5 83 75.5 L171 75.5 C174 75.5 175 77.5 178 77.5 L196.5 77.5 Q198 77.5 198 76 L198 54.5"></path>
         </g>
 
-        <!-- Основной контур баллона, редуктора и подающей трубки -->
+        <!-- Main outline of bottle, regulator and feed tube -->
         <g stroke="#5ce6e1" stroke-width="1.25">
-          <!-- Баллон в задней части багажника -->
+          <!-- Bottle in the rear of the trunk -->
           <path d="M29.5 38 L39.5 38 Q41 38 41 39.5 L41 58.5 Q41 61.5 37.2 62.5 L31.8 62.5 Q28 61.5 28 58.5 L28 39.5 Q28 38 29.5 38 Z" fill="url(#nitrousGrad)"></path>
 
-          <!-- Крепежные хомуты баллона -->
+          <!-- Bottle mounting straps -->
           <line x1="28.3" y1="44.5" x2="40.7" y2="44.5" stroke-width="0.8" stroke-opacity="0.55"></line>
           <line x1="28.3" y1="54.5" x2="40.7" y2="54.5" stroke-width="0.8" stroke-opacity="0.55"></line>
 
-          <!-- Вентиль и редуктор -->
+          <!-- Valve and regulator -->
           <rect x="33.1" y="62.5" width="2.8" height="5.5" rx="0.8" fill="url(#nitrousGrad)" stroke-width="1.1"></rect>
           <line x1="32.2" y1="65.2" x2="36.8" y2="65.2" stroke-width="0.95"></line>
 
-          <!-- Магистраль вдоль левого порога к впуску двигателя -->
+          <!-- Line along the left sill to the engine intake -->
           <path d="M34.5 68 L34.5 76.2 Q34.5 77.5 35.8 77.5 L76 77.5 C79 77.5 80 75.5 83 75.5 L171 75.5 C174 75.5 175 77.5 178 77.5 L196.5 77.5 Q198 77.5 198 76 L198 54.5"></path>
 
-          <!-- Форсунка / соленоид на входе в двигатель -->
+          <!-- Injector / solenoid at the engine inlet -->
           <circle cx="198" cy="54.5" r="1.2" fill="#5ce6e1" stroke="none"></circle>
         </g>
       </g>
@@ -502,12 +502,12 @@ var SCHEMATICS = {
       </defs>
 
 
-      <!-- Подсвеченный узел сцепления и маховика (Clutch) -->
+      <!-- Lit clutch and flywheel (Clutch) -->
       <g filter="url(#clutchGlow)">
-        <!-- Внешний мягкий ореол -->
+        <!-- Soft outer halo -->
         <rect x="181.4" y="38.8" width="5.2" height="22.4" rx="1.8" stroke="#29c5c0" stroke-width="2.6" stroke-opacity="0.34"></rect>
 
-        <!-- Основной контур корзины сцепления, диска и маховика -->
+        <!-- Main outline of clutch housing, disc and flywheel -->
         <g stroke="#5ce6e1" stroke-width="1.25">
           <rect x="181.4" y="38.8" width="5.2" height="22.4" rx="1.8" fill="url(#clutchGrad)"></rect>
           <line x1="183.2" y1="39.3" x2="183.2" y2="60.7" stroke-width="0.8" stroke-opacity="0.6"></line>
@@ -532,19 +532,19 @@ var SCHEMATICS = {
       </defs>
 
 
-      <!-- Подсвеченная коробка передач и передняя часть карданного вала (Gear kit) -->
+      <!-- Lit gearbox and front driveshaft (Gear kit) -->
       <g filter="url(#gearGlow)">
-        <!-- Внешний мягкий ореол -->
+        <!-- Soft outer halo -->
         <g stroke="#29c5c0" stroke-width="2.6" stroke-opacity="0.34">
           <path d="M185.5 41 L181.5 41 Q178 38.5 174 38.5 Q170.5 38.5 167.5 42.5 L153.5 43.5 L151 45.5 L143.5 46.2 Q140 46.5 137.5 48.5 L134 48.5 L134 51.5 L137.5 51.5 Q140 53.5 143.5 53.8 L151 54.5 L153.5 56.5 L167.5 57.5 Q170.5 61.5 174 61.5 Q178 61.5 181.5 59 L185.5 59 Q186.8 59 186.8 57.5 L186.8 42.5 Q186.8 41 185.5 41 Z"></path>
           <line x1="134" y1="50" x2="115" y2="50" stroke-width="3.2"></line>
         </g>
 
-        <!-- Основной контур картера КПП, хвостовика и вала -->
+        <!-- Main outline of gearbox case, tail and shaft -->
         <g stroke="#5ce6e1" stroke-width="1.25">
           <path d="M185.5 41 L181.5 41 Q178 38.5 174 38.5 Q170.5 38.5 167.5 42.5 L153.5 43.5 L151 45.5 L143.5 46.2 Q140 46.5 137.5 48.5 L134 48.5 L134 51.5 L137.5 51.5 Q140 53.5 143.5 53.8 L151 54.5 L153.5 56.5 L167.5 57.5 Q170.5 61.5 174 61.5 Q178 61.5 181.5 59 L185.5 59 Q186.8 59 186.8 57.5 L186.8 42.5 Q186.8 41 185.5 41 Z" fill="url(#gearGrad)"></path>
 
-          <!-- Внутренние ребра картера, блок шестерен и сервисный порт -->
+          <!-- Inner case ribs, gear block and service port -->
           <line x1="181.5" y1="41.4" x2="181.5" y2="58.6" stroke-width="0.85" stroke-opacity="0.6"></line>
           <line x1="173.5" y1="39.2" x2="173.5" y2="60.8" stroke-width="0.85" stroke-opacity="0.55"></line>
           <line x1="166.5" y1="43" x2="166.5" y2="57" stroke-width="0.8" stroke-opacity="0.5"></line>
@@ -552,7 +552,7 @@ var SCHEMATICS = {
           <line x1="143.5" y1="46.6" x2="143.5" y2="53.4" stroke-width="0.8" stroke-opacity="0.5"></line>
           <circle cx="147.8" cy="48.5" r="0.85" fill="#5ce6e1" stroke="none"></circle>
 
-          <!-- Передняя секция карданного вала до середины туннеля -->
+          <!-- Front driveshaft section to the middle of the tunnel -->
           <rect x="115" y="49.1" width="19" height="1.8" rx="0.9" fill="url(#gearGrad)" stroke-width="1.1"></rect>
         </g>
       </g>
@@ -574,9 +574,9 @@ var SCHEMATICS = {
       </defs>
 
 
-      <!-- Подсвеченная подвеска, стойки, пружины и задний мост (Shocks/Springs) -->
+      <!-- Lit suspension, struts, springs and rear axle (Shocks/Springs) -->
       <g filter="url(#suspGlow)">
-        <!-- Внешний мягкий ореол -->
+        <!-- Soft outer halo -->
         <g stroke="#29c5c0" stroke-width="2.6" stroke-opacity="0.34">
           <path d="M62 17 L68.5 23 L72.5 24.5 L72.5 36.5 L70 41.5 L74 45.5 L74 54.5 L70 58.5 L72.5 63.5 L72.5 75.5 L68.5 77 L62 83 L55.5 77 L50.5 75.5 L52.5 63 L54 50 L52.5 37 L50.5 24.5 L55.5 23 Z"></path>
           <line x1="74" y1="50" x2="115" y2="50" stroke-width="3"></line>
@@ -584,12 +584,12 @@ var SCHEMATICS = {
           <path d="M194 83 L202.5 69.5 L185.5 69.5 Z"></path>
         </g>
 
-        <!-- Основной контур рычагов, амортизаторов, подрамника и редуктора -->
+        <!-- Main outline of arms, dampers, subframe and diff -->
         <g stroke="#5ce6e1" stroke-width="1.2">
-          <!-- Задний подрамник, рычаги и корпус дифференциала с технологическими окнами -->
+          <!-- Rear subframe, arms and diff housing with service windows -->
           <path fill-rule="evenodd" d="M62 16.5 Q63.6 16.5 65 19 L68.5 23 L72.5 24.5 L72.5 36.5 L70 41.5 L74 45.5 L74 54.5 L70 58.5 L72.5 63.5 L72.5 75.5 L68.5 77 L65 81 Q63.6 83.5 62 83.5 Q60.4 83.5 59 81 L55.5 77 L50.5 75.5 L52.5 63 L54 50 L52.5 37 L50.5 24.5 L55.5 23 L59 19 Q60.4 16.5 62 16.5 Z M55 27.5 L60.5 27.5 L60.5 40.5 L56.5 41.5 Z M63.5 27.5 L69.5 27.5 L68.5 39.5 L63.5 40.5 Z M55 72.5 L60.5 72.5 L60.5 59.5 L56.5 58.5 Z M63.5 72.5 L69.5 72.5 L68.5 60.5 L63.5 59.5 Z" fill="url(#suspGrad)"></path>
 
-          <!-- Полуоси, дифференциал и витки задних пружин -->
+          <!-- Halfshafts, diff and rear spring coils -->
           <line x1="62" y1="19.5" x2="62" y2="44" stroke-width="1.25"></line>
           <line x1="62" y1="56" x2="62" y2="80.5" stroke-width="1.25"></line>
           <ellipse cx="64.5" cy="50" rx="5.5" ry="4.5" stroke-width="0.95" stroke-opacity="0.7"></ellipse>
@@ -598,16 +598,16 @@ var SCHEMATICS = {
           <line x1="67" y1="75.4" x2="70.5" y2="75.4" stroke-width="0.85" stroke-opacity="0.7"></line>
           <line x1="67" y1="77.2" x2="70.5" y2="77.2" stroke-width="0.85" stroke-opacity="0.7"></line>
 
-          <!-- Задняя секция карданного вала до середины кузова -->
+          <!-- Rear driveshaft section to the middle of the body -->
           <rect x="74" y="49.1" width="41" height="1.8" rx="0.9" fill="url(#suspGrad)" stroke-width="1.1"></rect>
 
-          <!-- Верхняя передняя стойка и треугольный рычаг -->
+          <!-- Upper front strut and wishbone -->
           <path fill-rule="evenodd" d="M194 16.5 Q195.8 16.5 197.2 19.5 L203 29.8 Q203.5 31 202 31 L186 31 Q184.5 31 185 29.8 L190.8 19.5 Q192.2 16.5 194 16.5 Z M192.8 23.2 L188.5 28.8 L192.8 28.8 Z M195.2 23.2 L199.5 28.8 L195.2 28.8 Z" fill="url(#suspGrad)"></path>
           <line x1="194" y1="18.5" x2="194" y2="30.5" stroke-width="1.1"></line>
           <line x1="192.6" y1="22.5" x2="195.4" y2="22.5" stroke-width="0.8" stroke-opacity="0.7"></line>
           <line x1="192.6" y1="25" x2="195.4" y2="25" stroke-width="0.8" stroke-opacity="0.7"></line>
 
-          <!-- Нижняя передняя стойка и треугольный рычаг -->
+          <!-- Lower front strut and wishbone -->
           <path fill-rule="evenodd" d="M194 83.5 Q195.8 83.5 197.2 80.5 L203 70.2 Q203.5 69 202 69 L186 69 Q184.5 69 185 70.2 L190.8 80.5 Q192.2 83.5 194 83.5 Z M192.8 76.8 L188.5 71.2 L192.8 71.2 Z M195.2 76.8 L199.5 71.2 L195.2 71.2 Z" fill="url(#suspGrad)"></path>
           <line x1="194" y1="81.5" x2="194" y2="69.5" stroke-width="1.1"></line>
           <line x1="192.6" y1="77.5" x2="195.4" y2="77.5" stroke-width="0.8" stroke-opacity="0.7"></line>
@@ -632,17 +632,17 @@ var SCHEMATICS = {
       </defs>
 
 
-      <!-- Подсвеченные стабилизаторы поперечной устойчивости (Swaybars) -->
+      <!-- Lit swaybars (Swaybars) -->
       <g filter="url(#swayGlow)">
-        <!-- Внешний мягкий ореол -->
+        <!-- Soft outer halo -->
         <g stroke="#29c5c0" stroke-width="3.2" stroke-opacity="0.34">
           <path d="M55 20 C55.8 23.5 57.4 25.5 57.4 29 C57.4 33 55.6 38 55.6 50 C55.6 62 57.4 67 57.4 71 C57.4 74.5 55.8 76.5 55 80"></path>
           <path d="M192.5 19.5 C193 23 194.5 25.5 194.2 29.5 C193.9 33.5 193.2 38 193.2 50 C193.2 58 193.4 61.5 194.8 64.5 C196.2 67.5 196.2 70.5 194.8 74 C193.8 76.5 193.5 78.5 193.5 80.5"></path>
         </g>
 
-        <!-- Основные торсионные стержни, втулки и стойки стабилизаторов -->
+        <!-- Main torsion bars, bushings and swaybar links -->
         <g stroke="#5ce6e1">
-          <!-- Задний стабилизатор -->
+          <!-- Rear swaybar -->
           <path d="M55 20 C55.8 23.5 57.4 25.5 57.4 29 C57.4 33 55.6 38 55.6 50 C55.6 62 57.4 67 57.4 71 C57.4 74.5 55.8 76.5 55 80" stroke-width="1.65"></path>
           <path d="M55 20 C55.8 23.5 57.4 25.5 57.4 29 C57.4 33 55.6 38 55.6 50 C55.6 62 57.4 67 57.4 71 C57.4 74.5 55.8 76.5 55 80" stroke="#9ef7f4" stroke-width="0.55" stroke-opacity="0.65"></path>
           <rect x="54.5" y="34.5" width="2.4" height="3.2" rx="0.8" fill="url(#swayGrad)" stroke-width="0.95"></rect>
@@ -650,7 +650,7 @@ var SCHEMATICS = {
           <circle cx="55" cy="20" r="1.15" fill="#5ce6e1" stroke="none"></circle>
           <circle cx="55" cy="80" r="1.15" fill="#5ce6e1" stroke="none"></circle>
 
-          <!-- Передний стабилизатор -->
+          <!-- Front swaybar -->
           <path d="M192.5 19.5 C193 23 194.5 25.5 194.2 29.5 C193.9 33.5 193.2 38 193.2 50 C193.2 58 193.4 61.5 194.8 64.5 C196.2 67.5 196.2 70.5 194.8 74 C193.8 76.5 193.5 78.5 193.5 80.5" stroke-width="1.65"></path>
           <path d="M192.5 19.5 C193 23 194.5 25.5 194.2 29.5 C193.9 33.5 193.2 38 193.2 50 C193.2 58 193.4 61.5 194.8 64.5 C196.2 67.5 196.2 70.5 194.8 74 C193.8 76.5 193.5 78.5 193.5 80.5" stroke="#9ef7f4" stroke-width="0.55" stroke-opacity="0.65"></path>
           <rect x="192" y="34.5" width="2.4" height="3.2" rx="0.8" fill="url(#swayGrad)" stroke-width="0.95"></rect>
@@ -677,9 +677,9 @@ var SCHEMATICS = {
       </defs>
 
 
-      <!-- Подсвеченные тормозные диски и суппорты (Brakes) -->
+      <!-- Lit brake discs and calipers (Brakes) -->
       <g filter="url(#brakesGlow)">
-        <!-- Внешний мягкий ореол -->
+        <!-- Soft outer halo -->
         <g stroke="#29c5c0" stroke-width="2.4" stroke-opacity="0.34">
           <path d="M50.5 16.2 Q50.5 15.3 51.5 15.3 L57.5 15.3 Q58.3 15.3 58.6 16.3 L72 16.3 Q73 16.3 73 17.5 Q73 18.7 72 18.7 L58.6 18.7 Q58.3 20.3 57.2 20.3 L51.5 20.3 Q50.5 20.3 50.5 19.3 Z"></path>
           <path d="M50.5 83.8 Q50.5 84.7 51.5 84.7 L57.5 84.7 Q58.3 84.7 58.6 83.7 L72 83.7 Q73 83.7 73 82.5 Q73 81.3 72 81.3 L58.6 81.3 Q58.3 79.7 57.2 79.7 L51.5 79.7 Q50.5 79.7 50.5 80.7 Z"></path>
@@ -687,30 +687,30 @@ var SCHEMATICS = {
           <path d="M182.5 83.8 Q182.5 84.7 183.5 84.7 L189.5 84.7 Q190.3 84.7 190.6 83.7 L204 83.7 Q205 83.7 205 82.5 Q205 81.3 204 81.3 L190.6 81.3 Q190.3 79.7 189.2 79.7 L183.5 79.7 Q182.5 79.7 182.5 80.7 Z"></path>
         </g>
 
-        <!-- Основные контуры дисков и многопоршневых суппортов -->
+        <!-- Main outlines of discs and multi-piston calipers -->
         <g stroke="#5ce6e1" stroke-width="1.15">
-          <!-- Задний правый (верхний) -->
+          <!-- Rear right (upper) -->
           <path d="M50.5 16.2 Q50.5 15.3 51.5 15.3 L57.5 15.3 Q58.3 15.3 58.6 16.3 L72 16.3 Q73 16.3 73 17.5 Q73 18.7 72 18.7 L58.6 18.7 Q58.3 20.3 57.2 20.3 L51.5 20.3 Q50.5 20.3 50.5 19.3 Z" fill="url(#brakesGrad)"></path>
           <line x1="58.2" y1="15.8" x2="58.2" y2="19.6" stroke-width="0.85" stroke-opacity="0.7"></line>
           <line x1="53.5" y1="16.2" x2="53.5" y2="19.4" stroke-width="0.7" stroke-opacity="0.55"></line>
           <line x1="55.8" y1="16.2" x2="55.8" y2="19.4" stroke-width="0.7" stroke-opacity="0.55"></line>
           <line x1="59.2" y1="17.5" x2="71.5" y2="17.5" stroke-width="0.7" stroke-opacity="0.6"></line>
 
-          <!-- Задний левый (нижний) -->
+          <!-- Rear left (lower) -->
           <path d="M50.5 83.8 Q50.5 84.7 51.5 84.7 L57.5 84.7 Q58.3 84.7 58.6 83.7 L72 83.7 Q73 83.7 73 82.5 Q73 81.3 72 81.3 L58.6 81.3 Q58.3 79.7 57.2 79.7 L51.5 79.7 Q50.5 79.7 50.5 80.7 Z" fill="url(#brakesGrad)"></path>
           <line x1="58.2" y1="80.4" x2="58.2" y2="84.2" stroke-width="0.85" stroke-opacity="0.7"></line>
           <line x1="53.5" y1="80.6" x2="53.5" y2="83.8" stroke-width="0.7" stroke-opacity="0.55"></line>
           <line x1="55.8" y1="80.6" x2="55.8" y2="83.8" stroke-width="0.7" stroke-opacity="0.55"></line>
           <line x1="59.2" y1="82.5" x2="71.5" y2="82.5" stroke-width="0.7" stroke-opacity="0.6"></line>
 
-          <!-- Передний правый (верхний) -->
+          <!-- Front right (upper) -->
           <path d="M182.5 16.2 Q182.5 15.3 183.5 15.3 L189.5 15.3 Q190.3 15.3 190.6 16.3 L204 16.3 Q205 16.3 205 17.5 Q205 18.7 204 18.7 L190.6 18.7 Q190.3 20.3 189.2 20.3 L183.5 20.3 Q182.5 20.3 182.5 19.3 Z" fill="url(#brakesGrad)"></path>
           <line x1="190.2" y1="15.8" x2="190.2" y2="19.6" stroke-width="0.85" stroke-opacity="0.7"></line>
           <line x1="185.5" y1="16.2" x2="185.5" y2="19.4" stroke-width="0.7" stroke-opacity="0.55"></line>
           <line x1="187.8" y1="16.2" x2="187.8" y2="19.4" stroke-width="0.7" stroke-opacity="0.55"></line>
           <line x1="191.2" y1="17.5" x2="203.5" y2="17.5" stroke-width="0.7" stroke-opacity="0.6"></line>
 
-          <!-- Передний левый (нижний) -->
+          <!-- Front left (lower) -->
           <path d="M182.5 83.8 Q182.5 84.7 183.5 84.7 L189.5 84.7 Q190.3 84.7 190.6 83.7 L204 83.7 Q205 83.7 205 82.5 Q205 81.3 204 81.3 L190.6 81.3 Q190.3 79.7 189.2 79.7 L183.5 79.7 Q182.5 79.7 182.5 80.7 Z" fill="url(#brakesGrad)"></path>
           <line x1="190.2" y1="80.4" x2="190.2" y2="84.2" stroke-width="0.85" stroke-opacity="0.7"></line>
           <line x1="185.5" y1="80.6" x2="185.5" y2="83.8" stroke-width="0.7" stroke-opacity="0.55"></line>
@@ -736,9 +736,9 @@ var SCHEMATICS = {
       </defs>
 
 
-      <!-- Подсвеченные покрышки (Tires) -->
+      <!-- Lit tires (Tires) -->
       <g filter="url(#tiresGlow)">
-        <!-- Внешний мягкий ореол -->
+        <!-- Soft outer halo -->
         <g stroke="#29c5c0" stroke-width="2.4" stroke-opacity="0.34">
           <rect x="44" y="13" width="36" height="9" rx="3"></rect>
           <rect x="44" y="78" width="36" height="9" rx="3"></rect>
@@ -746,30 +746,30 @@ var SCHEMATICS = {
           <rect x="176" y="78" width="36" height="9" rx="3"></rect>
         </g>
 
-        <!-- Основные контуры шин, протектора и просвечивающих дисков -->
+        <!-- Main outlines of tires, tread and see-through rims -->
         <g stroke="#5ce6e1" stroke-width="1.2">
-          <!-- Задняя правая (верхняя) -->
+          <!-- Rear right (upper) -->
           <rect x="44" y="13" width="36" height="9" rx="3" fill="url(#tiresGrad)"></rect>
           <line x1="46.5" y1="15.2" x2="77.5" y2="15.2" stroke-width="0.65" stroke-opacity="0.45"></line>
           <line x1="46" y1="17.5" x2="78" y2="17.5" stroke-width="0.65" stroke-opacity="0.45"></line>
           <line x1="46.5" y1="19.8" x2="77.5" y2="19.8" stroke-width="0.65" stroke-opacity="0.45"></line>
           <rect x="49" y="15.5" width="26" height="4" rx="1.5" stroke-width="0.75" stroke-opacity="0.35"></rect>
 
-          <!-- Задняя левая (нижняя) -->
+          <!-- Rear left (lower) -->
           <rect x="44" y="78" width="36" height="9" rx="3" fill="url(#tiresGrad)"></rect>
           <line x1="46.5" y1="80.2" x2="77.5" y2="80.2" stroke-width="0.65" stroke-opacity="0.45"></line>
           <line x1="46" y1="82.5" x2="78" y2="82.5" stroke-width="0.65" stroke-opacity="0.45"></line>
           <line x1="46.5" y1="84.8" x2="77.5" y2="84.8" stroke-width="0.65" stroke-opacity="0.45"></line>
           <rect x="49" y="80.5" width="26" height="4" rx="1.5" stroke-width="0.75" stroke-opacity="0.35"></rect>
 
-          <!-- Передняя правая (верхняя) -->
+          <!-- Front right (upper) -->
           <rect x="176" y="13" width="36" height="9" rx="3" fill="url(#tiresGrad)"></rect>
           <line x1="178.5" y1="15.2" x2="209.5" y2="15.2" stroke-width="0.65" stroke-opacity="0.45"></line>
           <line x1="178" y1="17.5" x2="210" y2="17.5" stroke-width="0.65" stroke-opacity="0.45"></line>
           <line x1="178.5" y1="19.8" x2="209.5" y2="19.8" stroke-width="0.65" stroke-opacity="0.45"></line>
           <rect x="181" y="15.5" width="26" height="4" rx="1.5" stroke-width="0.75" stroke-opacity="0.35"></rect>
 
-          <!-- Передняя левая (нижняя) -->
+          <!-- Front left (lower) -->
           <rect x="176" y="78" width="36" height="9" rx="3" fill="url(#tiresGrad)"></rect>
           <line x1="178.5" y1="80.2" x2="209.5" y2="80.2" stroke-width="0.65" stroke-opacity="0.45"></line>
           <line x1="178" y1="82.5" x2="210" y2="82.5" stroke-width="0.65" stroke-opacity="0.45"></line>
@@ -854,7 +854,7 @@ var MOTO_SCHEMATICS = {
       </defs>
 
       <g filter="url(#motoEngineGlow)">
-        <!-- Внешний мягкий ореол силовой установки, радиатора и цепного привода -->
+        <!-- Soft outer halo of powertrain, radiator and chain drive -->
         <g stroke="#29c5c0" stroke-width="2.6" stroke-opacity="0.32">
           <path d="M144.8 33.8 L156.8 32.5 L161.6 36.5 L166.8 42.2 L177.8 39.6 L179.2 41.2 L173.2 63.8 L167.4 62.4 L169.2 54.2 L157.5 56 L160.8 68.6 L153.8 75.5 L125.3 75.5 L120.8 67.5 L121.9 53.3 L139 53.3 Z"></path>
           <path d="M166.2 41.8 L117.4 43.8 L115.2 48.6 L101.2 56.4"></path>
@@ -863,36 +863,36 @@ var MOTO_SCHEMATICS = {
           <line x1="121.5" y1="71.4" x2="80.9" y2="81.7"></line>
         </g>
 
-        <!-- Основной контур двигателя, картера, радиатора и главной передачи -->
+        <!-- Main outline of engine, cases, radiator and final drive -->
         <g stroke="#5ce6e1" stroke-width="1.2">
-          <!-- Верхняя магистраль питания / троса управления под баком -->
+          <!-- Upper feed line / control cables under the tank -->
           <path d="M166.2 41.8 L117.4 43.8 L115.2 48.6 L101.2 56.4" stroke-width="1.25"></path>
 
-          <!-- Крышка ГБЦ и наклонный блок цилиндров -->
+          <!-- Head cover and canted cylinder block -->
           <path d="M144.8 33.8 L156.8 32.5 L161.6 36.5 L159.6 39.2 L143.4 37.6 Z" fill="url(#motoEngineGrad)"></path>
           <path d="M143.4 37.6 L159.6 39.2 L166.8 42.4 L156.4 56 L139 53.3 Z" fill="url(#motoEngineGrad)"></path>
           <line x1="141.9" y1="42" x2="163" y2="45.4" stroke-width="0.85" stroke-opacity="0.65"></line>
           <line x1="140.7" y1="47.1" x2="160.2" y2="50.2" stroke-width="0.85" stroke-opacity="0.65"></line>
 
-          <!-- Картер двигателя и выступ масляного поддона -->
+          <!-- Engine cases and sump lip -->
           <path d="M121.9 53.3 L157.2 55.5 L160.8 68.6 L153.8 75.5 L125.3 75.5 L120.8 67.5 Z" fill="url(#motoEngineGrad)"></path>
 
-          <!-- Выделенный левый отсек сцепления и ведущей звезды -->
+          <!-- Left recess for clutch and drive sprocket -->
           <path d="M121.9 53.3 L139 53.3 L142.4 64.5 L137.4 75.5 L125.3 75.5 L120.8 67.5 Z" fill="url(#motoClutchHousingGrad)" stroke-width="0.95" stroke-opacity="0.8"></path>
 
-          <!-- Крышки картера и генератора -->
+          <!-- Case and generator covers -->
           <circle cx="134.4" cy="65.8" r="7.3" stroke-width="1.05" stroke-opacity="0.85"></circle>
           <circle cx="134.4" cy="65.8" r="2.2" stroke-width="0.8" stroke-opacity="0.65"></circle>
           <circle cx="149.8" cy="65.8" r="5.4" stroke-width="1.05" stroke-opacity="0.85"></circle>
 
-          <!-- Радиатор охлаждения и боковой диффузор -->
+          <!-- Cooling radiator and side deflector -->
           <path d="M167.2 42.2 L177.8 39.6 L179.2 41.2 L173.2 63.8 L167.4 62.4 L169.2 54.2 L162.8 53.2 Z" fill="url(#motoEngineGrad)"></path>
           <line x1="173.8" y1="40.6" x2="169.4" y2="62.8" stroke-width="0.8" stroke-opacity="0.65"></line>
           <line x1="171.2" y1="45.5" x2="177.6" y2="46.8" stroke-width="0.7" stroke-opacity="0.5"></line>
           <line x1="169.8" y1="51.2" x2="176.2" y2="52.5" stroke-width="0.7" stroke-opacity="0.5"></line>
           <line x1="168.4" y1="56.8" x2="174.8" y2="58.1" stroke-width="0.7" stroke-opacity="0.5"></line>
 
-          <!-- Приводная цепь и ведомая звезда на заднем колесе -->
+          <!-- Drive chain and driven sprocket at the rear wheel -->
           <line x1="120.8" y1="66.2" x2="80.9" y2="66.9" stroke-width="1.2"></line>
           <line x1="121.5" y1="71.4" x2="80.9" y2="81.7" stroke-width="1.2"></line>
           <circle cx="80.9" cy="74.3" r="7.4" fill="url(#motoEngineGrad)" stroke-width="1.15"></circle>
@@ -921,7 +921,7 @@ var MOTO_SCHEMATICS = {
       </defs>
 
       <g filter="url(#motoEngineGlow)">
-        <!-- Внешний мягкий ореол силовой установки, радиатора и цепного привода -->
+        <!-- Soft outer halo of powertrain, radiator and chain drive -->
         <g stroke="#29c5c0" stroke-width="2.6" stroke-opacity="0.32">
           <path d="M144.8 33.8 L156.8 32.5 L161.6 36.5 L166.8 42.2 L177.8 39.6 L179.2 41.2 L173.2 63.8 L167.4 62.4 L169.2 54.2 L157.5 56 L160.8 68.6 L153.8 75.5 L125.3 75.5 L120.8 67.5 L121.9 53.3 L139 53.3 Z"></path>
           <path d="M166.2 41.8 L117.4 43.8 L115.2 48.6 L101.2 56.4"></path>
@@ -930,36 +930,36 @@ var MOTO_SCHEMATICS = {
           <line x1="121.5" y1="71.4" x2="80.9" y2="81.7"></line>
         </g>
 
-        <!-- Основной контур двигателя, картера, радиатора и главной передачи -->
+        <!-- Main outline of engine, cases, radiator and final drive -->
         <g stroke="#5ce6e1" stroke-width="1.2">
-          <!-- Верхняя магистраль питания / троса управления под баком -->
+          <!-- Upper feed line / control cables under the tank -->
           <path d="M166.2 41.8 L117.4 43.8 L115.2 48.6 L101.2 56.4" stroke-width="1.25"></path>
 
-          <!-- Крышка ГБЦ и наклонный блок цилиндров -->
+          <!-- Head cover and canted cylinder block -->
           <path d="M144.8 33.8 L156.8 32.5 L161.6 36.5 L159.6 39.2 L143.4 37.6 Z" fill="url(#motoEngineGrad)"></path>
           <path d="M143.4 37.6 L159.6 39.2 L166.8 42.4 L156.4 56 L139 53.3 Z" fill="url(#motoEngineGrad)"></path>
           <line x1="141.9" y1="42" x2="163" y2="45.4" stroke-width="0.85" stroke-opacity="0.65"></line>
           <line x1="140.7" y1="47.1" x2="160.2" y2="50.2" stroke-width="0.85" stroke-opacity="0.65"></line>
 
-          <!-- Картер двигателя и выступ масляного поддона -->
+          <!-- Engine cases and sump lip -->
           <path d="M121.9 53.3 L157.2 55.5 L160.8 68.6 L153.8 75.5 L125.3 75.5 L120.8 67.5 Z" fill="url(#motoEngineGrad)"></path>
 
-          <!-- Выделенный левый отсек сцепления и ведущей звезды -->
+          <!-- Left recess for clutch and drive sprocket -->
           <path d="M121.9 53.3 L139 53.3 L142.4 64.5 L137.4 75.5 L125.3 75.5 L120.8 67.5 Z" fill="url(#motoClutchHousingGrad)" stroke-width="0.95" stroke-opacity="0.8"></path>
 
-          <!-- Крышки картера и генератора -->
+          <!-- Case and generator covers -->
           <circle cx="134.4" cy="65.8" r="7.3" stroke-width="1.05" stroke-opacity="0.85"></circle>
           <circle cx="134.4" cy="65.8" r="2.2" stroke-width="0.8" stroke-opacity="0.65"></circle>
           <circle cx="149.8" cy="65.8" r="5.4" stroke-width="1.05" stroke-opacity="0.85"></circle>
 
-          <!-- Радиатор охлаждения и боковой диффузор -->
+          <!-- Cooling radiator and side deflector -->
           <path d="M167.2 42.2 L177.8 39.6 L179.2 41.2 L173.2 63.8 L167.4 62.4 L169.2 54.2 L162.8 53.2 Z" fill="url(#motoEngineGrad)"></path>
           <line x1="173.8" y1="40.6" x2="169.4" y2="62.8" stroke-width="0.8" stroke-opacity="0.65"></line>
           <line x1="171.2" y1="45.5" x2="177.6" y2="46.8" stroke-width="0.7" stroke-opacity="0.5"></line>
           <line x1="169.8" y1="51.2" x2="176.2" y2="52.5" stroke-width="0.7" stroke-opacity="0.5"></line>
           <line x1="168.4" y1="56.8" x2="174.8" y2="58.1" stroke-width="0.7" stroke-opacity="0.5"></line>
 
-          <!-- Приводная цепь и ведомая звезда на заднем колесе -->
+          <!-- Drive chain and driven sprocket at the rear wheel -->
           <line x1="120.8" y1="66.2" x2="80.9" y2="66.9" stroke-width="1.2"></line>
           <line x1="121.5" y1="71.4" x2="80.9" y2="81.7" stroke-width="1.2"></line>
           <circle cx="80.9" cy="74.3" r="7.4" fill="url(#motoEngineGrad)" stroke-width="1.15"></circle>
@@ -988,7 +988,7 @@ var MOTO_SCHEMATICS = {
       </defs>
 
       <g filter="url(#motoEngineGlow)">
-        <!-- Внешний мягкий ореол силовой установки, радиатора и цепного привода -->
+        <!-- Soft outer halo of powertrain, radiator and chain drive -->
         <g stroke="#29c5c0" stroke-width="2.6" stroke-opacity="0.32">
           <path d="M144.8 33.8 L156.8 32.5 L161.6 36.5 L166.8 42.2 L177.8 39.6 L179.2 41.2 L173.2 63.8 L167.4 62.4 L169.2 54.2 L157.5 56 L160.8 68.6 L153.8 75.5 L125.3 75.5 L120.8 67.5 L121.9 53.3 L139 53.3 Z"></path>
           <path d="M166.2 41.8 L117.4 43.8 L115.2 48.6 L101.2 56.4"></path>
@@ -997,36 +997,36 @@ var MOTO_SCHEMATICS = {
           <line x1="121.5" y1="71.4" x2="80.9" y2="81.7"></line>
         </g>
 
-        <!-- Основной контур двигателя, картера, радиатора и главной передачи -->
+        <!-- Main outline of engine, cases, radiator and final drive -->
         <g stroke="#5ce6e1" stroke-width="1.2">
-          <!-- Верхняя магистраль питания / троса управления под баком -->
+          <!-- Upper feed line / control cables under the tank -->
           <path d="M166.2 41.8 L117.4 43.8 L115.2 48.6 L101.2 56.4" stroke-width="1.25"></path>
 
-          <!-- Крышка ГБЦ и наклонный блок цилиндров -->
+          <!-- Head cover and canted cylinder block -->
           <path d="M144.8 33.8 L156.8 32.5 L161.6 36.5 L159.6 39.2 L143.4 37.6 Z" fill="url(#motoEngineGrad)"></path>
           <path d="M143.4 37.6 L159.6 39.2 L166.8 42.4 L156.4 56 L139 53.3 Z" fill="url(#motoEngineGrad)"></path>
           <line x1="141.9" y1="42" x2="163" y2="45.4" stroke-width="0.85" stroke-opacity="0.65"></line>
           <line x1="140.7" y1="47.1" x2="160.2" y2="50.2" stroke-width="0.85" stroke-opacity="0.65"></line>
 
-          <!-- Картер двигателя и выступ масляного поддона -->
+          <!-- Engine cases and sump lip -->
           <path d="M121.9 53.3 L157.2 55.5 L160.8 68.6 L153.8 75.5 L125.3 75.5 L120.8 67.5 Z" fill="url(#motoEngineGrad)"></path>
 
-          <!-- Выделенный левый отсек сцепления и ведущей звезды -->
+          <!-- Left recess for clutch and drive sprocket -->
           <path d="M121.9 53.3 L139 53.3 L142.4 64.5 L137.4 75.5 L125.3 75.5 L120.8 67.5 Z" fill="url(#motoClutchHousingGrad)" stroke-width="0.95" stroke-opacity="0.8"></path>
 
-          <!-- Крышки картера и генератора -->
+          <!-- Case and generator covers -->
           <circle cx="134.4" cy="65.8" r="7.3" stroke-width="1.05" stroke-opacity="0.85"></circle>
           <circle cx="134.4" cy="65.8" r="2.2" stroke-width="0.8" stroke-opacity="0.65"></circle>
           <circle cx="149.8" cy="65.8" r="5.4" stroke-width="1.05" stroke-opacity="0.85"></circle>
 
-          <!-- Радиатор охлаждения и боковой диффузор -->
+          <!-- Cooling radiator and side deflector -->
           <path d="M167.2 42.2 L177.8 39.6 L179.2 41.2 L173.2 63.8 L167.4 62.4 L169.2 54.2 L162.8 53.2 Z" fill="url(#motoEngineGrad)"></path>
           <line x1="173.8" y1="40.6" x2="169.4" y2="62.8" stroke-width="0.8" stroke-opacity="0.65"></line>
           <line x1="171.2" y1="45.5" x2="177.6" y2="46.8" stroke-width="0.7" stroke-opacity="0.5"></line>
           <line x1="169.8" y1="51.2" x2="176.2" y2="52.5" stroke-width="0.7" stroke-opacity="0.5"></line>
           <line x1="168.4" y1="56.8" x2="174.8" y2="58.1" stroke-width="0.7" stroke-opacity="0.5"></line>
 
-          <!-- Приводная цепь и ведомая звезда на заднем колесе -->
+          <!-- Drive chain and driven sprocket at the rear wheel -->
           <line x1="120.8" y1="66.2" x2="80.9" y2="66.9" stroke-width="1.2"></line>
           <line x1="121.5" y1="71.4" x2="80.9" y2="81.7" stroke-width="1.2"></line>
           <circle cx="80.9" cy="74.3" r="7.4" fill="url(#motoEngineGrad)" stroke-width="1.15"></circle>
@@ -1082,30 +1082,30 @@ var MOTO_SCHEMATICS = {
       </defs>
 
 
-      <!-- Подсвеченные шины и покрышки (Tires) -->
+      <!-- Lit tires (Tires) -->
       <g filter="url(#motoTiresGlow)">
-        <!-- Внешний мягкий ореол для задней и передней покрышки -->
+        <!-- Soft outer halo for rear and front tire -->
         <g stroke="#29c5c0" stroke-width="2.6" stroke-opacity="0.34">
           <circle cx="80.9" cy="74.3" r="23.4"></circle>
           <circle cx="194.9" cy="74.9" r="22.8"></circle>
         </g>
 
-        <!-- Основные контуры, градиенты и протектор -->
+        <!-- Main outlines, gradients and tread -->
         <g stroke="#5ce6e1">
-          <!-- Заднее колесо -->
+          <!-- Rear wheel -->
           <path d="M80.9 50.9 A23.4 23.4 0 1 0 80.9 97.7 A23.4 23.4 0 1 0 80.9 50.9 M80.9 57 A17.3 17.3 0 1 1 80.9 91.6 A17.3 17.3 0 1 1 80.9 57 Z" fill="url(#motoTiresGrad)" stroke-width="1.2" fill-rule="evenodd"></path>
-          <!-- Канавки протектора -->
+          <!-- Tread grooves -->
           <circle cx="80.9" cy="74.3" r="21.4" stroke-opacity="0.45" stroke-dasharray="1 3.2" stroke-width="0.95"></circle>
           <circle cx="80.9" cy="74.3" r="19.4" stroke-opacity="0.35" stroke-dasharray="1 4" stroke-width="0.85"></circle>
-          <!-- Контур внутреннего обода -->
+          <!-- Inner rim outline -->
           <circle cx="80.9" cy="74.3" r="17.3" stroke-width="1.1"></circle>
 
-          <!-- Переднее колесо -->
+          <!-- Front wheel -->
           <path d="M194.9 52.1 A22.8 22.8 0 1 0 194.9 97.7 A22.8 22.8 0 1 0 194.9 52.1 M194.9 58 A16.9 16.9 0 1 1 194.9 91.8 A16.9 16.9 0 1 1 194.9 58 Z" fill="url(#motoTiresGrad)" stroke-width="1.2" fill-rule="evenodd"></path>
-          <!-- Канавки протектора -->
+          <!-- Tread grooves -->
           <circle cx="194.9" cy="74.9" r="20.8" stroke-opacity="0.45" stroke-dasharray="1 3.2" stroke-width="0.95"></circle>
           <circle cx="194.9" cy="74.9" r="18.9" stroke-opacity="0.35" stroke-dasharray="1 4" stroke-width="0.85"></circle>
-          <!-- Контур внутреннего обода -->
+          <!-- Inner rim outline -->
           <circle cx="194.9" cy="74.9" r="16.9" stroke-width="1.1"></circle>
         </g>
       </g>

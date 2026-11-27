@@ -23,9 +23,9 @@ function writeField(at, width, text) {
   }
 }
 
-/* Grades os bytes de aparencia (rodas e detalhes) que a jogo escreve quando
-   voce compra o carro. Sem isso o carro novo herda as rodas e o kit do
-   ocupante anterior do slot. */
+/* Writes the appearance bytes (wheels and details) the game sets when you
+   buy a car. Without this a new car inherits the wheels and kit of the
+   slot's previous occupant. */
 function writeAppearance(at, prefab) {
   var preset = STOCK_APPEARANCE[prefab];
   if (!preset) return;

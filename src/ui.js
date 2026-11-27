@@ -1,10 +1,10 @@
-/* Quantos slots cabem na secao. Nao da para usar so a divisao inteira: o
-   ultimo slot pode estar truncado no cauda e ainda assim ser um carro real.
-   Em mc4.sav.COMPLETED a secao tem 29 slots cheios mais 7459 bytes, e o
-   carro 30 (vp_lam_murcielago_06) mora justamente nesse pedaco: nome,
-   rotulo, placa e tune cabem nos primeiros 7459 bytes, so o que falta e o
-   cauda de 717 bytes que o editor nunca le.
-   Por isso o criterio e caber o nome (32 bytes), nao o stride inteiro. */
+/* How many slots fit in the section. Plain integer division is not enough:
+   the last slot can be truncated in the tail and still be a real car.
+   In mc4.sav.COMPLETED the section has 29 full slots plus 7459 bytes, and
+   car 30 (vp_lam_murcielago_06) lives right there: name, label, plate and
+   tune fit in the first 7459 bytes, only the 717-byte tail the editor never
+   reads is missing.
+   So the test is that the name (32 bytes) fits, not the whole stride. */
 function slotCount() {
   var lo = sec("LocalOptions"), n = 0;
   while (OFF.slot0 + (n + 1) * OFF.slotStride <= lo.size) n++;
@@ -12,8 +12,8 @@ function slotCount() {
   return n;
 }
 
-/* A placa fica no stride anterior (OFF.plateStrideBack), e o jogo grava espaco
-   como 0x3E (">"), nao 0x20. */
+/* The plate sits in the previous stride (OFF.plateStrideBack), and the game
+   writes space as 0x3E (">"), not 0x20. */
 function plateAt(n) {
   var at = slotAt(n) - OFF.slotStride * OFF.plateStrideBack + OFF.slotPlate;
   var out = "";
@@ -25,7 +25,7 @@ function plateAt(n) {
   return out;
 }
 
-/* Devolve os 7 codigos de byte da placa: espaco vira 0x3E, como a jogo grava. */
+/* Returns the 7 plate byte codes: space becomes 0x3E, as the game writes. */
 function plateFrom(str) {
   var out = [];
   for (var i = 0; i < 7; i++) out.push(i < str.length ? (str[i] === " " ? 0x3E : str.charCodeAt(i)) : 0);
@@ -58,11 +58,11 @@ function parseClampedInt(raw) {
   return n > MAX_WALLET ? MAX_WALLET : n;
 }
 
-/* Formata o campo do cofrinho: prefixo fixo (o "$" do dinheiro) e separador
-   de milhar. O usuario digita so digitos; a virgula aparece sozinha.
+/* Formats the wallet field: fixed prefix (money's "$") and thousands
+   separator. The user types digits only; the comma appears by itself.
 
-   O caret e reposicionado contando quantos digitos havia antes dele, senao
-   formatar no meio da edicao jogaria o cursor pro fim. */
+   The caret is repositioned by counting the digits before it, or formatting
+   mid-edit would throw the cursor to the end. */
 function maskWallet(inp, prefix) {
   var raw = inp.value;
   var caret = inp.selectionStart == null ? raw.length : inp.selectionStart;

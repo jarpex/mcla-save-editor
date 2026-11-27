@@ -10,20 +10,20 @@ var OFF = {
   slotStride: 8176,
   slotLabel: 32,
   slotPlate: 2186,
-  /* Bloco de aparencia (rodas + detalhes do carro), 12 bytes espalhados:
-     +446,+450,+454,+458, +1734..+1974 em passo 48, +2177..+2178. */
+  /* Appearance block (wheels and body details), 12 scattered bytes:
+     +446,+450,+454,+458, +1734..+1974 step 48, +2177..+2178. */
   appear: [446, 450, 454, 458, 1734, 1782, 1830, 1878, 1926, 1974, 2177, 2178],
-  /* O array de placas comeca um stride antes do slot 0, como o de tune:
-     a placa do slot N esta em slotAt(N) - slotStride + slotPlate. */
+  /* The plate array starts one stride before slot 0, like the tune one:
+     slot N's plate is at slotAt(N) - slotStride + slotPlate. */
   plateStrideBack: 1,
 
   tuneBase: 1293,
   tuneN: 13,
   tuneLv: 95,
   tunePct: 126,
-  /* Uma linha de 13 bytes com o indice do fornecedor de cada categoria e uma
-     tabela de 13 floats (4 bytes cada) com o multiplicador dele. O byte fica
-     em +0x6E e os floats em +0x27. */
+  /* A row of 13 bytes with each category's vendor index and a table of 13
+     floats (4 bytes each) with its multiplier. The bytes sit at +0x6E and
+     the floats at +0x27. */
   tuneVendor: 110,
   tuneVendorF: 0x27,
 
@@ -34,7 +34,7 @@ var OFF = {
   ttTargetStride: 4,
   ttTargetCount: 4,
 
-  /* Colecionaveis: 60 bytes 0/1 em LocalOptions, na ordem do menu
+  /* Collectables: 60 0/1 bytes in LocalOptions, in menu order
      (Hollywood 20, Beach 15, Downtown 15, Hills 10). */
   collect: 0x3DF84,
   collectN: 60
@@ -52,10 +52,10 @@ var SECTION_NOTES = {
     { at: 0x727D, size: 4, k: "offTtTarget" }
   ],
   Stats: [
-    /* A tabela de registros comeca em +0xC (alinhada a 16) e tem uma linha
-       de 16 bytes por FourCC. As linhas de r:TI, vWIN e vkDT nao tem offset
-       fixo: elas andam conforme a quantidade de registros anteriores, entao
-       o editor acha cada uma pelo codigo, nao pela posicao. */
+    /* The record table starts at +0xC (16-aligned) with one 16-byte row per
+       FourCC. The r:TI, vWIN and vkDT rows have no fixed offset: they move
+       with the number of earlier records, so the editor finds each by code,
+       not by position. */
     { at: 0xC, size: 16, k: "offStatRec" },
     { at: 0xC, size: 4, k: "offStatKey" },
     { at: 0x14, size: 1, k: "offStatKind" },
@@ -175,11 +175,9 @@ var CAR_TITLES = {
   vp_se_chv_chp_96: "1996 Chevrolet Impala SS Police CHP"
 };
 
-/* Заготовки стоковых (stock) и максимальных (max) характеристик для полосок
-   в Performance Shop.
-   Формат для каждой машины:
-   { accel: [stock, max], speed: [stock, max], hand: [stock, max] } (значения 0..100).
-   Пока стоит null, используются DEFAULT_CAR_PERF или DEFAULT_MOTO_PERF. */
+/* Stock and max performance for the shop bars, per car.
+   Shape: { accel: [stock, max], speed: [stock, max], hand: [stock, max] }, 0..100.
+   null falls back to DEFAULT_CAR_PERF or DEFAULT_MOTO_PERF. */
 var DEFAULT_CAR_PERF  = { accel: [34, 66], speed: [38, 70], hand: [28, 56] };
 var DEFAULT_MOTO_PERF = { accel: [65, 86], speed: [40, 56], hand: [48, 72] };
 
@@ -257,20 +255,20 @@ var VEHICLE_PERF_STATS = {
 
 
 /* ---------- Stock appearance (wheels + body details) ----------
-   Os 12 bytes que a jogo grava quando voce compra um carro na loja:
-   +446,+450,+454,+458 (4 bytes de detalhes), +1734..+1974 (6 valores,
-   passo 48), +2177..+2178 (diametro das rodas, 2 bytes).
+   The 12 bytes the game writes when you buy a car in the shop:
+   +446,+450,+454,+458 (4 detail bytes), +1734..+1974 (6 values,
+   step 48), +2177..+2178 (wheel diameter, 2 bytes).
 
-   Tirados de saves reais com carros stock (Saves example/stock cars +
-   mc4.sav.COMPLETED). Faltam vp_aud_r8_08 (recompensa do Social Club),
-   vp_chv_police_96 e vp_citybus_07: ninguem tinha esses no save.
-   Sem entrada aqui, o editor nao escreve nada e o carro fica com o
-   bloco do slot anterior.
+   Taken from real saves with stock cars (Saves example/stock cars +
+   mc4.sav.COMPLETED). Missing: vp_aud_r8_08 (Social Club reward),
+   vp_chv_police_96 and vp_citybus_07, which no save had.
+   With no entry here the editor writes nothing and the car keeps the
+   previous slot's block.
 */
-/* Fornecedores por categoria. So o Escape (categoria 0) foi levantado do
-   jogo, e so no nivel 1: cada peca tem um conjunto proprio, os outros 12
-   ainda nao foram dumpados. `floats` e o multiplicador que a jogo grava em
-   tuneVendorF; `stock` e o valor de "sem peca". */
+/* Vendors per category. Only the Escape (category 0) was collected from
+   the game, and only at level 1: each part has its own set, the other 12
+   are not dumped yet. `floats` is the multiplier the game writes to
+   tuneVendorF; `stock` is the "no part" value. */
 var TUNE_VENDORS = {
   0: {
     stock: 0.6789,
@@ -357,7 +355,7 @@ var STOCK_APPEARANCE = {
    move the line up and drop the comment.
 
    Prefab names below are INFERRED from the vp_<maker>_<model>_<yy> pattern and
-   are NOT verified against the game's own vehicle.lst — fix them before use.
+   are NOT verified against the game's own vehicle.lst. Fix them before use.
    The seven a real save confirmed (Bel Air, Riviera, Impala '64, Malibu, GTO,
    Chevelle, Impala SS Police) moved up into ROSTER, with their numbers in
    VEHICLE_PERF_STATS. The save's vp_se_chv_plc_96 is the D-Class $20,000

@@ -15,8 +15,8 @@ function load(file) {
     view = new DataView(r.result);
     secs = p;
     fileName = file.name || "mc4.sav";
-    /* A base da tabela de alvos muda de save para save; recalcula no proximo
-       paintTimeTrial em vez de reaproveitar a do arquivo anterior. */
+    /* The target table base changes from save to save; recompute it on the
+       next paintTimeTrial instead of reusing the previous file's. */
     resetTtBase();
     setFileTag();
     el("empty").hidden = true;

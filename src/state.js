@@ -6,30 +6,30 @@ function msToText(ms) {
   return (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s + "." + (h < 10 ? "0" : "") + h;
 }
 
-/* Mascara de tempo: deixa digitar so numeros e poe os separadores sozinho.
-   A ordem e a mesma do formato canonico (MM:SS.Ms): dois digitos de minuto,
-   dois de segundo, dois de centesimo. "3152" vira "31:52".
-   `prev` e o que a mascara devolveu na ultima tecla: serve para reconhecer
-   a digitacao continuada ("03:01" + "5") sem confundir com um valor colado
-   ou digitado por extenso, que passa intacto. */
+/* Time mask: only digits are typed and the separators appear by themselves.
+   The order matches the canonical format (MM:SS.Ms): two minute digits, two
+   second digits, two hundredth digits. "3152" becomes "31:52".
+   `prev` is what the mask returned on the last key: it tells continued
+   typing ("03:01" then "5") from a pasted or fully typed value, which
+   passes through untouched. */
 function maskTime(str, prev) {
   var raw = String(str == null ? "" : str);
   var digits = raw.replace(/[^0-9]/g, "");
 
-  /* Continuacao da mascara: o texto novo e o anterior mais um digito. */
+  /* Mask continuation: the new text is the old one plus a digit. */
   if (prev && raw.length === prev.length + 1 && raw.indexOf(prev) === 0) {
     return maskDigits(prev.replace(/[^0-9]/g, "") + raw.slice(-1));
   }
   /* Tudo digito: e digitacao limpa, mascara do zero. */
   if (!/[^0-9]/.test(raw)) return maskDigits(digits);
-  /* Tem separador: ou e um tempo valido (colado ou digitado, fica como esta),
-     ou e lixo de proposito, que nao deve ser consertado em silencio. */
+  /* Has a separator: either a valid time (pasted or typed, kept as is) or
+     deliberate garbage, which must not be fixed silently. */
   return raw;
 }
 
-/* Sem padding no meio: com 3 digitos "031" vira "03:1", nao "03:01", senao
-   o quarto digito cairia nos centesimos em vez de fechar os segundos. O
-   formato canonico (com zero a esquerda) volta no blur. */
+/* No padding in the middle: with 3 digits "031" becomes "03:1", not
+   "03:01", or the fourth digit would land in the hundredths instead of
+   closing the seconds. The canonical form (leading zero) returns on blur. */
 function maskDigits(d) {
   if (!d) return "";
   if (d.length > 6) d = d.slice(0, 6);

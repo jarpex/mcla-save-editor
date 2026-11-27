@@ -1,7 +1,7 @@
 // ---------- Collapsible stat panels ----------
-// As cinco telas de tabela (Game/Vehicle/Race/Collectables/Career) comecam
-// so com o cabecalho. Um clique abre a altura com animacao; o estado fica
-// marcado no proprio painel, entao nada de duplicar markup em body.html.
+// The five table screens (Game/Vehicle/Race/Collectables/Career) start with
+// the header only. A click animates the height open; the state lives on the
+// panel itself, so body.html holds no duplicate markup.
 
 (function () {
   var panels = document.querySelectorAll('.panel[data-group="career"]');
@@ -19,8 +19,8 @@
     var head = panel.querySelector("header");
     if (!head) return;
 
-    /* O chevron fica antes do contador, senao o margin-left:auto do
-       contador empurra a seta para a extrema direita. */
+    /* The chevron comes before the counter, or the counter's
+       margin-left:auto pushes the arrow to the far right. */
     var chev = document.createElement("span");
     chev.className = "chev";
     chev.setAttribute("aria-hidden", "true");
@@ -162,7 +162,7 @@ document.querySelectorAll("[data-set-lang]").forEach(function (opt) {
 document.addEventListener("click", function (e) {
   if (!e.target.closest("#langMenu")) closeLangMenu();
 
-  /* Hex Sections: clicar na linha da secao abre os offsets conhecidos. */
+  /* Hex Sections: clicking a section row opens its known offsets. */
   var row = e.target.closest(".sec-row");
   if (row) {
     var detail = el("secBody").querySelector('.sec-detail[data-for="' + row.dataset.sec + '"]');

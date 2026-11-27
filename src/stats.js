@@ -1,7 +1,7 @@
 // ---------- Statistics ----------
 
 var STATS = [];
-/* Sub-listas por tela do jogo, preenchidas em renderStats. */
+/* Sub-lists per game screen, filled by renderStats. */
 var GAME_KEYS = [], VEH_KEYS = [], RACE_KEYS = [], VEH_ROWS = [];
 
 var STAT_NAMES = {
@@ -68,13 +68,13 @@ var STAT_NAMES = {
   "r:TI": "Race Time"
 };
 
-/* ---------- Nomes em ordem de memoria ----------
-   A ordem dos registros repetidos e a que a jogo grava, nao a ordem do
-   menu. Os nomes vem do dump da propria tela de estatisticas.
+/* ---------- Names in memory order ----------
+   Repeated records keep the order the game writes, not the menu order.
+   Names come from a dump of the stats screen itself.
 
-   r:TI tem 69 registros: 67 com nome, 2 sem (unordered/landmark, que a
-   tela mostra como NO STATS). vWIN tem 21: so os carros com vitoria, na
-   ordem do menu. vkDT tem 67: 66 carros do menu + 1 slot extra. */
+   r:TI has 69 records: 67 named, 2 not (unordered/landmark, which the
+   screen shows as NO STATS). vWIN has 21: only cars with a win, in menu
+   order. vkDT has 67: 66 menu cars plus 1 extra slot. */
 
 var RACE_NAMES = [
   "Century Mall",
@@ -148,11 +148,11 @@ var RACE_NAMES = [
   ""
 ];
 
-/* As quatro telas de corrida do jogo, na ordem em que aparecem no menu.
-   Os indices sao as ocorrencias de r:TI na memoria (a ordem gravada e outra,
-   veja RACE_NAMES). Unordered e Landmark ficam vazias: a tela do jogo mostra
-   "NO STATS FOR THIS RACE TYPE" e nao ha registro com nome. As duas entradas
-   sem nome da memoria (45 e 68) vao para Unknown. */
+/* The four race screens, in menu order. The indexes are r:TI occurrences
+   in memory (the written order differs, see RACE_NAMES). Unordered and
+   Landmark stay empty: the game screen shows "NO STATS FOR THIS RACE TYPE"
+   and no record carries a name. The two unnamed memory entries (45 and 68)
+   go to Unknown. */
 var RACE_GROUPS = [
   { key: "stRaceOrdered", label: "stRaceOrdered", occ: [
   7,
@@ -229,8 +229,8 @@ var RACE_GROUPS = [
   },
   { key: "stRaceUnordered", label: "stRaceUnordered", occ: [] },
   { key: "stRaceLandmark", label: "stRaceLandmark", occ: [] },
-  /* Unknown so aparece se tiver alguma linha: e a categoria do que nao
-     deu para reconhecer, entao vazia ela nao diz nada. */
+  /* Unknown shows only when it has a row: it holds what was not
+     recognized, so empty it says nothing. */
   { key: "stRaceUnknown", label: "stRaceUnknown", hideEmpty: true, occ: [
   45,
   68
@@ -238,9 +238,9 @@ var RACE_GROUPS = [
   }
 ];
 
-/* Carros que tem registro em vWIN, na ordem em que a jogo grava (a mesma
-   ordem do menu, so sem os carros que nunca venceram). A lista e esparsa de
-   proposito: nao da para derivar os nomes de CAR_ORDER_NAMES por indice. */
+/* Cars with a vWIN record, in the order the game writes (menu order minus
+   the cars that never won). The list is sparse on purpose: names cannot be
+   derived from CAR_ORDER_NAMES by index. */
 var WIN_CAR_NAMES = [
   "1998 240SX",
   "1969 Camaro RS SS",
@@ -334,7 +334,7 @@ var CAR_ORDER_NAMES = [
   "CHARGER POLICE CHP"
 ];
 
-/* Nome de um registro repetido: a lista de nomes segue a ordem da memoria. */
+/* Name of a repeated record: the name list follows memory order. */
 function statName(r) {
   var base = STAT_NAMES[r.key];
   if (!base) return "";
@@ -342,15 +342,15 @@ function statName(r) {
            : r.key === "vWIN" ? WIN_CAR_NAMES
            : r.key === "vkDT" ? CAR_ORDER_NAMES
            : null;
-  /* Nas corridas o nome proprio basta: a coluna do tipo ja diz "time", e
-     "Race Time · Around Hollywood" so repetia o cabecalho da tabela. */
+  /* For races the name alone is enough: the type column already says
+     "time", and "Race Time Around Hollywood" repeated the header. */
   if (r.key === "r:TI") {
     if (list[r.occ]) return list[r.occ];
     return "#" + (r.occ + 1);
   }
   if (list && list[r.occ]) return base + " \u00b7 " + list[r.occ];
-  /* As duas entradas sem nome ficam em Unknown; sem texto proprio, usamos o
-     numero da ocorrencia na memoria. */
+  /* The two unnamed entries go to Unknown; with no text of their own, the
+     memory occurrence number is used. */
   return r.occ ? base + " #" + (r.occ + 1) : base;
 }
 
@@ -361,8 +361,8 @@ function renderStats() {
   var seen = {};
   for (var o = start; o + 16 <= s.data + s.size; o += 16) {
     var k = ascii(o, 4);
-    /* Aceita $, % e : no codigo: k$CE, k%AG, k:TB e r:TI sao reais e ficavam
-       de fora da regex antiga, que so deixava [A-Za-z0-9]. */
+    /* Accept $, % and : in the code: k$CE, k%AG, k:TB and r:TI are real
+       and the old regex, [A-Za-z0-9] only, dropped them. */
     if (!/^[A-Za-z][A-Za-z0-9$%:]{3}$/.test(k)) continue;
     var kind = bytes[o + 8];
     var occ = seen[k] || 0;
@@ -371,11 +371,11 @@ function renderStats() {
       at: o, key: k, occ: occ,
       isFloat: kind === 0x28 || kind === 0x00,
       isHours: statIsHours({ key: k }),
-      /* r:TI guarda milisegundos; a tela mostra mm:ss.cc como o jogo. */
+      /* r:TI stores milliseconds; the screen shows mm:ss.cc like the game. */
       isTime: k === "r:TI"
     });
   }
-  /* As quatro telas do jogo: cada prefixo de FourCC pertence a uma. */
+  /* The four game screens: each FourCC prefix belongs to one. */
   GAME_KEYS = STATS.filter(function (r) { return r.key.charAt(0) === "g"; });
   VEH_KEYS = STATS.filter(function (r) { return r.key === "vWIN" || r.key === "vkDT"; });
   RACE_KEYS = STATS.filter(function (r) { return r.key === "r:TI"; });
@@ -384,15 +384,15 @@ function renderStats() {
   el("vehCount").textContent = VEH_KEYS.length + " " + t("nRecords");
   el("raceCount").textContent = RACE_KEYS.length + " " + t("nRecords");
 
-  /* Uma linha por carro, como a jogo mostra.
-     vWIN e esparso: so grava quem tem pelo menos uma vitoria (21 registros
-     neste save), e os indices sao comprimidos, sem buraco para carro sem
-     vitoria. vkDT nao e esparso: tem um registro por carro (67, um a mais
-     que os 66 nomes do menu).
-     Por isso o cruzamento e pelo nome do carro, nunca pelo indice: usar o
-     indice juntaria "1998 240SX" (vWIN[0]) com "1983 Golf/GTI" (vkDT[0]),
-     que e justamente o carro que nunca venceu. Quem nao aparece em vWIN
-     fica com win: null e o campo sai travado em 0. */
+  /* One row per car, as the game shows.
+     vWIN is sparse: it writes only cars with at least one win (21 records
+     in this save) and the indexes are packed, with no gap for a car that
+     never won. vkDT is not sparse: one record per car (67, one more than
+     the 66 menu names).
+     So the join is by car name, never by index: by index "1998 240SX"
+     (vWIN[0]) would pair with "1983 Golf/GTI" (vkDT[0]), which is exactly
+     the car that never won. A car absent from vWIN gets win: null and the
+     field stays locked at 0. */
   VEH_ROWS = [];
   var winByCar = {};
   VEH_KEYS.forEach(function (r) {
@@ -401,8 +401,8 @@ function renderStats() {
   VEH_KEYS.forEach(function (r) {
     if (r.key !== "vkDT") return;
     var car = CAR_ORDER_NAMES[r.occ];
-    /* vkDT tem 67 registros e a lista de nomes do menu tem 66: o ultimo
-       registro nao tem carro e fica de fora. */
+    /* vkDT has 67 records and the menu name list has 66: the last record
+       has no car and is dropped. */
     if (!car) return;
     VEH_ROWS.push({ car: car, dist: r, win: winByCar[car] || null });
   });
@@ -450,7 +450,7 @@ function drawStats(q) {
     inp.setAttribute("aria-label", t("aValue", r.key));
     inp.value = statRead(r);
 
-    /* gCOL nao e editavel: a caixa fica travada e o titulo explica por que. */
+    /* gCOL is not editable: the box is locked and the title says why. */
     if (r.key === "gCOL") {
       inp.disabled = true;
       inp.title = t("gColSynced");
@@ -467,7 +467,7 @@ function drawStats(q) {
       if (statWrite(r, inp.value)) mark();
     });
 
-    /* Sair do campo devolve o texto ao formato canonico: "2:5" vira "2:05". */
+    /* Leaving the field returns the text to canonical form: "2:5" becomes "2:05". */
     inp.addEventListener("blur", function () {
       inp.value = statRead(r);
     });
@@ -476,13 +476,13 @@ function drawStats(q) {
   if (!shown) host.innerHTML = '<p class="empty-note">' + t("noStat") + "</p>";
 }
 
-/* ghTC e ghTP guardam horas fracionarias e o jogo mostra h:mm; o resto da
-   lista e numero puro. A conversao fica num lugar so, pra Statistics e Career
-   nao divergirem. */
+/* ghTC and ghTP hold fractional hours and the game shows h:mm; the rest of
+   the list is a plain number. The conversion lives in one place so
+   Statistics and Career never disagree. */
 function statIsHours(r) { return r.key === "ghTC" || r.key === "ghTP"; }
 
 function statRead(r) {
-  /* gCOL e derivado: conta as caixas marcadas, como a tela do jogo. */
+  /* gCOL is derived: it counts the checked boxes, like the game screen. */
   if (r.key === "gCOL") return String(collectFound());
   if (r.isHours) return hoursToText(view.getFloat32(r.at + 12));
   if (r.isTime) return msToText(u32(r.at + 12));
@@ -490,7 +490,7 @@ function statRead(r) {
 }
 
 function statWrite(r, val) {
-  /* gCOL nao se escreve: ele segue as caixas de Collectables. */
+  /* gCOL is never written: it follows the Collectables checkboxes. */
   if (r.key === "gCOL") return false;
   if (r.isTime) {
     var ms = textToMs(val);
@@ -511,7 +511,7 @@ function statWrite(r, val) {
   return true;
 }
 
-/* Mantem gCOL (raw + campo na tela) junto das caixas marcadas. */
+/* Keeps gCOL (raw and on-screen field) in step with the checked boxes. */
 function syncGcol() {
   var r = STATS.filter(function (x) { return x.key === "gCOL"; })[0];
   if (!r) return;
@@ -523,7 +523,7 @@ function syncGcol() {
   if (row) row.querySelector("input").value = String(n);
 }
 
-/* Quantas caixas estao marcadas em LocalOptions. gCOL e a mesma conta. */
+/* How many boxes are checked in LocalOptions. gCOL is the same count. */
 function collectFound() {
   var lo = sec("LocalOptions"), base = lo.data + OFF.collect, c = 0;
   for (var i = 0; i < OFF.collectN; i++) if (bytes[base + i] === 1) c++;
@@ -538,9 +538,9 @@ function drawVehicles(q) {
   host.innerHTML = "";
   var shown = 0;
 
-  /* O jogo mostra uma linha por carro com os dois numeros: vitórias e
-     distância. As duas listas vem de registros diferentes (vWIN so tem
-     quem venceu, vkDT tem todos), VEH_ROWS ja cruzou os dois. */
+  /* One row per car with both numbers: wins and distance. The lists come
+     from different records (vWIN has only winners, vkDT has all cars);
+     VEH_ROWS already joined the two. */
   VEH_ROWS.forEach(function (row) {
     if (q && row.car.toLowerCase().indexOf(q) === -1) return;
     shown++;
@@ -556,8 +556,8 @@ function drawVehicles(q) {
     name.className = "name";
     name.textContent = row.car;
 
-    /* Cada campo leva o seu rotulo curto: sem isso, dois inputs lado a
-       lado nao dizem qual e vitoria e qual e distancia. */
+    /* Each field carries its short label: without it, two side-by-side
+       inputs do not say which is wins and which is distance. */
     var wins = statField(row.win, "vehWins", "integer");
     var dist = statField(row.dist, "vehDist", "decimal");
 
@@ -571,7 +571,7 @@ function drawVehicles(q) {
   if (!shown) host.innerHTML = '<p class="empty-note">' + t("noStat") + "</p>";
 }
 
-/* Um campo de stat: rotulo + input, os dois na mesma celula. */
+/* One stat field: label plus input, both in the same cell. */
 function statField(r, labelKey, kindKey) {
   var cell = document.createElement("div");
   cell.className = "stat-cell";
@@ -591,8 +591,8 @@ function statField(r, labelKey, kindKey) {
     });
     inp.addEventListener("blur", function () { inp.value = statRead(r); });
   } else {
-    /* Carro sem vitoria: o registro nao existe no save (vWIN e esparso),
-       entao mostramos 0 como a jogo faz e travamos o campo. */
+    /* Car with no win: the record does not exist in the save (vWIN is
+       sparse), so 0 is shown as the game does and the field is locked. */
     inp.value = "0";
     inp.disabled = true;
     inp.title = t("vehNoWins");
@@ -605,8 +605,8 @@ function statField(r, labelKey, kindKey) {
 
 /* ---------- Race Stats ---------- */
 
-/* Estado aberto/fechado de cada grupo, sobrevivendo ao filtro (que redesenha
-   a lista inteira). */
+/* Open/closed state of each group, surviving the filter (which redraws the
+   whole list). */
 var RACE_OPEN = {};
 
 function drawRaces(q) {
@@ -615,18 +615,18 @@ function drawRaces(q) {
   host.innerHTML = "";
   var shown = 0;
 
-  /* As quatro telas do menu: Ordered, Circuit, Unordered, Landmark. Cada uma
-     e um spoiler dentro do spoiler do painel: o cabecalho abre e fecha as
-     proprias linhas, igual aos paineis de cima. */
+  /* The four menu screens: Ordered, Circuit, Unordered, Landmark. Each is
+     a spoiler inside the panel spoiler: its header opens and closes its own
+     rows, like the panels above. */
   RACE_GROUPS.forEach(function (g) {
     var rows = g.occ.map(function (occ) {
       return RACE_KEYS.filter(function (r) { return r.occ === occ; })[0];
     }).filter(Boolean);
 
     if (q) rows = rows.filter(function (r) { return statName(r).toLowerCase().indexOf(q) !== -1; });
-    /* Grupo vazio continua na tela: a jogo mostra "NO STATS FOR THIS RACE
-       TYPE" em vez de esconder a categoria. O filtro e a excecao: se ele
-       nao achou nada, a categoria some como qualquer outra. */
+    /* An empty group stays on screen: the game shows "NO STATS FOR THIS
+       RACE TYPE" instead of hiding the category. The filter is the
+       exception: when it finds nothing, the group goes like any other. */
     if (!rows.length && (q || g.hideEmpty)) return;
 
     var group = document.createElement("div");
@@ -646,8 +646,9 @@ function drawRaces(q) {
     head.appendChild(chev);
     head.appendChild(label);
 
-    /* Duas camadas: o grid anima 0fr -> 1fr na externa, a interna esconde o
-       excesso. Com max-height fixo o conteudo cortava (45 linhas nao cabem). */
+    /* Two layers: the outer grid animates 0fr -> 1fr, the inner one hides
+       the overflow. A fixed max-height clipped the content (45 rows do not
+       fit). */
     var body = document.createElement("div");
     body.className = "stat-group-body";
 
@@ -691,10 +692,10 @@ function drawRaces(q) {
       row.appendChild(kind);
       row.appendChild(inp);
 
-      /* A mascara poe ":" e "." sozinha: enquanto digita so numeros, o
-         texto ja sai no formato do jogo. */
+      /* The mask adds ":" and "." itself: typing digits alone already
+         yields the game format. */
       inp.addEventListener("input", function () {
-        /* Poe ":" e "." sozinha enquanto se digita so numeros. */
+        /* Adds ":" and "." while only digits are typed. */
         inp.value = maskTime(inp.value, inp.dataset.maskPrev);
         inp.dataset.maskPrev = inp.value;
         if (statWrite(r, inp.value)) mark();
@@ -711,7 +712,7 @@ function drawRaces(q) {
     group.appendChild(body);
     host.appendChild(group);
 
-    /* O estado vem do mapa, nao do DOM: o filtro recria tudo do zero. */
+    /* State comes from the map, not the DOM: the filter rebuilds from scratch. */
     if (RACE_OPEN[g.key]) group.classList.add("open");
     head.setAttribute("role", "button");
     head.setAttribute("tabindex", "0");
@@ -737,7 +738,7 @@ function drawRaces(q) {
 
 /* ---------- Collectables ---------- */
 
-/* Os 60 bytes ficam em LocalOptions, na ordem do menu: Hollywood 20,
+/* The 60 bytes live in LocalOptions, in menu order: Hollywood 20,
    Beach 15, Downtown 15, Hills 10. */
 var COLLECT_GROUPS = [
   { key: "colHollywood", n: 20, at: 0 },
@@ -746,7 +747,7 @@ var COLLECT_GROUPS = [
   { key: "colHills", n: 10, at: 50 }
 ];
 
-/* Estado aberto/fechado de cada zona, sobrevivendo a redesenho. */
+/* Open/closed state of each zone, surviving a redraw. */
 var COLLECT_OPEN = {};
 
 function drawCollect() {
@@ -757,8 +758,8 @@ function drawCollect() {
   var found = 0;
 
   COLLECT_GROUPS.forEach(function (g) {
-    /* Mesmo spoiler das categorias de corrida: o cabecalho da zona abre e
-       fecha as suas linhas. */
+    /* Same spoiler as the race categories: the zone header opens and
+       closes its own rows. */
     var group = document.createElement("div");
     group.className = "stat-group";
 
@@ -773,7 +774,7 @@ function drawCollect() {
     var label = document.createElement("span");
     label.textContent = t(g.key);
 
-    /* O contador de achados da zona fica no proprio cabecalho. */
+    /* The zone found-counter sits in its own header. */
     var zoneFound = 0;
     for (var k = 0; k < g.n; k++) if (bytes[base + g.at + k] === 1) zoneFound++;
 
@@ -798,7 +799,7 @@ function drawCollect() {
       if (isFound) found++;
 
       var row = document.createElement("div");
-      /* A ultima coluna e a caixa (22px), nao os 128px do campo de texto. */
+      /* The last column is the box (22px), not the 128px text field. */
       row.className = "stat plain bool";
 
       var cur = document.createElement("span");
@@ -809,15 +810,15 @@ function drawCollect() {
       name.className = "name";
       name.textContent = t(g.key) + " " + (i + 1);
 
-      /* E um booleano de verdade: caixa marcada ou nao, sem campo de texto
-         para digitar "1"/"0". */
+      /* A real boolean: checked or not, with no text field to type
+         "1"/"0" into. */
       var kind = document.createElement("span");
       kind.className = "kind";
       kind.textContent = t(isFound ? "colFound" : "colHidden");
 
-      /* O que se ve e o label .check, que e a quarta coluna da linha. O input
-         fica invisivel logo antes dele, dentro do mesmo wrapper: assim o
-         seletor :checked + .check funciona e o clique no desenho tambem. */
+      /* What shows is the .check label, the fourth column of the row. The
+         input sits invisible just before it, in the same wrapper, so
+         :checked + .check works and a click on the drawing lands too. */
       var wrap = document.createElement("div");
       wrap.className = "check-wrap";
 
@@ -827,7 +828,7 @@ function drawCollect() {
       box.id = "col-" + g.key + "-" + i;
       box.setAttribute("aria-label", name.textContent);
 
-      /* Nao chamar de `mark`: o nome colide com a funcao global mark(). */
+      /* Not named `mark`: that collides with the global mark(). */
       var boxLabel = document.createElement("label");
       boxLabel.className = "check";
       boxLabel.setAttribute("for", box.id);
@@ -840,12 +841,12 @@ function drawCollect() {
       row.appendChild(kind);
       row.appendChild(wrap);
 
-      /* `at` vem de um var dentro do for: sem capturar em IIFE todas as
-         caixas escreveriam no ultimo endereco da zona. */
+      /* `at` comes from a var inside the for: without an IIFE capture
+         every box would write to the zone's last address. */
       (function (addr) {
         box.addEventListener("change", function () {
           setU8(addr, this.checked ? 1 : 0);
-          /* Contador do cabecalho e da zona contam na memoria, nao no DOM. */
+          /* Header and zone counters count in memory, not in the DOM. */
           var lo = sec("LocalOptions"), b0 = lo.data + OFF.collect, c = 0;
           for (var q = 0; q < OFF.collectN; q++) if (bytes[b0 + q] === 1) c++;
           el("colCount").textContent = c + " / " + OFF.collectN;
@@ -885,15 +886,15 @@ function drawCollect() {
 
   el("colCount").textContent = found + " / " + OFF.collectN;
 
-  /* gCOL na tabela de estatisticas segue a mesma conta. */
+  /* gCOL in the stats table follows the same count. */
   syncGcol();
 
-  /* As duas mesmas acoes da Progressao: marcar ou limpar tudo de uma vez. */
+  /* The same two actions as Progression: mark or clear everything at once. */
   el("colAll").onclick = function () { collectSet(1); };
   el("colNone").onclick = function () { collectSet(0); };
 }
 
-/* Grava 0 ou 1 nos 60 bytes de uma vez e redesenha a lista. */
+/* Writes 0 or 1 to all 60 bytes at once and redraws the list. */
 function collectSet(v) {
   var lo = sec("LocalOptions"), base = lo.data + OFF.collect;
   for (var i = 0; i < OFF.collectN; i++) setU8(base + i, v);

@@ -49,9 +49,9 @@ function maxTune(n) {
 }
 
 /* Everything the UI needs about one slot's tune, in one object. */
-/* Zera o bloco de tune do slot: 13 niveis em +95 e a porcentagem em +126.
-   O bloco fica fisicamente no stride anterior (tuneAt), entao usamos tuneAt
-   pra ler e pra escrever -- os dois tem que concordar. */
+/* Zeroes the slot's tune block: 13 levels at +95 and the percent at +126.
+   The block sits physically in the previous stride (tuneAt), so read and
+   write both go through tuneAt and must agree. */
 function clearTune(n) {
   var at = tuneAt(n);
   for (var i = 0; i < OFF.tuneN; i++) {
@@ -63,12 +63,12 @@ function clearTune(n) {
   bytes[at + OFF.tunePct] = 0;
 }
 
-/* Indice do fornecedor de uma categoria (0 = nenhuma peca). */
+/* A category's vendor index (0 = no part). */
 function tuneVendorAt(n, catIdx) { return bytes[tuneAt(n) + OFF.tuneVendor + catIdx]; }
 
-/* Grava o fornecedor: o indice no byte e o multiplicador na tabela de floats.
-   `idx` null significa "sem peca" (stock): o byte vai a zero e o float volta
-   ao valor de fabrica, que nao e o mesmo do fornecedor 0. */
+/* Writes the vendor: the index to the byte and the multiplier to the float
+   table. `idx` null means "no part" (stock): the byte goes to zero and the
+   float returns to the factory value, which is not vendor 0's. */
 function tuneVendorSet(n, catIdx, idx) {
   var at = tuneAt(n), v = TUNE_VENDORS[catIdx];
   if (idx == null) {
@@ -95,8 +95,8 @@ function tuneInfo(n) {
       name: catTitle,
       level: Math.max(1, Math.min(max + 1, rawLv)),
       max: max + 1,
-      /* So as categorias com fornecedor levantado tem lista; as outras ficam
-         com vendor=null e a UI mostra "Stock"/nada. */
+      /* Only categories with a collected vendor get a list; the rest keep
+         vendor=null and the UI shows "Stock"/nothing. */
       vendor: vend ? tuneVendorAt(n, ci) : null,
       vendors: vend ? vend.names : null
     };

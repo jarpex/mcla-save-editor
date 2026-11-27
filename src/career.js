@@ -1,10 +1,10 @@
 // ---------- Time Trial ----------
 
-/* Os alvos ficam numa tabela de 4 u32 (ms) dentro de Career, logo seguida de
-   16 alvos de corrida. A base NAO e fixa: num save curto ela esta em +0x727D,
-   mas quando o jogador tem eventos a mais (mc4.sav.COMPLETED, lancers) ela
-   anda para +0x7291. Por isso a tabela e achada por padrao, nao por constante:
-   4 valores plausiveis (10-400 s) seguidos de 16 que sao plausiveis ou zero. */
+/* Targets live in a table of 4 u32 (ms) inside Career, followed at once by
+   16 race targets. The base is NOT fixed: in a short save it sits at
+   +0x727D, but with more events (mc4.sav.COMPLETED, lancers) it moves to
+   +0x7291. So the table is found by pattern, not by constant: 4 plausible
+   values (10-400 s) then 16 that are plausible or zero. */
 var TT_BASE = null;
 var RACE_TARGETS = 16;
 
@@ -29,14 +29,14 @@ function ttBase() {
 
 function ttPlausible(v) { return v >= 10000 && v <= 400000; }
 
-/* A marcacao [Untested] e literal no rotulo: nenhum destes alvos foi
-   confirmado contra o jogo, so achados por padrao no save. */
+/* The [Untested] tag is literal in the label: none of these targets was
+   confirmed against the game, they were only found by pattern. */
 function ttMark(label) { return label + " [" + t("ttUntested") + "]"; }
 
 var TT_EVENTS = [{ key: "ttHollywood2", label: "Hollywood time trial: '99 Eclipse - Race 2", target: 0, rec: 0 }];
 
-/* Os 16 alvos de corrida ficam logo depois dos 4 de time trial. Nomes ainda
-   nao mapeados (a tabela do jogo nao foi dumpada). */
+/* The 16 race targets sit right after the 4 time trial ones. Names are not
+   mapped yet (the game table was never dumped). */
 for (var _r = 0; _r < RACE_TARGETS; _r++) {
   TT_EVENTS.push({ key: "raceTarget" + _r, label: "Race target #" + (_r + 1), target: 4 + _r, rec: 0 });
 }
@@ -89,16 +89,16 @@ el("ttTarget").addEventListener("input", function () {
 
 // ---------- Career ----------
 
-/* A tela de carreira do jogo. Tudo isso mora nas RECORDS da secao Stats (nao
-   no cabecalho, que e so um cache): uma linha de 16 bytes por FourCC, com o
-   valor em +12. Cada entrada acha a sua linha pelo codigo na leitura.
+/* The game's career screen. All of it lives in the Stats section RECORDS,
+   not in the header, which is only a cache: one 16-byte row per FourCC with
+   the value at +12. Each entry finds its row by code on read.
 
-   `fmt` diz como o valor e mostrado e aceito, e e a unica fonte do rotulo do
-   tipo: int, dec, time (mm:ss.cc) ou hours (h:mm). */
+   `fmt` says how the value is shown and accepted, and is the only source of
+   the type label: int, dec, time (mm:ss.cc) or hours (h:mm). */
 var FMT_LABEL = { int: "hintInt", dec: "hintDec", time: "timeKind", hours: "hintHours" };
 
 var CAREER_RECORDS = [
-  /* Os cinco time trials sao o mesmo FourCC (k:TB) em cinco ocorrencias. */
+  /* The five time trials are one FourCC (k:TB) in five occurrences. */
   { code: "k:TB", occ: 0, id: "careerRecord", titleKey: "ttHollywood", fmt: "time", stat: "k:TB" },
   { code: "k:TB", occ: 1, titleKey: "ttBeach", fmt: "time", stat: "k:TB" },
   { code: "k:TB", occ: 2, titleKey: "ttHills", fmt: "time", stat: "k:TB" },
@@ -135,14 +135,14 @@ var CAREER_RECORDS = [
   { code: "khTC", id: "careerHours", titleKey: "careerHours", fmt: "hours", stat: "khTC" }
 ];
 
-/* Acha a linha de um FourCC na secao Stats e devolve o offset absoluto do
-   valor. As linhas tem 16 bytes e comecam no primeiro offset da secao onde
-   (offset % 16) == 2, o mesmo calculo de renderStats. */
-/* Acha uma linha livre na tabela de Stats e grava o FourCC + tipo nela,
-   devolvendo o offset do valor. A tabela tem 1056 linhas de 16 bytes e a
-   jogo so grava as que usou: num save curto (mc4.sav.tuned) metade das
-   estatisticas de carreira nao tem linha, e sem isso o campo fica vazio e
-   nao aceita nada. */
+/* Finds a FourCC row in the Stats section and returns the absolute value
+   offset. Rows are 16 bytes and start at the first section offset where
+   (offset % 16) == 2, the same math as renderStats. */
+/* Finds a free row in the Stats table, writes the FourCC and type there and
+   returns the value offset. The table has 1056 rows of 16 bytes and the game
+   writes only the ones it used: in a short save (mc4.sav.tuned) half the
+   career stats have no row, and without this the field stays empty and
+   accepts nothing. */
 function statAlloc(code, isFloat) {
   var s = sec("Stats");
   var start = s.data + (((2 - (s.data % 16)) % 16) + 16) % 16;
@@ -170,22 +170,23 @@ function statValueAt(code, occ) {
   return -1;
 }
 
-/* Horas de jogo no formato do relogio: 1.9862 vira "1:59", 2.5 vira "2:30".
-   A parte inteira e a hora, a fracao e o minuto (0.9862 * 60 = 59.17). */
+/* Play time in clock form: 1.9862 becomes "1:59", 2.5 becomes "2:30".
+   The integer part is the hour, the fraction the minute
+   (0.9862 * 60 = 59.17). */
 function hoursToText(h) {
   var total = Math.max(0, Math.round(h * 60));
   return Math.floor(total / 60) + ":" + (total % 60 < 10 ? "0" : "") + (total % 60);
 }
 
-/* Entrada de tempo no formato mm:ss.cc. Aceita "3:15.32" e devolve
-   "03:15.32": o que o jogador digitou e normalizado, nunca recusado so por
-   falta de um zero a esquerda. null significa lixo. */
+/* Time entry in mm:ss.cc. Accepts "3:15.32" and returns "03:15.32": what
+   the player typed is normalized, never rejected just for a missing leading
+   zero. null means garbage. */
 function textToMs(str) {
   var m = /^\s*(\d{1,3}):(\d{1,2})(?:[.,](\d{1,2}))?\s*$/.exec(str || "");
   if (!m) return null;
   var min = +m[1], sec = +m[2], frac = m[3] || "";
   if (sec > 59) return null;
-  /* Dois digitos de centesimos; um unico vira dezena (".5" = 50). */
+  /* Two hundredths digits; a single one becomes a ten (".5" = 50). */
   var cs = frac.length === 1 ? +frac * 10 : +frac;
   return Math.max(0, Math.min(4294967295, min * 60000 + sec * 1000 + cs * 10));
 }
@@ -202,7 +203,7 @@ function careerRead(rec) {
   if (rec.read) return rec.read();
   var at = statValueAt(rec.stat, rec.occ);
   if (at < 0) return "";
-  /* Os cinco time trials guardam milisegundos e a tela mostra mm:ss.cc. */
+  /* The five time trials store milliseconds and the screen shows mm:ss.cc. */
   if (rec.fmt === "time") return msToText(u32(at));
   if (rec.fmt === "hours") return hoursToText(view.getFloat32(at));
   if (rec.fmt === "dec") return view.getFloat32(at).toFixed(4);
@@ -212,9 +213,9 @@ function careerRead(rec) {
 function careerWrite(rec, val) {
   if (rec.write) return rec.write(val);
   var at = statValueAt(rec.stat, rec.occ);
-  /* Sem linha no save (save curto), cria uma livre em vez de recusar. Vale
-     para qualquer ocorrencia: as linhas sao achadas por indice, entao criar
-     a de k:TB 2 funciona desde que a 1 exista. */
+  /* With no row in the save (short save), create a free one instead of
+     refusing. Works for any occurrence: rows are found by index, so creating
+     k:TB 2 works as long as 1 exists. */
   if (at < 0) at = statAlloc(rec.stat, rec.fmt === "dec");
   if (at < 0) return false;
   if (rec.fmt === "time") {
@@ -273,8 +274,8 @@ function drawCareer(q) {
     key.className = "key";
     key.textContent = titleText;
 
-    /* O rotulo do tipo sai de FMT_LABEL, o mesmo mapa que o leitor usa: um
-    campo so, sem texto repetido na tela. */
+    /* The type label comes from FMT_LABEL, the same map the reader uses: one
+    field, no text repeated on screen. */
     var kind = document.createElement("span");
     kind.className = "kind";
     kind.textContent = typeText;
@@ -295,7 +296,7 @@ function drawCareer(q) {
     host.appendChild(row);
 
     inp.addEventListener("input", function () {
-      /* So nos campos de tempo: int e decimal nao tem mascara. */
+      /* Time fields only: int and decimal have no mask. */
       var isTime = rec.fmt === "time";
       if (isTime) {
         this.value = maskTime(this.value, this.dataset.maskPrev);
@@ -305,9 +306,9 @@ function drawCareer(q) {
       if (ok) mark();
     });
 
-    /* Ao sair do campo o texto volta ao formato canonico: quem digitou
-       "3:15.32" ve "03:15.32". Enquanto digita nao mexo, pra o cursor nao
-       pular no meio da edicao. */
+    /* On leaving the field the text returns to canonical form: whoever typed
+       "3:15.32" sees "03:15.32". While typing it is left alone so the caret
+       does not jump mid-edit. */
     inp.addEventListener("blur", function () {
       inp.value = careerRead(rec);
       inp.dataset.maskPrev = inp.value;

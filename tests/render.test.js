@@ -1,15 +1,16 @@
-/* Roda o script de dentro do index.html contra um save sintetico e confere que
-   render() liga os campos editaveis e que cada um grava onde deve.
+/* Runs the script from inside index.html against a synthetic save and checks
+   that render() wires the editable fields and that each one writes where it
+   should.
 
-   Existe por causa de um bug real: `var t = bytes[o + 8]` dentro de renderStats
-   sombreava a funcao t() de traducao, render() estourava na metade, e os
-   oninput do dinheiro e da reputacao nunca eram ligados. A tela parecia certa,
-   os campos aceitavam digitacao, e nada era gravado. Qualquer excecao no meio
-   do render() reproduz essa classe de falha, entao o teste cobre a classe toda,
-   nao so aquela linha.
+   It exists because of a real bug: `var t = bytes[o + 8]` inside renderStats
+   shadowed the t() translation function, render() blew up halfway, and the
+   money and reputation oninput handlers were never attached. The screen looked
+   right, the fields accepted typing, and nothing was written. Any exception
+   mid-render() reproduces that class of failure, so the test covers the whole
+   class, not just that line.
 
    node tests/render.test.js
-   node tests/render.test.js C:\caminho\para\mc4.sav */
+   node tests/render.test.js C:\path\to\mc4.sav */
 
 var fs = require("fs");
 var path = require("path");
@@ -21,13 +22,13 @@ var ROOT = path.join(__dirname, "..");
 var OFF_LABEL = 32, OFF_PLATE = 2186, SLOT_STRIDE = 8176, SLOT0 = 0x24FD;
 var TUNE_BASE = 1293, TUNE_LV = 95, TUNE_N = 13, TUNE_PCT = 126;
 
-// ---------- save sintetico ----------
-// Mesmo formato do real, pequeno. Nenhum dado do jogo entra no repositorio.
+// ---------- synthetic save ----------
+// Same shape as the real one, small. No game data enters the repository.
 
 var CAREER = 30000;       // cobre a progressao (0x2E9 + 43*65) e a tabela de alvos (0x727D)
 var LOCAL = SLOT0 + SLOT_STRIDE * 2;
-/* Os colecionaveis ficam em LocalOptions+0x3DF84, entao a secao precisa
-   ser maior que isso para o save sintetico ter o mesmo layout do real. */
+/* Collectables live at LocalOptions+0x3DF84, so the section must be larger
+   than that for the synthetic save to match the real layout. */
 var LOCAL_MIN = 0x3E000;
 var STATS = 2048;         // cobre os recordes de time trial (0x6A8)
 
@@ -64,29 +65,29 @@ function buildSave() {
   dv.setUint32(at.Career + 0x2E1, 2050);   // reputacao
   dv.setUint32(at.Career + 0x2E5, 43);     // blocos de progressao
 
-  /* Tabela de alvos: 4 de time trial + 16 de corrida. A base e achada por
-     padrao (4 valores plausiveis seguidos de 16 plausiveis ou zero), entao o
-     save sintetico precisa dela ou o painel fica desabilitado. */
+  /* Target table: 4 time trial + 16 race. The base is found by pattern (4
+     plausible values then 16 plausible or zero), so the synthetic save needs
+     it or the panel stays disabled. */
   [128540, 150000, 137000, 115000].forEach(function (v, i) {
     dv.setUint32(at.Career + 0x727D + i * 4, v);
   });
   b[at.LocalOptions + 0x53F] = 1;          // contador de carros
   b[at.LocalOptions + 0x543] = 0;
 
-  // bloco de tune do carro 0: meio tunado, pra a leitura ter o que mostrar
+  // car 0's tune block: half tuned, so the read has something to show
   var t0 = at.LocalOptions + TUNE_BASE;
   for (var k = 0; k < TUNE_N; k++) b[t0 + TUNE_LV + k] = 1;
   b[t0 + TUNE_PCT] = 50;
 
-  // slot 0 ocupado, pra ter o que ler na abertura
+  // slot 0 occupied, so the opening has something to read
   var s0 = at.LocalOptions + SLOT0;
   "vp_vw_golf_83".split("").forEach(function (c, i) { b[s0 + i] = c.charCodeAt(0); });
   "83 GOLF/GTI".split("").forEach(function (c, i) { b[s0 + OFF_LABEL + i] = c.charCodeAt(0); });
-  // a placa do slot N mora no stride anterior (slotAt(N) - STRIDE + OFF_PLATE),
-  // entao a do slot 1 cai em s0 + OFF_PLATE: e o que a abertura le.
+  // slot N's plate lives in the previous stride (slotAt(N) - STRIDE +
+  // OFF_PLATE), so slot 1's lands at s0 + OFF_PLATE: what the opening reads.
   "RSTLESS".split("").forEach(function (c, i) { b[s0 + OFF_PLATE + i] = c.charCodeAt(0); });
 
-  // dois registros de stat, no offset absoluto onde offset % 16 == 2
+  // two stat records, at the absolute offset where offset % 16 == 2
   var st = at.Stats + (((2 - (at.Stats % 16)) % 16) + 16) % 16;
   ["gWIN", "tPUR"].forEach(function (key, n) {
     var r = st + n * 16;
@@ -95,14 +96,14 @@ function buildSave() {
     dv.setUint32(r + 12, 7 + n);
   });
 
-  /* khTC: horas de jogo, float. A tela mostra h:mm e aceita h:mm de volta,
-     entao o teste precisa de uma linha que exista de verdade. */
+  /* khTC: play hours, float. The screen shows h:mm and accepts h:mm back, so
+     the test needs a row that really exists. */
   var hr = st + 2 * 16;
   "khTC".split("").forEach(function (c, i) { b[hr + i] = c.charCodeAt(0); });
   b[hr + 8] = 0x00;                        // float
   dv.setUint32(hr + 12, 0x3FE00000);       // 1.75 horas = 1:45
 
-  /* ghTC: horas de jogo da tela Statistics, tambem float e tambem h:mm. */
+  /* ghTC: play hours from the Statistics screen, also float and h:mm. */
   var gh = st + 3 * 16;
   "ghTC".split("").forEach(function (c, i) { b[gh + i] = c.charCodeAt(0); });
   b[gh + 8] = 0x00;                        // float
@@ -111,14 +112,14 @@ function buildSave() {
   return { buf: buf, at: at };
 }
 
-// ---------- DOM minimo ----------
-// addEventListener guarda o listener em _on, pra o teste poder disparar.
+// ---------- minimal DOM ----------
+// addEventListener stores the listener in _on so the test can fire it.
 
 function noop() {}
 
-/* createElement/appendChild guardam o que a pagina monta, e getElementById acha
-   por id: os campos que nascem em JS (o recorde do Career) precisam ser
-   alcancaveis pelo teste do mesmo jeito que os do HTML. */
+/* createElement/appendChild keep what the page builds, and getElementById
+   finds by id: fields born in JS (the Career record) must be reachable by the
+   test the same way the HTML ones are. */
 var MADE = [];
 
 function makeEl(id) {
@@ -128,7 +129,7 @@ function makeEl(id) {
     _on: {},
     classList: {
       add: noop, remove: noop, toggle: noop,
-      /* contains e real: setTab usa pra saber se a coluna ainda tem painel. */
+      /* contains is real: setTab uses it to know if the column still has a panel. */
       contains: function (c) { return e.className.split(/\s+/).indexOf(c) !== -1; }
     },
     addEventListener: function (type, fn) { e._on[type] = fn; },
@@ -142,15 +143,15 @@ function makeEl(id) {
     closest: function () { return e; },
     querySelector: function () { return makeEl("x"); },
     querySelectorAll: function (sel) { return group(sel); },
-    /* O painel novo mede posicoes pro deslizador das abas; zero e suficiente. */
+    /* The new panel measures positions for the tab slider; zero is enough. */
     getBoundingClientRect: function () { return { left: 0, top: 0, width: 0, height: 0, right: 0, bottom: 0 }; },
     style: {
       setProperty: function () {}, removeProperty: noop,
       getPropertyValue: function () { return ""; }
     }
   };
-  /* innerHTML = "" limpa os filhos, como no DOM de verdade: drawStats reescreve
-     a lista a cada tecla e o teste conta children pra saber o que sobrou. */
+  /* innerHTML = "" clears the children, as in a real DOM: drawStats rewrites
+     the list on every key and the test counts children to see what is left. */
   var html = "";
   Object.defineProperty(e, "innerHTML", {
     get: function () { return html; },
@@ -159,10 +160,10 @@ function makeEl(id) {
   return e;
 }
 
-/* As linhas da garagem nascem de innerHTML, que este shim nao interpreta, entao
-   nos fabricamos as mesmas linhas que a pagina criaria e devolvemos em
-   querySelectorAll. Assim os addEventListener reais do index.html caem em
-   elementos que o teste consegue acionar depois. */
+/* The garage rows are born from innerHTML, which this shim does not parse, so
+   we build the same rows the page would and return them from
+   querySelectorAll. The real addEventListener calls from index.html then land
+   on elements the test can trigger later. */
 
 var SLOTS = 0, CELLS = 0, rows = null, cells = null;
 
@@ -187,9 +188,9 @@ function buildCell(i) {
   return c;
 }
 
-/* Construido de proposito, nao na primeira chamada: applyLang() roda logo que o
-   script carrega e ja chama querySelectorAll, quando ainda nao sabemos quantos
-   slots o save tem. */
+/* Built on purpose, not on the first call: applyLang() runs as soon as the
+   script loads and already calls querySelectorAll, before we know how many
+   slots the save has. */
 function buildGroups() {
   rows = []; for (var i = 0; i < SLOTS; i++) rows.push(buildRow(i));
   cells = []; for (var k = 0; k < CELLS; k++) cells.push(buildCell(k));
@@ -202,8 +203,8 @@ function group(sel) {
   if (sel === "input.plate") return rows.map(function (r) { return r.plate; });
   if (sel === "button.tune") return rows.map(function (r) { return r.tune; });
   if (sel === ".cell") return cells;
-  /* O painel novo tem abas, filtros e botoes de carteira; o teste nao os usa,
-     mas o script chama querySelectorAll em cada um ao carregar. */
+  /* The new panel has tabs, filters and wallet buttons; the test does not use
+     them, but the script calls querySelectorAll on each at load. */
   return [];
 }
 
@@ -223,7 +224,7 @@ function makeDom() {
     addEventListener: noop,
     documentElement: makeEl("html"),
     body: makeEl("body"),
-    /* O painel novo espera fonts prontas e uma janela que redimensiona. */
+    /* The new panel expects fonts ready and a window that resizes. */
     fonts: { ready: { then: function () {} } },
     activeElement: makeEl("active")
   };
@@ -232,8 +233,8 @@ function makeDom() {
 
 // ---------- montar o contexto ----------
 
-/* index.html so carrega os arquivos de src/ na ordem em que aparecem; o teste
-   le a mesma lista de <script src>, pra rodar exatamente o que a pagina roda. */
+/* index.html loads the src/ files in the order they appear; the test reads
+   the same <script src> list, to run exactly what the page runs. */
 var html = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
 var srcs = [];
 var re = /<script src="([^"]+)"><\/script>/g;
@@ -255,7 +256,7 @@ var ctx = {
   Blob: function () {},
   FileReader: function () {},
   setTimeout: noop,
-  /* O painel novo escuta resize e pede um frame pra medir as abas. */
+  /* The new panel listens for resize and asks for a frame to measure tabs. */
   requestAnimationFrame: noop,
   addEventListener: noop,
   removeEventListener: noop,
@@ -265,8 +266,8 @@ ctx.window = ctx;
 vm.createContext(ctx);
 vm.runInContext(script, ctx, { filename: "src/" });
 
-/* Sem argumento roda no save sintetico. Passando um caminho, roda no seu
-   mc4.sav de verdade. O arquivo so e lido, nunca gravado. */
+/* With no argument it runs on the synthetic save. Given a path, it runs on
+   your real mc4.sav. The file is only read, never written. */
 var real = process.argv[2];
 var save;
 if (real) {
@@ -292,8 +293,8 @@ buildGroups();
 
 ctx.render();
 
-/* A base da tabela de alvos e achada por padrao (0x727D num save curto,
-   0x7291 quando ha mais eventos), entao o teste pergunta ao editor. */
+/* The target table base is found by pattern (0x727D in a short save, 0x7291
+   with more events), so the test asks the editor. */
 var ttAt = careerAt + ctx.ttBase();
 
 // ---------- carteira ----------
@@ -305,8 +306,8 @@ assert.strictEqual(typeof rep.oninput, "function",
 assert.strictEqual(typeof money.oninput, "function",
   "render() terminou sem ligar o campo de dinheiro: alguma excecao no meio");
 
-/* Os campos do cofrinho saem formatados: "$1.234" e "2.050". O teste tira o
-   que nao e digito antes de comparar. */
+/* The wallet fields come out formatted: "$1.234" and "2.050". The test
+   strips non-digits before comparing. */
 function plainNum(str) { return Number(String(str).replace(/\D+/g, "")); }
 
 if (!real) {
@@ -317,7 +318,7 @@ if (!real) {
 
 rep.value = "4242";
 rep.oninput.call(rep);
-/* O separador depende do idioma (pt-BR usa ponto), entao basta ter um. */
+/* The separator depends on the language (pt-BR uses a dot), so one is enough. */
 assert.ok(/[^0-9]/.test(rep.value), "a rep nao foi formatada com separador");
 assert.strictEqual(ctx.view.getUint32(careerAt + 0x2E1), 4242,
   "digitar na reputacao nao gravou nos bytes");
@@ -327,15 +328,16 @@ money.oninput.call(money);
 assert.strictEqual(ctx.view.getUint32(careerAt + 0x2D9), 999999,
   "digitar no dinheiro nao gravou nos bytes");
 
-// ---------- fornecedor de tuning ----------
-// O byte do fornecedor mora em tuneBase+0x6E e o multiplicador em tuneBase+0x27.
-// So o Escape (categoria 0) tem tabela; as outras categorias nao tem dropdown.
+// ---------- tuning vendor ----------
+// The vendor byte lives at tuneBase+0x6E and the multiplier at tuneBase+0x27.
+// Only the Escape (category 0) has a table; the other categories have no
+// dropdown.
 {
   var t0 = ctx.tuneAt(0);
   assert.strictEqual(typeof ctx.tuneVendorAt, "function",
     "o editor nao tem leitura de fornecedor");
-  /* No save sintetico o byte e zero; num save real ele traz o que a jogo
-     gravou (o HKS do conjunto de testes tem 7). */
+  /* In the synthetic save the byte is zero; a real save carries what the
+     game wrote (the HKS test set has 7). */
   if (!real) {
     assert.strictEqual(ctx.tuneVendorAt(0, 0), 0,
       "o fornecedor do save sintetico nao comeca em zero");
@@ -344,26 +346,26 @@ assert.strictEqual(ctx.view.getUint32(careerAt + 0x2D9), 999999,
   ctx.tuneVendorSet(0, 0, 2);
   assert.strictEqual(ctx.bytes[t0 + ctx.OFF.tuneVendor], 2,
     "o indice do fornecedor nao foi gravado em +0x6E");
-  /* Float32 nao guarda 1.4018 exato; compara com tolerancia. */
+  /* Float32 does not hold 1.4018 exactly; compare with a tolerance. */
   assert.ok(Math.abs(ctx.f32(t0 + ctx.OFF.tuneVendorF) - ctx.TUNE_VENDORS[0].floats[2]) < 1e-4,
     "o multiplicador nao foi gravado em +0x27");
 
-  // null = sem peca: byte zero e float de fabrica, nao o do fornecedor 0
+  // null = no part: byte zero and the factory float, not vendor 0's
   ctx.tuneVendorSet(0, 0, null);
   assert.strictEqual(ctx.bytes[t0 + ctx.OFF.tuneVendor], 0,
     "stock nao zerou o byte do fornecedor");
   assert.ok(Math.abs(ctx.f32(t0 + ctx.OFF.tuneVendorF) - ctx.TUNE_VENDORS[0].stock) < 1e-4,
     "stock nao devolveu o multiplicador de fabrica");
 
-  // categoria sem tabela aceita o byte mas nao mexe em float
+  // a category with no table takes the byte but leaves the float alone
   ctx.tuneVendorSet(0, 1, 5);
   assert.strictEqual(ctx.bytes[t0 + ctx.OFF.tuneVendor + 1], 5,
     "categoria sem tabela nao gravou o byte");
 }
 
 // ---------- stats ----------
-// ghTC e ghTP saem em h:mm; o resto continua numero. A conversao e a mesma do
-// painel de carreira, entao as duas telas nunca divergem.
+// ghTC and ghTP come out as h:mm; the rest stay numbers. The conversion is
+// the same as the career panel, so the two screens never disagree.
 
 assert.ok(ctx.STATS.length >= 2, "renderStats nao achou os registros");
 assert.notStrictEqual(dom.byId.roRep.textContent, "", "o rodape nao foi preenchido");
@@ -380,9 +382,9 @@ ghTCInput._on.input.call(ghTCInput);
 ghTCInput._on.blur.call(ghTCInput);
 assert.strictEqual(ghTCInput.value, "2:05", "sair do campo nao normalizou 2:5 em 2:05");
 
-// ---------- nomes e busca ----------
-// A tabela STAT_NAMES e do repositorio; o teste confere que ela casa com o save
-// sintetico (gWIN, tPUR) e que a busca pega os dois lados.
+// ---------- names and search ----------
+// STAT_NAMES comes from the repository; the test checks it matches the
+// synthetic save (gWIN, tPUR) and that search hits both sides.
 
 assert.strictEqual(typeof ctx.statName({ key: "gWIN" }), "string", "statName nao existe");
 assert.strictEqual(ctx.statName({ key: "gWIN" }), "Total Numbers of Wins",
@@ -393,19 +395,19 @@ assert.strictEqual(ctx.statName({ key: "tPUR" }), "",
 var statRows = dom.doc.getElementById("stats").children;
 assert.ok(statRows.length >= 2, "drawStats nao montou as linhas");
 var first = statRows[0];
-/* cursor, codigo, nome, tipo, campo: a seta do HUD conta como coluna. */
+/* cursor, code, name, type, field: the HUD arrow counts as a column. */
 assert.ok(first.children.length === 5,
   "a linha do stat nao tem cursor, codigo, nome, tipo e campo: " + first.children.length);
 assert.strictEqual(first.children[0].className, "cursor",
   "a linha nao comeca pelo cursor do HUD");
-/* drawStats agora mostra so a tela Game Stats: a linha e a do primeiro
-   registro g*, nao a do primeiro registro da secao (aB1T, que e conquista). */
+/* drawStats now shows only the Game Stats screen: the row is the first g*
+   record, not the section's first record (aB1T, which is an achievement). */
 assert.strictEqual(first.children[1].textContent, ctx.GAME_KEYS[0].key,
   "o codigo da linha nao e o do primeiro registro de jogo");
 assert.strictEqual(first.children[2].textContent, ctx.statName(ctx.GAME_KEYS[0]),
   "o nome em jogo nao apareceu na linha");
 
-// busca por codigo e por nome acham a mesma linha
+// search by code and by name find the same row
 var filter = dom.doc.getElementById("statFilter");
 filter.value = "gwin";
 filter.oninput.call(filter);
@@ -422,7 +424,7 @@ assert.strictEqual(dom.doc.getElementById("stats").children.length, 0,
 filter.value = "";
 filter.oninput.call(filter);
 
-// ---------- garagem: trocar o veiculo ----------
+// ---------- garage: swap the vehicle ----------
 
 function str(at, n) {
   var s = ""; for (var i = 0; i < n; i++) s += String.fromCharCode(ctx.bytes[at + i]);
@@ -441,8 +443,8 @@ assert.strictEqual(ctx.bytes[slot1 + 13], 0, "faltou o terminador depois do nome
 assert.strictEqual(ctx.bytes[slot1 + 14], 0xCD, "o preenchimento depois do nome nao e 0xCD");
 assert.ok(r1.lbl.value.length > 0, "o rotulo automatico nao foi preenchido");
 
-// a aparencia (rodas + detalhes) tem que vir do preset de stock, senao o
-// carro novo herda as rodas e o kit de quem estava no slot antes
+// the appearance (wheels and details) must come from the stock preset, or
+// the new car inherits the wheels and kit of the previous slot occupant
 var APPEAR = [446, 450, 454, 458, 1734, 1782, 1830, 1878, 1926, 1974, 2177, 2178];
 var preset = ctx.STOCK_APPEARANCE["vp_aud_rs4_07"];
 assert.ok(preset, "a tabela STOCK_APPEARANCE nao carregou");
@@ -453,24 +455,25 @@ assert.ok(preset, "a tabela STOCK_APPEARANCE nao carregou");
   }
 }
 
-/* Antes de esvaziar, suja a aparencia de proposito: e o caso real de um
-   carro tunado. Esvaziar tem que devolver o stock, nao so apagar o nome. */
+/* Before emptying, dirty the appearance on purpose: the real case of a tuned
+   car. Emptying must return the stock, not just erase the name. */
 var dirty = [11, 22, 33, 44, 55, 66, 77, 88, 99, 111, 222, 233];
 for (var di = 0; di < APPEAR.length; di++) ctx.bytes[slot1 + APPEAR[di]] = dirty[di];
 
-// esvaziar de volta grava "blank", que e o que o jogo poe num slot vazio
+// emptying back writes "blank", which is what the game puts in an empty slot
 r1.sel.value = "";
 r1.sel._on.change.call(r1.sel);
 assert.strictEqual(str(slot1, 5), "blank", "esvaziar o slot nao gravou blank");
 
-/* A aparencia volta ao stock do carro que saiu (vp_aud_rs4_07), junto com o
-   nome. Sem isso as rodas e o kit tunados ficam no slot. */
+/* The appearance returns to the stock of the car that left (vp_aud_rs4_07),
+   along with the name. Without this the tuned wheels and kit stay in the
+   slot. */
 for (var ai2 = 0; ai2 < APPEAR.length; ai2++) {
   assert.strictEqual(ctx.bytes[slot1 + APPEAR[ai2]], preset[ai2],
     "esvaziar nao devolveu a aparencia de stock em +" + APPEAR[ai2]);
 }
 
-// e tem que limpar o tune junto: senao o carro seguinte herda o nivel
+// and it must clear the tune too: or the next car inherits the level
 var t1 = ctx.tuneAt(1);
 for (var ti2 = 0; ti2 < ctx.OFF.tuneN; ti2++) {
   assert.strictEqual(ctx.bytes[t1 + ctx.OFF.tuneLv + ti2], 0,
@@ -496,7 +499,7 @@ assert.strictEqual(known.length, 3, "so devia haver notas para 3 secoes");
 assert.ok(ctx.SECTION_NOTES.Career.length > 0, "Career sem notas");
 assert.ok(ctx.SECTION_NOTES.LocalOptions.length > 0, "LocalOptions sem notas");
 
-// todo `at` tem que ser um inteiro positivo e caber na secao
+// every `at` must be a positive integer and fit in the section
 Object.keys(ctx.SECTION_NOTES).forEach(function (name) {
   var sec = ctx.sec(name);
   assert.ok(sec, "a secao " + name + " nao existe no save");
@@ -508,9 +511,10 @@ Object.keys(ctx.SECTION_NOTES).forEach(function (name) {
   });
 });
 
-// ---------- garagem: placa ----------
-// A placa ocupa 7 bytes exatos. O byte logo depois e de outra coisa e nao pode
-// ser tocado, entao marcamos com uma sentinela e conferimos que sobreviveu.
+// ---------- garage: plate ----------
+// The plate takes exactly 7 bytes. The byte right after belongs to something
+// else and must not be touched, so we mark it with a sentinel and check it
+// survived.
 
 assert.strictEqual(typeof r1.plate._on.input, "function", "o campo de placa nao foi ligado");
 var plateAt = slot1 - SLOT_STRIDE + OFF_PLATE;
@@ -522,28 +526,28 @@ assert.strictEqual(r1.plate.value, "XYZ9876", "a placa nao foi passada pra maius
 assert.strictEqual(str(plateAt, 7), "XYZ9876", "a placa nao foi gravada");
 assert.strictEqual(ctx.bytes[plateAt + 7], 0x5A, "a placa invadiu o byte seguinte");
 
-// espaco e gravado como 0x3E (">"), nao 0x20: e o que a jogo usa
+// space is written as 0x3E (">"), not 0x20: that is what the game uses
 r1.plate.value = "WRS 521";
 r1.plate._on.input.call(r1.plate);
 assert.strictEqual(ctx.bytes[plateAt + 3], 0x3E, "o espaco nao foi gravado como 0x3E");
 assert.strictEqual(str(plateAt, 7), "WRS>521", "a placa nao saiu com o byte do jogo");
 assert.strictEqual(ctx.bytes[plateAt + 7], 0x5A, "a placa com espaco invadiu o byte seguinte");
 
-// placa incompleta nao pode gravar nada
+// an incomplete plate cannot write anything
 r1.plate.value = "AB1";
 r1.plate._on.input.call(r1.plate);
 assert.strictEqual(str(plateAt, 7), "WRS>521", "placa de menos de 7 caracteres gravou mesmo assim");
 
-// caractere invalido e descartado, nao gravado
+// an invalid character is dropped, not written
 r1.plate.value = "ab-12/34";
 r1.plate._on.input.call(r1.plate);
 assert.strictEqual(r1.plate.value, "AB1234", "os caracteres invalidos nao foram filtrados");
 assert.strictEqual(str(plateAt, 7), "WRS>521", "a placa filtrada ficou curta e gravou assim mesmo");
 
-// ---------- desempenho ----------
-// 13 categorias de 0 a 2 (carro) ou 6 (moto), e a porcentagem que a loja
-// mostra e a soma sobre 2*(n-1): a ULTIMA categoria nao conta. Tudo em 2
-// num carro marca 100; 11 em 2 com os freios no estoque marca 45.
+// ---------- performance ----------
+// 13 categories of 0 to 2 (car) or 6 (moto), and the percent the shop shows
+// is the sum over 2*(n-1): the LAST category does not count. All 2 in a car
+// reads 100; 11 at 2 with the brakes at stock reads 45.
 
 var loAt = ctx.secs.list.filter(function (s) { return s.name === "LocalOptions"; })[0].data;
 function tuneBlock(n) { return loAt + TUNE_BASE + n * SLOT_STRIDE; }
@@ -554,26 +558,27 @@ if (!real) {
   assert.strictEqual(r0.tune.textContent, "50%", "o botao nao mostrou a porcentagem lida do save");
 }
 
-/* O botao de tune abre a Performance Shop; quem maxe de fato e o maxTune,
-   que a loja chama. Entao o teste maxe por maxTune e confere o botao. */
+/* The tune button opens the Performance Shop; what actually maxes is
+   maxTune, which the shop calls. So the test maxes via maxTune and checks
+   the button. */
 var t0 = tuneBlock(0);
 ctx.maxTune(0);
-/* O save pode ter moto no slot 0: 6 categorias em indices espalhados
-   (0,4,5,6,8,12), nao as 13 seguidas de um carro. O teste usa a mesma lista
-   que a pagina usa, em vez de contar de 0 ate 13. */
+/* The save may have a moto in slot 0: 6 categories at scattered indexes
+   (0,4,5,6,8,12), not the 13 in a row of a car. The test uses the same list
+   the page uses instead of counting 0 to 13. */
 var cats0 = ctx.tuneCatIdx(ctx.readSlot(0).car);
 cats0.forEach(function (c) {
   assert.strictEqual(ctx.bytes[t0 + TUNE_LV + c], 2, "categoria " + c + " nao foi para o nivel 2");
 });
 assert.strictEqual(ctx.bytes[t0 + TUNE_PCT], 100, "a porcentagem nao foi para 100");
 
-// o bloco seguinte nao pode ser tocado: um stride adiante, byte a byte
+// the next block must not be touched: one stride ahead, byte by byte
 var t1 = tuneBlock(1);
 assert.notStrictEqual(t1, t0, "os blocos de tune colidiram");
 assert.strictEqual(ctx.bytes[t0 + TUNE_LV + TUNE_N], 0,
   "escreveu um byte alem das 13 categorias");
 
-// tunar todos
+// max everything
 dom.byId.maxAll.onclick();
 for (var s2 = 0; s2 < SLOTS; s2++) {
   var nome = "";
@@ -584,9 +589,9 @@ for (var s2 = 0; s2 < SLOTS; s2++) {
       "tunar todos deixou o slot " + s2 + " de fora");
   }
 
-  // ---------- desempenho: moto tem 6 categorias ----------
-  // O save de teste so tem carro, entao troco o slot 1 pra uma moto e confiro
-  // que a lista encolheu pras seis categorias certas e que a formula usa /10.
+  // ---------- performance: a moto has 6 categories ----------
+  // The test save has only cars, so slot 1 becomes a moto and the list must
+  // shrink to the right six categories and the formula use /10.
 
   if (!real) {
     var m1 = rows[1];
@@ -601,13 +606,13 @@ for (var s2 = 0; s2 < SLOTS; s2++) {
     assert.strictEqual(info.cats[2].name, "Jet Kits",
       "a categoria 5 da moto nao virou Jet Kits");
 
-    // tres categorias em 1 (nivel 2) -> floor(3*100/10) = 30
+    // three categories at 1 (level 2) -> floor(3*100/10) = 30
     [0, 4, 5].forEach(function (ci) { ctx.tuneSet(1, ci, 2); });
     assert.strictEqual(ctx.tuneInfo(1).pct, 30, "a moto com 3 categorias nao marcou 30%");
     assert.strictEqual(ctx.bytes[tuneBlock(1) + TUNE_PCT], 30,
       "a porcentagem da moto nao chegou ao byte +126");
 
-    // maxTune numa moto escreve so nas seis categorias, nunca nas outras sete
+    // maxTune on a moto writes only the six categories, never the other seven
     ctx.maxTune(1);
     var tM = tuneBlock(1);
     [1, 2, 3, 7, 9, 10, 11].forEach(function (ci) {
@@ -617,7 +622,7 @@ for (var s2 = 0; s2 < SLOTS; s2++) {
     assert.strictEqual(ctx.bytes[tM + TUNE_PCT], 100, "a moto tunada nao marcou 100%");
   }
 
-// ---------- progressao ----------
+// ---------- progression ----------
 
 var prog = dom.byId.prog;
 assert.strictEqual(typeof prog.onclick, "function", "a grade de progressao nao foi ligada");
@@ -641,7 +646,7 @@ for (var j = 0; j < CELLS; j++) {
 
 var statsAt = ctx.secs.list.filter(function (s) { return s.name === "Stats"; })[0].data;
 
-// os campos do Career nascem em JS, entao o teste pega pelo id
+// the Career fields are born in JS, so the test grabs them by id
 var ttTarget = dom.doc.getElementById("ttTarget");
 var careerRecord = dom.doc.getElementById("careerRecord");
 
@@ -651,41 +656,41 @@ assert.strictEqual(typeof careerRecord._on.input, "function",
   "render() terminou sem ligar o campo de recorde");
 
 if (!real) {
-  /* 128540 ms = 02:08.54, o primeiro alvo da tabela do save sintetico. */
+  /* 128540 ms = 02:08.54, the first target in the synthetic save table. */
   assert.strictEqual(ttTarget.value, "02:08.54",
     "o alvo lido do save sintetico esta errado");
-  /* O save sintetico nao tem tabela de estatisticas, entao o recorde fica
-     vazio: nao ha linha k:TB para ler. */
+  /* The synthetic save has no stats table, so the record stays empty: there
+     is no k:TB row to read. */
   assert.strictEqual(careerRecord.value, "",
     "o recorde devia estar vazio sem a tabela de Stats");
 }
 
-// 02:08.54 = 128540 ms, o mesmo tempo do save de referencia
+// 02:08.54 = 128540 ms, the reference save's time
 ttTarget.value = "02:08.54";
 ttTarget._on.input.call(ttTarget);
 assert.strictEqual(ctx.view.getUint32(ttAt), 128540,
   "digitar no alvo nao gravou na tabela de Career");
-/* O alvo mora so em Career: Stats+0x578 e gWIP (total de wipeouts) e nao
-   pode ser tocado, senao a estatistica de queda vai junto. No save real ele
-   guarda 180; o que importa e nao virar 128540. */
+/* The target lives only in Career: Stats+0x578 is gWIP (total wipeouts) and
+   must not be touched, or the wipeout stat goes with it. The real save holds
+   180 there; what matters is that it does not become 128540. */
 assert.notStrictEqual(ctx.view.getUint32(statsAt + 0x578), 128540,
   "o alvo invadiu Stats+0x578, que e gWIP");
 
-// o alvo seguinte da tabela nao pode ser tocado (no save sintetico ele e 0)
+// the table's next target must not be touched (0 in the synthetic save)
 if (!real) {
-  /* A tabela do save sintetico tem 4 alvos; gravar o primeiro nao pode
-     mexer no segundo (150000). */
+  /* The synthetic save table has 4 targets; writing the first must not move
+     the second (150000). */
   assert.strictEqual(ctx.view.getUint32(ttAt + 4), 150000,
     "o alvo invadiu a entrada seguinte da tabela");
 }
 
-// formato invalido nao grava
+// an invalid format does not write
 ttTarget.value = "2:99";
 ttTarget._on.input.call(ttTarget);
 assert.strictEqual(ctx.view.getUint32(ttAt), 128540,
   "um tempo impossivel foi gravado mesmo assim");
 
-// o recorde e uma linha k:TB como as outras quatro
+// the record is a k:TB row like the other four
 if (real) {
   var tb0 = ctx.statValueAt("k:TB", 0);
   careerRecord.value = "04:15.32";
@@ -696,8 +701,8 @@ if (real) {
     "mudar so o recorde mexeu no alvo da missao");
 }
 
-// ---------- horas de jogo (h:mm) ----------
-// khTC guarda horas fracionarias; a tela mostra h:mm e aceita h:mm de volta.
+// ---------- play hours (h:mm) ----------
+// khTC holds fractional hours; the screen shows h:mm and accepts h:mm back.
 
 assert.strictEqual(ctx.hoursToText(1.9862), "1:59", "1.9862 horas nao virou 1:59");
 assert.strictEqual(ctx.hoursToText(2.5), "2:30", "2.5 horas nao virou 2:30");
@@ -706,7 +711,7 @@ assert.strictEqual(ctx.textToHours("2:5"), 2 + 5 / 60, "2:5 nao virou 2:05");
 assert.strictEqual(ctx.textToHours("2:99"), null, "minuto 99 foi aceito");
 assert.strictEqual(ctx.textToHours("abc"), null, "texto foi aceito como horas");
 
-// o campo existe, le o valor do save e grava de volta
+// the field exists, reads the save value and writes it back
 var hoursInput = dom.doc.getElementById("careerHours");
 assert.ok(hoursInput, "o campo de horas nao foi montado");
 assert.ok(hoursInput._on.input, "o campo de horas nao foi ligado");
@@ -718,7 +723,7 @@ hoursInput._on.blur.call(hoursInput);
 assert.strictEqual(hoursInput.value, "2:05",
   "sair do campo nao normalizou 2:5 em 2:05");
 
-// lixo nao grava: o valor do save continua o mesmo
+// garbage does not write: the save value stays the same
 var hoursAt = ctx.statValueAt("khTC");
 var hoursBefore = ctx.view.getFloat32(hoursAt);
 hoursInput.value = "abc";
@@ -726,7 +731,7 @@ hoursInput._on.input.call(hoursInput);
 assert.strictEqual(ctx.view.getFloat32(hoursAt), hoursBefore,
   "texto invalido mudou as horas no save");
 
-// ---------- o arquivo tem que sobreviver a tudo isso ----------
+// ---------- the file must survive all of this ----------
 
 var after = ctx.parse(ctx.bytes.buffer);
 assert.ok(after.valid, "o save ficou invalido depois das edicoes");

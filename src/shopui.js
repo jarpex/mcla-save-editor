@@ -5,7 +5,7 @@ function calcShopMetrics() {
   for (var i = 0; i < n - 1; i++) sum += (st.cats[i].level - 1);
   var pct = Math.max(0, Math.min(100, Math.floor(sum * 100 / (2 * (n - 1)))));
 
-  /* Normalized progress for schematic highlights */
+  /* Normalized progress for the schematic */
   var byIdx = {};
   st.cats.forEach(function (c) {
     byIdx[c.idx] = (c.level - 1) / Math.max(1, c.max - 1);
@@ -188,9 +188,9 @@ function renderShopRows() {
     ctrl.appendChild(cells);
     ctrl.appendChild(nextBtn);
 
-    /* A badge era "Stock"/"LVL n". O nivel ja esta nos quadradinhos, entao
-       aqui entra o fornecedor: "Stock" quando nao ha peca, ou o dropdown com
-       os nomes levantados do jogo. */
+    /* The badge used to read "Stock"/"LVL n". The level is already in the
+       squares, so the vendor goes here: "Stock" when there is no part, or
+       the dropdown with the names collected from the game. */
     var badge;
     if (cat.level === 1 || !cat.vendors) {
       badge = document.createElement("span");
@@ -238,7 +238,7 @@ function setShopCategoryLevel(rIdx, nextLv) {
   var cat = SHOP_STATE.cats[rIdx];
   if (!cat) return;
   cat.level = Math.max(1, Math.min(cat.max, nextLv));
-  /* Stock nao tem fornecedor: o byte volta a zero junto com o nivel. */
+  /* Stock has no vendor: the byte returns to zero with the level. */
   if (cat.level === 1) cat.vendor = 0;
   renderShopRows();
 }
@@ -296,7 +296,7 @@ function closePerformanceShop(commit) {
       if (c.level !== c.origLevel) changed = true;
       if (c.vendor !== c.origVendor && c.vendor != null) changed = true;
       tuneSet(st.slot, c.idx, c.level);
-      /* Fornecedor so existe em categoria com tabela; stock = zero. */
+      /* A vendor exists only in a category with a table; stock = zero. */
       if (c.vendors) tuneVendorSet(st.slot, c.idx, c.level === 1 ? null : (c.vendor || 0));
     });
     if (typeof window.refreshGarageTune === "function") window.refreshGarageTune();
